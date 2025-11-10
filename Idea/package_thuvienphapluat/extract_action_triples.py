@@ -2,17 +2,31 @@
 """
 Extract action-based (subject, verb, object) triples from Vietnamese legal text.
 
+New features (enhanced version):
+    - Optional cleanup / normalization of extracted triples (--clean)
+        - Optional Excel / CSV export (--xlsx), luôn xuất 3 cột (subject, predicate, object)
+            bằng pandas nếu có; nếu thiếu sẽ fallback CSV
+    - More robust JSON saving when output filename has no directory
+    - Optional augmentation: predicate normalization + subject/object typing (--augment)
+
 Dependencies:
-- PyPDF2 (required)
-- google-generativeai (optional, only if using --gemini)
+    - PyPDF2 (required)
+    - google-generativeai (optional, only if using --gemini)
+    - pandas (optional, for Excel export; openpyxl recommended)
 
 Usage examples:
-  python extract_action_triples.py --pdf LuatHS.pdf --start 4 --end 7 --output triples_p4_7_actions.json
+    python extract_action_triples.py --pdf LuatHS.pdf --start 4 --end 7 --output triples_p4_7_actions.json
 
-  # With Gemini refinement (optional)
-  python extract_action_triples.py --pdf LuatHS.pdf --start 4 --end 7 --output triples_p4_7_actions_refined.json --gemini --gemini-key YOUR_KEY
+    # With Gemini refinement (optional)
+    python extract_action_triples.py --pdf LuatHS.pdf --start 4 --end 7 \
+        --output triples_p4_7_actions_refined.json --gemini --gemini-key YOUR_KEY
+
+    # With cleanup & Excel export
+    python extract_action_triples.py --pdf LuatHS.pdf --start 4 --end 7 \
+        --output triples_p4_7_actions.json --clean --xlsx triples_p4_7_actions.xlsx
 """
 import argparse
+import csv
 import json
 import os
 import re
@@ -121,6 +135,27 @@ def cleanup(s: str) -> str:
     s = s.strip(' ,.;:()[]{}"“”\'’')
     s = re.sub(r'\s+', ' ', s)
     return s
+
+def cleanup_vi_tokens(s: str) -> str:
+    """Light Vietnamese cleanup: normalize spaces, unify dashes, fix common OCR splits."""
+    if not s:
+        return s
+    x = s.replace('\u00a0', ' ')
+    x = x.replace('–', '-')
+    x = x.replace('—', '-')
+    # OCR fix samples
+    x = x.replace('ph ạm', 'phạm')
+    x = x.replace('đ ó', 'đó')
+    x = x.replace('trước', 'trước')
+    x = x.replace('dấu', 'dấu')
+    x = x.replace('biết', 'biết')
+    x = x.replace('hiếp', 'hiếp')
+    x = x.replace('cướp', 'cướp')
+    x = x.replace('kết', 'kết')
+    x = x.replace('mới', 'mới')
+    x = x.replace('ho ặc', 'hoặc')
+    x = re.sub(r'\s+', ' ', x).strip(' ,.;:()[]{}"“”\'’')
+    return x
 
 
 def after_until_stop(text: str, start_idx: int) -> str:
@@ -288,6 +323,61 @@ def extract_action_triples(text: str) -> List[Dict[str, str]]:
             uniq.append(t)
     return uniq
 
+# --------------------------
+# Triple normalization & export
+# --------------------------
+
+NOISY_OBJECT_EXACT = {"hàng tháng", "vào việc", "phát tán"}
+
+def normalize_triples(triples: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    """Light normalization: cleanup tokens, remove clearly noisy objects, deduplicate again."""
+    out: List[Dict[str, str]] = []
+    for t in triples:
+        s = cleanup_vi_tokens(t.get("subject", ""))
+        p = cleanup_vi_tokens(t.get("predicate", ""))
+        o = cleanup_vi_tokens(t.get("object", ""))
+        s = normalize_age_subject(s)
+        if not s or not p or not o:
+            continue
+        if o.lower() in NOISY_OBJECT_EXACT and not any(k in p.lower() for k in ["phạt", "tử hình"]):
+            continue
+        if len(o) < 3 and o.lower() not in {"án", "tù"}:
+            continue
+        out.append({"subject": s, "predicate": p, "object": o})
+    # Deduplicate
+    uniq: List[Dict[str, str]] = []
+    seen = set()
+    for t in out:
+        key = (t["subject"].lower(), t["predicate"].lower(), t["object"].lower())
+        if key not in seen:
+            seen.add(key)
+            uniq.append(t)
+    return uniq
+
+def export_table(triples: List[Dict[str, str]], out_path: str) -> str:
+    if not triples:
+        raise ValueError("Không có dữ liệu để xuất.")
+    # Always export only 3 columns: subject, predicate, object
+    base_cols = ["subject", "predicate", "object"]
+    rows = [{c: t.get(c, "") for c in base_cols} for t in triples]
+    try:
+        import pandas as pd  # type: ignore
+        df = pd.DataFrame(rows, columns=base_cols)
+        if out_path.lower().endswith('.xlsx'):
+            df.to_excel(out_path, index=False)
+            return out_path
+        csv_path = out_path if out_path.lower().endswith('.csv') else os.path.splitext(out_path)[0] + '.csv'
+        df.to_csv(csv_path, index=False, encoding='utf-8-sig')
+        return csv_path
+    except Exception:
+        csv_path = out_path if out_path.lower().endswith('.csv') else os.path.splitext(out_path)[0] + '.csv'
+        with open(csv_path, 'w', newline='', encoding='utf-8-sig') as f:
+            w = csv.DictWriter(f, fieldnames=base_cols)
+            w.writeheader()
+            for row in rows:
+                w.writerow(row)
+        return csv_path
+
 
 def refine_with_gemini(triples: List[Dict[str, str]], api_key: str, model: str = "gemini-2.5-flash") -> List[Dict[str, str]]:
     try:
@@ -325,7 +415,8 @@ def refine_with_gemini(triples: List[Dict[str, str]], api_key: str, model: str =
 
 
 def save_to_json(triples: List[Dict[str, str]], out_path: str) -> None:
-    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    dir_name = os.path.dirname(out_path) or '.'
+    os.makedirs(dir_name, exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(triples, f, ensure_ascii=False, indent=2)
 
@@ -338,6 +429,9 @@ def main():
     parser.add_argument("--output", default="triples_actions.json", help="File JSON đầu ra")
     parser.add_argument("--gemini", action="store_true", help="Dùng Google Gemini để refine kết quả")
     parser.add_argument("--gemini-key", help="Gemini API key (hoặc đặt biến môi trường GEMINI_API_KEY)")
+    parser.add_argument("--clean", action="store_true", help="Làm sạch/chuẩn hóa nhẹ các bộ ba trước khi lưu")
+    parser.add_argument("--xlsx", help="Xuất thêm Excel/CSV (nếu .xlsx sẽ ưu tiên Excel; thiếu pandas sẽ fallback CSV)")
+    parser.add_argument("--augment", action="store_true", help="Bổ sung cột chuẩn hóa quan hệ và phân loại chủ thể/đối tượng")
     args = parser.parse_args()
 
     pdf_path = args.pdf
@@ -357,8 +451,96 @@ def main():
             raise RuntimeError("Thiếu Gemini API key. Truyền --gemini-key hoặc đặt biến GEMINI_API_KEY.")
         triples = refine_with_gemini(triples, api_key=api_key)
 
+    if args.clean:
+        triples = normalize_triples(triples)
+
+    if args.augment:
+        triples = augment_triples(triples)
+
     save_to_json(triples, args.output)
     print(f"Đã trích xuất {len(triples)} bộ ba. Đã lưu vào: {args.output}")
+
+    xout = args.xlsx
+    if not xout and args.output.lower().endswith('.xlsx'):
+        xout = args.output
+    if xout:
+        try:
+            written = export_table(triples, xout)
+            print(f"Đã xuất bảng: {written}")
+        except Exception as e:
+            print(f"[WARN] Xuất bảng thất bại: {e}")
+
+# --------------------------
+# Augmentation: predicate normalization + typing
+# --------------------------
+
+def canonical_predicate(subject: str, predicate: str, obj: str) -> str:
+    p = predicate.lower()
+    o = obj.lower()
+    if "chịu trách nhiệm hình sự" in p:
+        return "is_criminally_liable_for"
+    if "được miễn trách nhiệm hình sự" in p:
+        return "exempt_from_criminal_liability"
+    if "bị phạt tiền" in p:
+        return "fined"
+    if "bị xử phạt" in p or ("bị phạt" in p and "bị phạt tiền" not in p):
+        return "sentenced_to"
+    if p.strip() == "sử dụng":
+        return "uses"
+    if p.strip() == "tàng trữ":
+        return "possesses"
+    if p.strip() == "vận chuyển":
+        return "transports"
+    if p.strip() == "mua bán":
+        # Heuristic: trafficking if harmful objects
+        if any(x in o for x in ["ma túy", "người", "vũ khí", "tài sản"]):
+            return "commits"
+        return "trades"
+    if p.strip() in {"trộm cắp", "cướp", "bắt cóc", "hiếp dâm", "cưỡng dâm", "giết", "phá hoại", "hủy hoại", "chiếm đoạt"}:
+        return "commits"
+    if p.strip() == "thực hiện":
+        if any(x in o for x in ["tội ", "hành vi", "chiếm đoạt", "phạm tội"]):
+            return "commits"
+        return "performs"
+    return p.replace(" ", "_")
+
+def classify_entity(text: str, role: str) -> str:
+    t = (text or "").lower()
+    if role == "subject":
+        if t.startswith("người") or t.startswith("cá nhân"):
+            return "Person"
+        if t.startswith("tổ chức") or t.startswith("pháp nhân"):
+            return "Organization"
+        if any(x in t for x in ["viện kiểm sát", "tòa án", "cơ quan", "cấp trên", "chỉ huy"]):
+            return "Authority"
+        return "Unknown"
+    # object
+    if any(x in t for x in ["tội ", "hiếp dâm", "cướp", "trộm cắp", "bắt cóc", "chiếm đoạt"]):
+        return "Offense"
+    if any(x in t for x in ["tử hình", "phạt", "cải tạo", "tù", "án"]):
+        return "Penalty"
+    if any(x in t for x in ["mạng máy tính", "mạng viễn thông", "phương tiện điện tử", "vũ lực"]):
+        return "Resource"
+    if t.startswith("điều ") or t.startswith("khoản "):
+        return "ActPart"
+    if t.startswith("khi ") or t.startswith("trong trường hợp"):
+        return "Condition"
+    if "ma túy" in t:
+        return "Substance"
+    return "Unknown"
+
+def augment_triples(triples: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    out: List[Dict[str, str]] = []
+    for t in triples:
+        s = t.get("subject", "")
+        p = t.get("predicate", "")
+        o = t.get("object", "")
+        t2 = dict(t)
+        t2["predicate_norm"] = canonical_predicate(s, p, o)
+        t2["subject_type"] = classify_entity(s, "subject")
+        t2["object_type"] = classify_entity(o, "object")
+        out.append(t2)
+    return out
 
 
 if __name__ == "__main__":
