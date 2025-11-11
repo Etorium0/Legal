@@ -30,6 +30,7 @@ import csv
 import json
 import os
 import re
+import unicodedata
 from typing import List, Dict
 from PyPDF2 import PdfReader
 
@@ -55,7 +56,13 @@ SENT_SPLIT_RE = re.compile(r'(?<=[\.!\?;:])\s+|\n+')
 
 
 def normalize_text(raw: str) -> str:
-    s = raw.replace('\u00a0', ' ')  # nbsp
+    # Canonical compose to merge combining accents into precomposed Vietnamese characters where possible
+    s = unicodedata.normalize('NFC', raw)
+    s = s.replace('\u00a0', ' ')  # nbsp
+    # Additional OCR normalizations
+    s = s.replace('đủ', 'đủ').replace('Đủ', 'Đủ')
+    s = s.replace('Điều', 'Điều').replace('điều', 'điều')
+    s = s.replace('tội', 'tội').replace('Tội', 'Tội')
     # Fix common OCR spacing around numbers in Điều (e.g. "Điều 1 51" -> "Điều 151")
     s = re.sub(r'(Đi[êe]u)\s+(\d)\s+(\d)(?:\s+(\d))?',
                lambda m: f"{m.group(1)} {m.group(2)}{m.group(3)}{m.group(4) or ''}", s)
@@ -83,6 +90,9 @@ VERB_LEXICON = [
     "không chịu trách nhiệm hình sự",
     "phải chịu trách nhiệm hình sự",
     "được miễn trách nhiệm hình sự",
+    "không phải là",
+    "được quy định",
+    "là",
     "bị truy cứu trách nhiệm hình sự",
     "bị xử phạt",
     "bị phạt tiền",
@@ -105,9 +115,12 @@ VERB_LEXICON = [
     "phá hoại",
 ]
 
-# Precompile patterns, longest verb first
+# Precompile patterns with word boundaries to avoid matching inside words (e.g., 'là' in 'làm')
 VERB_LEXICON = sorted(VERB_LEXICON, key=len, reverse=True)
-VERB_PATTERNS = [(v, re.compile(re.escape(v), re.IGNORECASE)) for v in VERB_LEXICON]
+def _compile_verb(v: str):
+    pat = rf"(?<!\w){re.escape(v)}(?!\w)"
+    return re.compile(pat, re.IGNORECASE)
+VERB_PATTERNS = [(v, _compile_verb(v)) for v in VERB_LEXICON]
 
 SUBJECT_CANDIDATE_RE = re.compile(
     r'\b('
@@ -120,7 +133,11 @@ SUBJECT_CANDIDATE_RE = re.compile(
     r')', re.IGNORECASE
 )
 
-CRIME_ITEM_RE = re.compile(r'(tội [^,;:]+)', re.IGNORECASE)
+# Include standalone offenses and the general phrase "mọi tội phạm"
+CRIME_ITEM_RE = re.compile(r'(tội [^,;:]+|mọi tội phạm)', re.IGNORECASE)
+# Fallback pattern for enumerated offenses with OCR-tolerant "Điều" token (e.g., "Điều")
+# Matches: "Đi[êe]\S* <num> (tội ... )" and stops the offense name before ")" or ";"
+ENUM_OFFENSE_RE_FALLBACK = re.compile(r"Đi\S*\s+(\d+)\s*\((tội[^);]+)\)", re.IGNORECASE)
 CONNECTOR_RE = re.compile(r'\b(?:và|hoặc|nhưng|song)\b', re.IGNORECASE)
 
 
@@ -162,6 +179,50 @@ def after_until_stop(text: str, start_idx: int) -> str:
     sub = text[start_idx:]
     m = re.search(r'(?=[\.;:])', sub)
     return cleanup(sub[:m.start()] if m else sub)
+
+
+OBJ_STOP_TOKENS = re.compile(r"\b(thì|mà|để|trong khi|khi|nếu|do|vì|bằng việc|nhằm|song|tuy|nhưng)\b", re.IGNORECASE)
+
+def trim_object(obj: str) -> str:
+    # Cut at clause markers
+    m = OBJ_STOP_TOKENS.search(obj)
+    if m and m.start() > 0:
+        obj = obj[:m.start()]
+    # Remove leading 'hành vi' when followed by a verb-like word
+    obj = re.sub(r'^hành vi\s+', '', obj, flags=re.IGNORECASE)
+    # Cut at long comma tails
+    parts = [p.strip() for p in obj.split(',')]
+    if len(parts) > 1:
+        head = ', '.join(parts[:3])  # keep up to first 3 chunks
+        if len(head.split()) <= 15:
+            obj = head
+    # Hard cap length to keep noun phrase concise
+    tokens = obj.split()
+    if len(tokens) > 18:
+        obj = ' '.join(tokens[:18])
+    return cleanup(obj)
+
+
+VERB_LIKE_START_RE = re.compile(r'^(phạm|thực hiện|gây|chiếm đoạt|trốn|áp dụng|báo cáo|chấp hành|sử dụng)\b', re.IGNORECASE)
+
+def normalize_object_phrase(obj: str, predicate: str) -> str:
+    o = obj.strip()
+    if not o:
+        return o
+    # Convert common verb-leading phrases to noun phrases
+    low = o.lower()
+    if low.startswith('phạm tội') or low == 'phạm tội mới':
+        return 'tội phạm' if 'mới' not in low else 'tội phạm mới'
+    if VERB_LIKE_START_RE.match(o):
+        # Prefix with 'hành vi'
+        o = re.sub(r'^(thực hiện|gây|chiếm đoạt|trốn|áp dụng|báo cáo|chấp hành|sử dụng)\s+', '', o, flags=re.IGNORECASE)
+        if not o:
+            o = obj
+        o = 'hành vi ' + o
+    # Remove leading 'Người' as object for action predicates
+    if predicate.strip().lower() in {'thực hiện','sử dụng','tàng trữ','mua bán','vận chuyển','phá hoại','trộm cắp'} and low.startswith('người '):
+        return ''
+    return cleanup(o)
 
 
 def explode_crimes(obj: str) -> List[str]:
@@ -239,6 +300,8 @@ def extract_action_triples(text: str) -> List[Dict[str, str]]:
         'm ạng': 'mạng',
         'đ iện': 'điện',
         'vi ễn': 'viễn',
+        'h ành': 'hành',
+        'm hư hỏng': 'làm hư hỏng',
     }
 
     def fix_ocr_chunks(s: str) -> str:
@@ -252,7 +315,37 @@ def extract_action_triples(text: str) -> List[Dict[str, str]]:
 
     def looks_like_object_noun(s: str) -> bool:
         s2 = s.lower()
-        return any(x in s2 for x in ['tội ', 'tài sản', 'ma túy', 'mạng', 'phương tiện', 'điện tử', 'vũ lực', 'cơ sở', 'hành vi', 'điều '])
+        return any(x in s2 for x in ['tội ', 'tội phạm', 'tài sản', 'ma túy', 'mạng', 'phương tiện', 'điện tử', 'vũ lực', 'cơ sở', 'hành vi', 'điều ', 'thời hiệu'])
+
+    HEADING_OFFENSE_RE = re.compile(r"Đi\S*\s+(\d+)\s*\((tội[^)]+)\)", re.IGNORECASE)
+    def emit_offenses_from_sentence(sentence: str, subj_for_liability: str | None):
+        # Find all offense headings in the sentence and emit liability triples if in context
+        for m in HEADING_OFFENSE_RE.finditer(sentence):
+            art_no = m.group(1)
+            offense_raw = m.group(2)
+            offense = fix_ocr_chunks(cleanup(offense_raw))
+            # Include Điều number in the object and default subject to "Người 14–16 tuổi"
+            off_obj = f"{offense} (Điều {art_no})"
+            subject_emit = subj_for_liability or "Người 14–16 tuổi"
+            # For enumerated offenses, use predicate "phạm"
+            triples.append({
+                "subject": subject_emit,
+                "predicate": "phạm",
+                "object": off_obj,
+            })
+            # Additionally, if offense phrase contains clear verb-object like 'làm hư hỏng X' or 'hủy hoại X', emit action triples
+            mh = re.search(r"(?:cố ý\s+)?làm hư hỏng\s+([^,;\)]+)", offense, re.IGNORECASE)
+            if mh:
+                objx = trim_object(cleanup(mh.group(1)))
+                if objx:
+                    triples.append({"subject": "Người", "predicate": "làm hư hỏng", "object": objx})
+            mh2 = re.search(r"hủy hoại\s+([^,;\)]+)", offense, re.IGNORECASE)
+            if mh2:
+                objx = trim_object(cleanup(mh2.group(1)))
+                if objx:
+                    triples.append({"subject": "Người", "predicate": "hủy hoại", "object": objx})
+
+    active_liability_subject: str | None = None
 
     for s in sentences:
         subject = normalize_age_subject(pick_subject(s))
@@ -276,6 +369,14 @@ def extract_action_triples(text: str) -> List[Dict[str, str]]:
             obj = after_until_stop(s, best_m.end())
             obj = fix_ocr_chunks(obj)
 
+            # Copula/definition subject fallback: take phrase before the verb as subject if it looks noun-like
+            if verb.lower() in {"không phải là", "là", "được quy định"}:
+                pre = cleanup(s[:best_m.start()])
+                # strip leading numbering and labels
+                pre = re.sub(r'^(\d+\.|[a-d]\)|khoản \d+|điều \d+\.?\s*)', '', pre, flags=re.IGNORECASE)
+                if len(pre.split()) >= 2 and not pre.lower().startswith('người'):
+                    subject = pre
+
             # Composite splitting: "sử dụng <resources> thực hiện (hành vi)? <action>"
             # Example: "sử dụng mạng máy tính, mạng viễn thông, phương tiện điện tử thực hiện hành vi chiếm đoạt tài sản"
             # Emit two triples:
@@ -293,14 +394,30 @@ def extract_action_triples(text: str) -> List[Dict[str, str]]:
                         triples.append({"subject": subject, "predicate": "thực hiện", "object": action_obj})
                         handled_composite = True
 
-            if "chịu trách nhiệm hình sự" in verb.lower():
+            lowverb = verb.lower().strip()
+            if lowverb == "không chịu trách nhiệm hình sự":
+                # Capture condition phrase (e.g., "nếu Bộ luật có quy định khác") as the object
+                cond = re.search(r"(nếu [^\.;:]+|trừ trường hợp [^\.;:]+)", obj, re.IGNORECASE)
+                objx = cleanup(cond.group(1)) if cond else cleanup(obj)
+                if objx:
+                    triples.append({"subject": subject, "predicate": "không chịu trách nhiệm hình sự", "object": objx})
+                # Do not set liability enumeration context for negative clause
+            elif lowverb.startswith("chịu trách nhiệm hình sự") or lowverb.startswith("phải chịu trách nhiệm hình sự"):
                 crimes = explode_crimes(obj)
-                for c in crimes:
-                    triples.append({"subject": subject, "predicate": "chịu trách nhiệm hình sự về", "object": c})
+                if crimes:
+                    for c in crimes:
+                        triples.append({"subject": subject, "predicate": "chịu trách nhiệm hình sự về", "object": c})
+                else:
+                    # No explicit crime found; keep a generic liability triple when applicable
+                    triples.append({"subject": subject, "predicate": "phải chịu trách nhiệm hình sự", "object": "trách nhiệm hình sự"})
+                # Track liability context for following enumerations of Điều ...
+                if re.search(r"(một trong các đi[êe]u|các đi[êe]u sau đây)", obj, re.IGNORECASE):
+                    active_liability_subject = subject
             else:
                 if not handled_composite:
                     obj = CONNECTOR_RE.split(obj)[0]
-                    obj = cleanup(obj)
+                    obj = trim_object(cleanup(obj))
+                    obj = normalize_object_phrase(obj, verb)
                     # If object still contains verbs (likely a verb-list before a shared noun like "chất ma túy"), skip this noisy triple.
                     if contains_any_verb(obj) and not looks_like_object_noun(obj):
                         obj = ''
@@ -312,6 +429,83 @@ def extract_action_triples(text: str) -> List[Dict[str, str]]:
                 break
             else:
                 idx = best_m.end() + max(1, len(obj))
+
+        # After processing verbs in this sentence, emit offenses from heading if we are in liability context
+        emit_offenses_from_sentence(s, active_liability_subject)
+
+    # Enumerated offenses after phrases like "một trong các điều sau đây" (Điều 12 context)
+    def extract_enumerated_offenses(full_text: str) -> List[Dict[str, str]]:
+        out: List[Dict[str, str]] = []
+        anchor = re.search(r"(một trong các đi\S* sau đây|các đi\S* sau đây)\s*:?", full_text, re.IGNORECASE)
+        if not anchor:
+            return out
+        # Default subject for enumerated offenses per requirements
+        subj = 'Người 14–16 tuổi'
+        # Limit scan window to ~8000 chars after anchor
+        block = full_text[anchor.end(): anchor.end()+8000]
+        for m in re.finditer(r"Đi\S*\s+(\d+)\s*\((tội[^\)]+)\)", block, re.IGNORECASE | re.DOTALL):
+            art = m.group(1)
+            offense = fix_ocr_chunks(cleanup(m.group(2)))
+            obj = f"{offense} (Điều {art})"
+            out.append({"subject": subj, "predicate": "phạm", "object": obj})
+        return out
+
+    triples.extend(extract_enumerated_offenses(text))
+
+    # Add a fallback scan for enumerated offenses that explicitly emits predicate 'phạm'
+    def extract_enumerated_offenses_fixed(full_text: str) -> List[Dict[str, str]]:
+        """Fallback scan for enumerated offenses even when anchors are missing or OCR is noisy.
+        - Uses an OCR-tolerant regex: "Đi[êe]\S* <num> (tội ... )" (ENUM_OFFENSE_RE_FALLBACK)
+        - Also runs an accent-insensitive pass on a per-line basis for extreme OCR cases.
+        - Limits scan region to ~8000 chars after anchor if anchor is present; otherwise scans entire text.
+        - Default subject is "Người 14–16 tuổi" and predicate is "phạm".
+        """
+        out: List[Dict[str, str]] = []
+        subj = "Người 14–16 tuổi"
+        seen = set()
+
+        # Optional anchor limitation (tolerant to OCR on "trong")
+        anchor_raw = re.search(r"(một\s+t[rôo]ng\s+các\s+đi\S*\s+sau\s+đây|các\s+đi\S*\s+sau\s+đây)[:\s]*", full_text, re.IGNORECASE)
+        scan_text = full_text[anchor_raw.end(): anchor_raw.end()+8000] if anchor_raw else full_text
+
+        # Pass 1: direct OCR-tolerant regex over the scan block
+        for m in ENUM_OFFENSE_RE_FALLBACK.finditer(scan_text):
+            art = m.group(1)
+            offense = cleanup(m.group(2))
+            offense = fix_ocr_chunks(offense)
+            obj = f"{offense} (Điều {art})"
+            key = (subj.lower(), 'phạm', obj.lower())
+            if key not in seen:
+                seen.add(key)
+                out.append({"subject": subj, "predicate": "phạm", "object": obj})
+
+        # Pass 2: accent-insensitive line-based scan for severely broken diacritics
+        def strip_accents(x: str) -> str:
+            return ''.join(c for c in unicodedata.normalize('NFD', x) if unicodedata.category(c) != 'Mn')
+        for line in scan_text.splitlines():
+            if len(line) < 10:
+                continue
+            raw_line = line.strip()
+            sani = strip_accents(raw_line.lower())
+            mm = re.search(r"dieu\s+(\d+)\s*\((toi[^);]*)\)", sani)
+            if not mm:
+                continue
+            art = mm.group(1)
+            # Try to map back offense from original raw_line between parentheses
+            pm = re.search(r"\(([^)]*)\)", raw_line)
+            if not pm:
+                continue
+            offense = cleanup(pm.group(1))
+            offense = fix_ocr_chunks(offense)
+            obj = f"{offense} (Điều {art})"
+            key = (subj.lower(), 'phạm', obj.lower())
+            if key not in seen:
+                seen.add(key)
+                out.append({"subject": subj, "predicate": "phạm", "object": obj})
+        return out
+
+    triples.extend(extract_enumerated_offenses_fixed(text))
+
 
     # Deduplicate
     uniq: List[Dict[str, str]] = []
