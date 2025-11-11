@@ -56,7 +56,12 @@ SENT_SPLIT_RE = re.compile(r'(?<=[\.!\?;:])\s+|\n+')
 
 
 def normalize_text(raw: str) -> str:
-    # Canonical compose to merge combining accents into precomposed Vietnamese characters where possible
+    # Canonical compose to merge combining accents into precomposed Vietnamese characters where possible.
+    # OCR normalizations include:
+    #  - 'đủ' -> 'đủ' (and 'Đủ' -> 'Đủ')
+    #  - 'Điều'/'điều' -> 'Điều'/'điều'
+    #  - 'tội'/'Tội' -> 'tội'/'Tội'
+    # Also fixes common spacing around Điều numbers (e.g., 'Điều 1 51' -> 'Điều 151').
     s = unicodedata.normalize('NFC', raw)
     s = s.replace('\u00a0', ' ')  # nbsp
     # Additional OCR normalizations
@@ -171,7 +176,8 @@ def cleanup_vi_tokens(s: str) -> str:
     x = x.replace('kết', 'kết')
     x = x.replace('mới', 'mới')
     x = x.replace('ho ặc', 'hoặc')
-    x = re.sub(r'\s+', ' ', x).strip(' ,.;:()[]{}"“”\'’')
+    # Preserve parentheses to keep references like "(Điều 123)"
+    x = re.sub(r'\s+', ' ', x).strip(' ,.;:[]{}"“”\'’')
     return x
 
 
@@ -435,6 +441,12 @@ def extract_action_triples(text: str) -> List[Dict[str, str]]:
 
     # Enumerated offenses after phrases like "một trong các điều sau đây" (Điều 12 context)
     def extract_enumerated_offenses(full_text: str) -> List[Dict[str, str]]:
+        """Extract enumerated offenses following anchors like "một trong các điều sau đây".
+        - Default subject is "Người 14–16 tuổi"
+        - Predicate is always "phạm" for enumerations
+        - Scan up to ~8000 chars after anchor to avoid bleeding into next articles
+        - OCR-tolerant heading pattern: matches "Đi... <num> (tội ...)"
+        """
         out: List[Dict[str, str]] = []
         anchor = re.search(r"(một trong các đi\S* sau đây|các đi\S* sau đây)\s*:?", full_text, re.IGNORECASE)
         if not anchor:
@@ -455,7 +467,7 @@ def extract_action_triples(text: str) -> List[Dict[str, str]]:
     # Add a fallback scan for enumerated offenses that explicitly emits predicate 'phạm'
     def extract_enumerated_offenses_fixed(full_text: str) -> List[Dict[str, str]]:
         """Fallback scan for enumerated offenses even when anchors are missing or OCR is noisy.
-        - Uses an OCR-tolerant regex: "Đi[êe]\S* <num> (tội ... )" (ENUM_OFFENSE_RE_FALLBACK)
+        - Uses an OCR-tolerant regex description: "Đi\\S* <num> (tội ... )" (ENUM_OFFENSE_RE_FALLBACK)
         - Also runs an accent-insensitive pass on a per-line basis for extreme OCR cases.
         - Limits scan region to ~8000 chars after anchor if anchor is present; otherwise scans entire text.
         - Default subject is "Người 14–16 tuổi" and predicate is "phạm".
@@ -487,21 +499,15 @@ def extract_action_triples(text: str) -> List[Dict[str, str]]:
                 continue
             raw_line = line.strip()
             sani = strip_accents(raw_line.lower())
-            mm = re.search(r"dieu\s+(\d+)\s*\((toi[^);]*)\)", sani)
-            if not mm:
-                continue
-            art = mm.group(1)
-            # Try to map back offense from original raw_line between parentheses
-            pm = re.search(r"\(([^)]*)\)", raw_line)
-            if not pm:
-                continue
-            offense = cleanup(pm.group(1))
-            offense = fix_ocr_chunks(offense)
-            obj = f"{offense} (Điều {art})"
-            key = (subj.lower(), 'phạm', obj.lower())
-            if key not in seen:
-                seen.add(key)
-                out.append({"subject": subj, "predicate": "phạm", "object": obj})
+            for mm in re.finditer(r"dieu\s+(\d+)\s*\((toi[^)]*)\)", sani):
+                art = mm.group(1)
+                offense = cleanup(mm.group(2))  # offense text from accentless line
+                offense = fix_ocr_chunks(offense)
+                obj = f"{offense} (Điều {art})"
+                key = (subj.lower(), 'phạm', obj.lower())
+                if key not in seen:
+                    seen.add(key)
+                    out.append({"subject": subj, "predicate": "phạm", "object": obj})
         return out
 
     triples.extend(extract_enumerated_offenses_fixed(text))
