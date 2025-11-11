@@ -141,8 +141,10 @@ SUBJECT_CANDIDATE_RE = re.compile(
 # Include standalone offenses and the general phrase "mọi tội phạm"
 CRIME_ITEM_RE = re.compile(r'(tội [^,;:]+|mọi tội phạm)', re.IGNORECASE)
 # Fallback pattern for enumerated offenses with OCR-tolerant "Điều" token (e.g., "Điều")
-# Matches: "Đi[êe]\S* <num> (tội ... )" and stops the offense name before ")" or ";"
+# Matches style 1: "Đi[êe]\S* <num> (tội ... )" and stops the offense name before ")" or ";"
 ENUM_OFFENSE_RE_FALLBACK = re.compile(r"Đi\S*\s+(\d+)\s*\((tội[^);]+)\)", re.IGNORECASE)
+# Matches style 2: dotted headings like "Điều 151. Tội ..." (stop before line end or next punctuation)
+ENUM_OFFENSE_RE_DOTTED = re.compile(r"Đi\S*\s+(\d+)\s*[\.:\-]\s*(tội[^\n\r;:\.)]+)", re.IGNORECASE)
 CONNECTOR_RE = re.compile(r'\b(?:và|hoặc|nhưng|song)\b', re.IGNORECASE)
 
 
@@ -336,24 +338,26 @@ def extract_action_triples(text: str) -> List[Dict[str, str]]:
         s2 = s.lower()
         return any(x in s2 for x in ['tội ', 'tội phạm', 'tài sản', 'ma túy', 'mạng', 'phương tiện', 'điện tử', 'vũ lực', 'cơ sở', 'hành vi', 'điều ', 'thời hiệu'])
 
-    HEADING_OFFENSE_RE = re.compile(r"Đi\S*\s+(\d+)\s*\((tội[^)]+)\)", re.IGNORECASE)
+    HEADING_OFFENSE_RE_PAREN = re.compile(r"Đi\S*\s+(\d+)\s*\((tội[^)]+)\)", re.IGNORECASE)
+    HEADING_OFFENSE_RE_DOT = re.compile(r"Đi\S*\s+(\d+)\s*[\.:\-]\s*(tội[^\n\r;:\.)]+)", re.IGNORECASE)
     def emit_offenses_from_sentence(sentence: str, subj_for_liability: str | None, enum_predicate: str | None):
         # Find all offense headings in the sentence and emit liability triples if in context
-        for m in HEADING_OFFENSE_RE.finditer(sentence):
-            art_no = m.group(1)
-            offense_raw = m.group(2)
-            offense = fix_ocr_chunks(cleanup(offense_raw))
-            # Include Điều number in the object and default subject to "Người 14–16 tuổi"
-            off_obj = f"{offense} (Điều {art_no})"
-            subject_emit = subj_for_liability or "Người từ 14–16 tuổi"
-            # Predicate for enumerations: default "phạm", but allow context override (e.g., "chuẩn bị phạm")
-            predicate_emit = (enum_predicate or "phạm").strip()
-            # Emit a single triple per offense heading
-            triples.append({
-                "subject": subject_emit,
-                "predicate": predicate_emit,
-                "object": off_obj,
-            })
+        for rex in (HEADING_OFFENSE_RE_PAREN, HEADING_OFFENSE_RE_DOT):
+            for m in rex.finditer(sentence):
+                art_no = m.group(1)
+                offense_raw = m.group(2)
+                offense = fix_ocr_chunks(cleanup(offense_raw))
+                # Include Điều number in the object and default subject to "Người 14–16 tuổi"
+                off_obj = f"{offense} (Điều {art_no})"
+                subject_emit = subj_for_liability or "Người từ 14–16 tuổi"
+                # Predicate for enumerations: default "phạm", but allow context override (e.g., "chuẩn bị phạm")
+                predicate_emit = (enum_predicate or "phạm").strip()
+                # Emit a single triple per offense heading
+                triples.append({
+                    "subject": subject_emit,
+                    "predicate": predicate_emit,
+                    "object": off_obj,
+                })
 
     active_liability_subject: str | None = None
     active_enum_predicate: str | None = None
@@ -479,7 +483,14 @@ def extract_action_triples(text: str) -> List[Dict[str, str]]:
         pred = 'chuẩn bị phạm' if re.search(r"chuẩn bị\s+phạm", ctx, re.IGNORECASE) else 'phạm'
         # Limit scan window to ~8000 chars after anchor
         block = full_text[anchor.end(): anchor.end()+8000]
+        # Parenthesis style
         for m in re.finditer(r"Đi\S*\s+(\d+)\s*\((tội[^\)]+)\)", block, re.IGNORECASE | re.DOTALL):
+            art = m.group(1)
+            offense = fix_ocr_chunks(cleanup(m.group(2)))
+            obj = f"{offense} (Điều {art})"
+            out.append({"subject": subj, "predicate": pred, "object": obj})
+        # Dotted style
+        for m in re.finditer(r"Đi\S*\s+(\d+)\s*[\.:\-]\s*(tội[^\n\r;:\.)]+)", block, re.IGNORECASE):
             art = m.group(1)
             offense = fix_ocr_chunks(cleanup(m.group(2)))
             obj = f"{offense} (Điều {art})"
@@ -505,8 +516,18 @@ def extract_action_triples(text: str) -> List[Dict[str, str]]:
         scan_text = full_text[anchor_raw.end(): anchor_raw.end()+8000] if anchor_raw else full_text
         default_pred = 'chuẩn bị phạm' if re.search(r"chuẩn bị\s+phạm", scan_text[:200], re.IGNORECASE) else 'phạm'
 
-        # Pass 1: direct OCR-tolerant regex over the scan block
+        # Pass 1a: direct OCR-tolerant regex over the scan block (parenthesis style)
         for m in ENUM_OFFENSE_RE_FALLBACK.finditer(scan_text):
+            art = m.group(1)
+            offense = cleanup(m.group(2))
+            offense = fix_ocr_chunks(offense)
+            obj = f"{offense} (Điều {art})"
+            key = (subj.lower(), default_pred, obj.lower())
+            if key not in seen:
+                seen.add(key)
+                out.append({"subject": subj, "predicate": default_pred, "object": obj})
+        # Pass 1b: dotted heading style
+        for m in ENUM_OFFENSE_RE_DOTTED.finditer(scan_text):
             art = m.group(1)
             offense = cleanup(m.group(2))
             offense = fix_ocr_chunks(offense)
@@ -533,6 +554,7 @@ def extract_action_triples(text: str) -> List[Dict[str, str]]:
                 if key not in seen:
                     seen.add(key)
                     out.append({"subject": subj, "predicate": default_pred, "object": obj})
+        
         return out
 
     triples.extend(extract_enumerated_offenses_fixed(text))
@@ -649,6 +671,55 @@ def refine_with_gemini(triples: List[Dict[str, str]], api_key: str, model: str =
     return refined
 
 
+def split_by_articles(text: str) -> List[str]:
+    """Split normalized text by Điều headings, keep heading with its block."""
+    blocks: List[str] = []
+    parts = re.split(r"(?=\bĐi\S*\s+\d+\b)", text)
+    for p in parts:
+        p = p.strip()
+        if len(p) > 80 and re.search(r"\bĐi\S*\s+\d+\b", p):
+            blocks.append(p)
+    return blocks
+
+
+def gemini_extract_triples(text_blocks: List[str], api_key: str, model: str = "gemini-2.5-flash", max_chars: int = 6000) -> List[Dict[str, str]]:
+    """Use Gemini to extract triples from a list of article text blocks."""
+    try:
+        import google.generativeai as genai
+    except Exception as e:
+        raise RuntimeError("Chưa cài google-generativeai. Cài bằng: pip install google-generativeai") from e
+
+    genai.configure(api_key=api_key)
+    mdl = genai.GenerativeModel(model)
+
+    all_triples: List[Dict[str, str]] = []
+    sys_instructions = """Bạn là trợ lý pháp luật. Hãy trích xuất các bộ ba (subject, predicate, object) từ đoạn văn bản pháp luật tiếng Việt.
+YÊU CẦU:
+- Trả về JSON duy nhất dạng [{"subject":"...","predicate":"...","object":"..."}, ...].
+- predicate là động từ/cụm động từ ngắn gọn.
+- object là cụm danh từ; nếu có tham chiếu điều khoản thì ghi kèm (Điều N).
+- Bao gồm tội danh, hành vi bị cấm, trách nhiệm hình sự, hình phạt.
+- Không suy diễn ngoài văn bản.
+"""
+    for block in text_blocks:
+        chunk = block[:max_chars]
+        prompt = f"{sys_instructions}\nVĂN BẢN:\n{chunk}\n\nChỉ trả về JSON như mô tả."
+        try:
+            resp = mdl.generate_content(prompt)
+            txt = (resp.text or "").strip()
+            m = re.search(r"\[.*\]", txt, re.DOTALL)
+            arr = json.loads(m.group(0)) if m else []
+            for t in arr:
+                s = cleanup_vi_tokens(t.get("subject", ""))
+                p = cleanup_vi_tokens(t.get("predicate", ""))
+                o = cleanup_vi_tokens(t.get("object", ""))
+                if s and p and o:
+                    all_triples.append({"subject": s, "predicate": p, "object": o})
+        except Exception:
+            continue
+    return all_triples
+
+
 def save_to_json(triples: List[Dict[str, str]], out_path: str) -> None:
     dir_name = os.path.dirname(out_path) or '.'
     os.makedirs(dir_name, exist_ok=True)
@@ -663,6 +734,7 @@ def main():
     parser.add_argument("--end", type=int, required=True, help="Trang kết thúc (>=start)")
     parser.add_argument("--output", default="triples_actions.json", help="File JSON đầu ra")
     parser.add_argument("--gemini", action="store_true", help="Dùng Google Gemini để refine kết quả")
+    parser.add_argument("--gemini-extract", action="store_true", help="Dùng Google Gemini để bổ sung bộ ba từ văn bản (tăng recall)")
     parser.add_argument("--gemini-key", help="Gemini API key (hoặc đặt biến môi trường GEMINI_API_KEY)")
     parser.add_argument("--clean", action="store_true", help="Làm sạch/chuẩn hóa nhẹ các bộ ba trước khi lưu")
     parser.add_argument("--xlsx", help="Xuất thêm Excel/CSV (nếu .xlsx sẽ ưu tiên Excel; thiếu pandas sẽ fallback CSV)")
@@ -679,6 +751,16 @@ def main():
 
     raw = extract_text_from_pdf(pdf_path, args.start, args.end)
     triples = extract_action_triples(raw)
+
+    # Optional: augment triples by extracting with Gemini over article chunks
+    if args.gemini and args.gemini_extract:
+        api_key = args.gemini_key or os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            raise RuntimeError("Thiếu Gemini API key. Truyền --gemini-key hoặc đặt biến GEMINI_API_KEY.")
+        blocks = split_by_articles(normalize_text(raw))
+        llm_triples = gemini_extract_triples(blocks, api_key=api_key)
+        # Merge then dedupe
+        triples.extend(llm_triples)
 
     if args.gemini:
         api_key = args.gemini_key or os.getenv("GEMINI_API_KEY")
