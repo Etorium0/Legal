@@ -56,6 +56,41 @@ def normalize_text(raw: str) -> str:
     s = re.sub(r'\s+', ' ', s)
     return s.strip()
 
+# --- Additional preprocessing helpers ---
+ARTICLE_SPLIT_RE = re.compile(r'(?=\bĐiều\s+\d+\b)', re.IGNORECASE)
+KHOAN_SPLIT_RE = re.compile(r'(?=\bKhoản\s+\d+\b)', re.IGNORECASE)
+
+CLAUSE_CONJ_RE = re.compile(r'\s+(và|hoặc|đồng thời|cũng như)\s+', re.IGNORECASE)
+
+PRONOUNS = {"người này", "họ", "người đó"}
+
+def split_articles(text: str) -> List[str]:
+    parts = [p.strip() for p in ARTICLE_SPLIT_RE.split(text) if p.strip()]
+    return parts
+
+def split_khoan(article_text: str) -> List[str]:
+    parts = [p.strip() for p in KHOAN_SPLIT_RE.split(article_text) if p.strip()]
+    return parts
+
+def split_clauses(sentence: str) -> List[str]:
+    segs = [s.strip() for s in CLAUSE_CONJ_RE.split(sentence) if s.strip()]
+    return segs if len(segs) > 1 else [sentence]
+
+def normalize_entities(text: str) -> str:
+    if not text:
+        return text
+    t = text
+    t = re.sub(r"\bngười\s+phạm\s+tội\b", "Người", t, flags=re.IGNORECASE)
+    t = re.sub(r"\bngười\s+bị\s+kết\s+án\b", "Người", t, flags=re.IGNORECASE)
+    t = re.sub(r"\bngười\s+phạm\s+tội\s+đó\b", "Người phạm tội", t, flags=re.IGNORECASE)
+    return t
+
+def resolve_pronouns(prev_subject: str, current: str) -> str:
+    c = (current or "").lower().strip()
+    if c in PRONOUNS and prev_subject:
+        return prev_subject
+    return current
+
 
 def split_sentences(text: str) -> List[str]:
     parts = SENT_SPLIT_RE.split(text)
@@ -223,7 +258,14 @@ def _verb_phrase(tokens: List[Dict], v_idx: int) -> str:
 def extract_triples_with_vncorenlp(text: str, nlp) -> List[Dict[str, str]]:
     text = normalize_text(text)
     triples: List[Dict[str, str]] = []
-    sentences = nlp.annotate(text)  # List[List[tokenDict]]
+    # Split into smaller chunks (articles -> khoản) to improve parsing quality
+    article_chunks = split_articles(text)
+    sentences_all: List[List[Dict]] = []
+    for art in article_chunks:
+        for kc in split_khoan(art):
+            sentences_all.extend(nlp.annotate(kc))
+    prev_subject = ""
+    sentences = sentences_all
     for sent in sentences:
         for v_idx, tok in enumerate(sent):
             form = (tok.get("form") or "").lower()
@@ -247,11 +289,28 @@ def extract_triples_with_vncorenlp(text: str, nlp) -> List[Dict[str, str]]:
                 for s_text in subjects or [""]:
                     for o_text in objects or [""]:
                         s_clean = cleanup_vi_tokens(s_text) or "Người"
+                        s_clean = normalize_entities(s_clean)
+                        s_clean = resolve_pronouns(prev_subject, s_clean)
                         p_clean = cleanup_vi_tokens(predicate)
                         o_clean = cleanup_vi_tokens(o_text)
                         if not p_clean or not o_clean:
                             continue
                         triples.append({"subject": s_clean, "predicate": p_clean, "object": o_clean})
+                        prev_subject = s_clean
+
+                # Nominal predicate with 'là'
+                if form == 'là':
+                    subj_indices = [i for i, t in enumerate(sent) if t.get("head") == v_idx + 1 and t.get("depLabel", "").lower() in SUBJ_LABELS]
+                    obj_np = [i for i, t in enumerate(sent) if t.get("head") == v_idx + 1 and t.get("depLabel", "").lower() in ATTR_LABELS]
+                    for si in subj_indices:
+                        s_clean = cleanup_vi_tokens(_assemble_span(sent, _collect_with_dependents(sent, si, NP_MOD_LABELS))) or "Người"
+                        s_clean = normalize_entities(s_clean)
+                        s_clean = resolve_pronouns(prev_subject, s_clean)
+                        for oi in obj_np:
+                            o_clean = cleanup_vi_tokens(_assemble_span(sent, _collect_with_dependents(sent, oi, NP_MOD_LABELS)))
+                            if o_clean:
+                                triples.append({"subject": s_clean, "predicate": "là", "object": o_clean})
+                                prev_subject = s_clean
     # Dedup
     uniq: List[Dict[str, str]] = []
     seen = set()
@@ -276,6 +335,12 @@ EXEMPT_RE = re.compile(r"\bđược\s+miễn\s+trách\s+nhiệm\s+hình\s+sự(?
 PENALTY_RE = re.compile(r"\bbị\s+phạt\s+([^.;:\n]+)", re.IGNORECASE)
 PENALTY2_RE = re.compile(r"\bbị\s+xử\s+phạt\s+([^.;:\n]+)", re.IGNORECASE)
 INCLUDE_RE = re.compile(r"\b(Hình\s+phạt\s+(?:chính|bổ\s*sung))\s+bao\s+gồm\s*:\s*([^\n\.]*)", re.IGNORECASE)
+RIGHT_RE = re.compile(r"\bcó\s+(quyền|nghĩa\s+vụ)\s+([^.;:\n]+)", re.IGNORECASE)
+MUST_RE = re.compile(r"\bphải\s+([^.;:\n]+)", re.IGNORECASE)
+PERMIT_RE = re.compile(r"\bđược\s+(phép|quyền)\s+([^.;:\n]+)", re.IGNORECASE)
+FORBID_RE = re.compile(r"\bkhông\s+được\s+(?:phép\s+)?([^.;:\n]+)", re.IGNORECASE)
+APPLY_RE = re.compile(r"\b(được|bị)?\s*áp\s+dụng\s+(?:đối\s+với\s+)?([^.;:\n]+)", re.IGNORECASE)
+COURT_RE = re.compile(r"\bTòa\s+án\s+(quyết\s+định|giao|tước)\s+([^.;:\n]+)", re.IGNORECASE)
 
 
 def extract_triples_regex(text: str) -> List[Dict[str, str]]:
@@ -334,8 +399,43 @@ def extract_triples_regex(text: str) -> List[Dict[str, str]]:
         pred = "không chịu trách nhiệm hình sự" if neg else "chịu trách nhiệm hình sự về"
         triples.append({"subject": "Người", "predicate": pred, "object": obj})
 
-    # Include lists like: "Hình phạt chính bao gồm: a, b, c"
-    for m in INCLUDE_RE.finditer(s):
+    # Rights & obligations
+    for m in RIGHT_RE.finditer(s):
+        kind = m.group(1).lower()
+        obj = cleanup_vi_tokens(m.group(2))
+        pred = "có quyền" if "quyền" in kind else "có nghĩa vụ"
+        triples.append({"subject": "Người", "predicate": pred, "object": obj})
+
+    # Must (obligation)
+    for m in MUST_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(1))
+        triples.append({"subject": "Người", "predicate": "phải", "object": obj})
+
+    # Permitted
+    for m in PERMIT_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(2))
+        triples.append({"subject": "Người", "predicate": "được phép", "object": obj})
+
+    # Forbidden
+    for m in FORBID_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(1))
+        triples.append({"subject": "Người", "predicate": "không được phép", "object": obj})
+
+    # Apply (áp dụng)
+    for m in APPLY_RE.finditer(s):
+        aux = (m.group(1) or "được").strip()
+        obj = cleanup_vi_tokens(m.group(2))
+        pred = f"{aux} áp dụng"
+        triples.append({"subject": "Người", "predicate": pred, "object": obj})
+
+    # Court actions
+    for m in COURT_RE.finditer(s):
+        action = cleanup_vi_tokens(m.group(1))
+        obj = cleanup_vi_tokens(m.group(2))
+        triples.append({"subject": "Tòa án", "predicate": action, "object": obj})
+
+    # Include lists like: "Hình phạt chính bao gồm: a, b, c" (and variants)
+    for m in re.finditer(r"\b(Hình\s+phạt\s+(?:chính|bổ\s*sung))\s+(?:bao\s+gồm|gồm|gồm\s+có|kể\s+cả|như\s+sau)\s*:?\s*([^\n\.]*)", s, re.IGNORECASE):
         subj = normalize_terms(m.group(1))
         items = m.group(2)
         parts = re.split(r",|\bvà\b|\bhoặc\b", items)
@@ -363,17 +463,29 @@ def extract_triples_regex(text: str) -> List[Dict[str, str]]:
         obj = cleanup_vi_tokens(m.group(0))
         triples.append({"subject": "Người", "predicate": "chịu trách nhiệm hình sự về", "object": obj})
 
-    # Normalize and dedup
+    # Normalize, split compound objects, extract article_number and dedup
     uniq: List[Dict[str, str]] = []
     seen = set()
     for t in triples:
         subj_n = normalize_terms(t.get("subject", ""))
         obj_n = normalize_terms(t.get("object", ""))
         pred_n = cleanup_vi_tokens(t.get("predicate", ""))
-        key = (subj_n.lower(), pred_n.lower(), obj_n.lower())
-        if key not in seen:
+        # Split compound objects by conjunctions
+        obj_parts = re.split(r"\s+(?:và|hoặc|cũng như|đồng thời)\s+", obj_n)
+        for obj_piece in obj_parts:
+            obj_piece = obj_piece.strip().strip(',;')
+            if not obj_piece:
+                continue
+            art_match = re.search(r"Điều\s+(\d+)", obj_piece, re.IGNORECASE)
+            article_number = art_match.group(1) if art_match else None
+            key = (subj_n.lower(), pred_n.lower(), obj_piece.lower())
+            if key in seen:
+                continue
             seen.add(key)
-            uniq.append({"subject": subj_n, "predicate": pred_n, "object": obj_n})
+            rec = {"subject": subj_n, "predicate": pred_n, "object": obj_piece}
+            if article_number:
+                rec["article_number"] = article_number
+            uniq.append(rec)
     return uniq
 
 
