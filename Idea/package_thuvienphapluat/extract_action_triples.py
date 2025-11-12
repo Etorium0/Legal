@@ -1,566 +1,258 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Extract action-based (subject, verb, object) triples from Vietnamese legal text.
+VNCoreNLP-based triple extractor for Vietnamese legal PDFs.
 
-New features (enhanced version):
-    - Optional cleanup / normalization of extracted triples (--clean)
-        - Optional Excel / CSV export (--xlsx), luôn xuất 3 cột (subject, predicate, object)
-            bằng pandas nếu có; nếu thiếu sẽ fallback CSV
-    - More robust JSON saving when output filename has no directory
-    - Optional augmentation: predicate normalization + subject/object typing (--augment)
+Features:
+- Read PDF text by page range using PyPDF2 (--start, --end).
+- Use VNCoreNLP (word segmentation, POS, dependency parse) to identify verbs and their subjects/objects.
+- Extract (subject, predicate, object) triples via dependency labels: nsubj/subj, obj/iobj, obl, attr/ccomp/xcomp.
+- Handle copula 'là' and passive constructions with 'bị', 'được'.
+- Clean and assemble multi-word noun / verb phrases (include modifiers: nmod, amod, det, compound, name, case, clf).
+- Export JSON and optional Excel/CSV with 3 columns.
+- Optional Gemini refine (--gemini) to polish grammar.
 
-Dependencies:
-    - PyPDF2 (required)
-    - google-generativeai (optional, only if using --gemini)
-    - pandas (optional, for Excel export; openpyxl recommended)
-
-Usage examples:
-    python extract_action_triples.py --pdf LuatHS.pdf --start 4 --end 7 --output triples_p4_7_actions.json
-
-    # With Gemini refinement (optional)
-    python extract_action_triples.py --pdf LuatHS.pdf --start 4 --end 7 \
-        --output triples_p4_7_actions_refined.json --gemini --gemini-key YOUR_KEY
-
-    # With cleanup & Excel export
-    python extract_action_triples.py --pdf LuatHS.pdf --start 4 --end 7 \
-        --output triples_p4_7_actions.json --clean --xlsx triples_p4_7_actions.xlsx
+CLI example:
+  py extract_action_triples.py --pdf LuatHS.pdf --start 4 --end 7 --output triples_p4_7.json --xlsx triples_p4_7.xlsx
 """
+
 import argparse
 import csv
 import json
 import os
 import re
 import unicodedata
-from typing import List, Dict
+from typing import List, Dict, Set
 from PyPDF2 import PdfReader
 
 
 # --------------------------
-# Text IO
+# PDF text extraction
 # --------------------------
+
 def extract_text_from_pdf(file_path: str, start_page: int, end_page: int) -> str:
     reader = PdfReader(file_path)
-    text = []
+    text_parts: List[str] = []
     end_index = min(end_page, len(reader.pages))
     for i in range(start_page - 1, end_index):
         page = reader.pages[i]
         t = page.extract_text() or ""
-        text.append(t)
-    return "\n".join(text)
+        text_parts.append(t)
+    return "\n".join(text_parts)
 
 
 # --------------------------
-# Normalization & splitting
+# Normalization & sentence splitting
 # --------------------------
-SENT_SPLIT_RE = re.compile(r'(?<=[\.!\?;:])\s+|\n+')
+SENT_SPLIT_RE = re.compile(r'(?<=[\.\!\?;:])\s+|\n+')
 
 
 def normalize_text(raw: str) -> str:
-    # Canonical compose to merge combining accents into precomposed Vietnamese characters where possible.
-    # OCR normalizations include:
-    #  - 'đủ' -> 'đủ' (and 'Đủ' -> 'Đủ')
-    #  - 'Điều'/'điều' -> 'Điều'/'điều'
-    #  - 'tội'/'Tội' -> 'tội'/'Tội'
-    # Also fixes common spacing around Điều numbers (e.g., 'Điều 1 51' -> 'Điều 151').
-    s = unicodedata.normalize('NFC', raw)
-    s = s.replace('\u00a0', ' ')  # nbsp
-    # Additional OCR normalizations
+    s = unicodedata.normalize('NFC', raw).replace('\u00a0', ' ')
     s = s.replace('đủ', 'đủ').replace('Đủ', 'Đủ')
     s = s.replace('Điều', 'Điều').replace('điều', 'điều')
     s = s.replace('tội', 'tội').replace('Tội', 'Tội')
-    # Fix common OCR spacing around numbers in Điều (e.g. "Điều 1 51" -> "Điều 151")
-    s = re.sub(r'(Đi[êe]u)\s+(\d)\s+(\d)(?:\s+(\d))?',
-               lambda m: f"{m.group(1)} {m.group(2)}{m.group(3)}{m.group(4) or ''}", s)
-    # Collapse excessive spaces
+    s = re.sub(r'(Đi[êe]u)\s+(\d)\s+(\d)(?:\s+(\d))?', lambda m: f"{m.group(1)} {m.group(2)}{m.group(3)}{m.group(4) or ''}", s)
     s = re.sub(r'\s+', ' ', s)
     return s.strip()
 
 
 def split_sentences(text: str) -> List[str]:
     parts = SENT_SPLIT_RE.split(text)
-    out = []
-    for p in parts:
-        p = p.strip(' ,.;:()[]{}"“”\'’')
-        if len(p.split()) >= 3:
-            out.append(p)
-    return out
+    return [p.strip(' \t') for p in parts if len(p.split()) >= 3]
 
-
-# --------------------------
-# Action-based triple extraction
-# --------------------------
-# Longest-first verb lexicon (legal and action verbs)
-VERB_LEXICON = [
-    "chịu trách nhiệm hình sự về",
-    "không chịu trách nhiệm hình sự",
-    "phải chịu trách nhiệm hình sự",
-    "được miễn trách nhiệm hình sự",
-    "không phải là",
-    "được quy định",
-    "là",
-    "bị truy cứu trách nhiệm hình sự",
-    "bị xử phạt",
-    "bị phạt tiền",
-    "bị phạt",
-    "thực hiện",
-    "điều khiển",
-    "sử dụng",
-    "tàng trữ",
-    "vận chuyển",
-    "mua bán",
-    "chiếm đoạt",
-    "gây thương tích",
-    "hiếp dâm",
-    "cưỡng dâm",
-    "giết",
-    "cướp",
-    "bắt cóc",
-    "trộm cắp",
-    "hủy hoại",
-    "phá hoại",
-]
-
-# Precompile patterns with word boundaries to avoid matching inside words (e.g., 'là' in 'làm')
-VERB_LEXICON = sorted(VERB_LEXICON, key=len, reverse=True)
-def _compile_verb(v: str):
-    pat = rf"(?<!\w){re.escape(v)}(?!\w)"
-    return re.compile(pat, re.IGNORECASE)
-VERB_PATTERNS = [(v, _compile_verb(v)) for v in VERB_LEXICON]
-
-SUBJECT_CANDIDATE_RE = re.compile(
-    r'\b('
-    r'Người(?: [^,;:]{0,120})?'
-    r'|Cá nhân(?: [^,;:]{0,120})?'
-    r'|Tổ chức(?: [^,;:]{0,120})?'
-    r'|Pháp nhân(?: [^,;:]{0,120})?'
-    r'|Người\s*\d{1,2}[–-]\d{1,2}\s*tuổi'
-    r'|Người từ [^,;:]{0,120}?tuổi'
-    r')', re.IGNORECASE
-)
-
-# Include standalone offenses and the general phrase "mọi tội phạm"
-CRIME_ITEM_RE = re.compile(r'(tội [^,;:]+|mọi tội phạm)', re.IGNORECASE)
-# Fallback pattern for enumerated offenses with OCR-tolerant "Điều" token (e.g., "Điều")
-# Matches style 1: "Đi[êe]\S* <num> (tội ... )" and stops the offense name before ")" or ";"
-ENUM_OFFENSE_RE_FALLBACK = re.compile(r"Đi\S*\s+(\d+)\s*\((tội[^);]+)\)", re.IGNORECASE)
-# Matches style 2: dotted headings like "Điều 151. Tội ..." (stop before line end or next punctuation)
-ENUM_OFFENSE_RE_DOTTED = re.compile(r"Đi\S*\s+(\d+)\s*[\.:\-]\s*(tội[^\n\r;:\.)]+)", re.IGNORECASE)
-CONNECTOR_RE = re.compile(r'\b(?:và|hoặc|nhưng|song)\b', re.IGNORECASE)
-
-
-def pick_subject(sent: str) -> str:
-    m = SUBJECT_CANDIDATE_RE.search(sent)
-    if m:
-        return cleanup(m.group(0))
-    return "Người"
-
-
-def cleanup(s: str) -> str:
-    s = s.strip(' ,.;:()[]{}"“”\'’')
-    s = re.sub(r'\s+', ' ', s)
-    return s
 
 def cleanup_vi_tokens(s: str) -> str:
-    """Light Vietnamese cleanup: normalize spaces, unify dashes, fix common OCR splits."""
     if not s:
         return s
-    x = s.replace('\u00a0', ' ')
-    x = x.replace('–', '-')
-    x = x.replace('—', '-')
-    # OCR fix samples
-    x = x.replace('ph ạm', 'phạm')
-    x = x.replace('đ ó', 'đó')
-    x = x.replace('trước', 'trước')
-    x = x.replace('dấu', 'dấu')
-    x = x.replace('biết', 'biết')
-    x = x.replace('hiếp', 'hiếp')
-    x = x.replace('cướp', 'cướp')
-    x = x.replace('kết', 'kết')
-    x = x.replace('mới', 'mới')
-    x = x.replace('ho ặc', 'hoặc')
-    # Common OCR variants
-    x = x.replace('chât', 'chất').replace('chất', 'chất')
-    x = x.replace('ma tuý', 'ma túy').replace('ma tu y', 'ma túy')
-    # Preserve parentheses to keep references like "(Điều 123)"
-    x = re.sub(r'\s+', ' ', x).strip(' ,.;:[]{}"“”\'’')
+    x = s.replace('\u00a0', ' ').replace('–', '-').replace('—', '-')
+    x = x.replace('ph ạm', 'phạm').replace('đ ó', 'đó').replace('trước', 'trước')
+    x = x.replace('dấu', 'dấu').replace('biết', 'biết').replace('hiếp', 'hiếp')
+    x = x.replace('cướp', 'cướp').replace('kết', 'kết').replace('mới', 'mới').replace('ho ặc', 'hoặc')
+    # Fix common OCR split-inside-words seen in sample
+    common_fixes = {
+        'cư ỡng': 'cưỡng',
+        'ph át': 'phát',
+        'm ua': 'mua',
+        'đ iệp': 'điệp',
+        'gi án': 'gián',
+        'ti ện': 'tiện',
+        'p hép': 'phép',
+        'c ạnh': 'cạnh',
+        'v ề': 'về',
+        'h òa': 'hòa',
+        'qu ốc': 'quốc',
+        'ph át tán': 'phát tán',
+        'l ừa': 'lừa',
+        'đ ảo': 'đảo',
+        'chiếm đo ạt': 'chiếm đoạt',
+        'đ ến': 'đến',
+        'n ăm': 'năm',
+        'kh ông': 'không',
+        'cả nh': 'cảnh',
+    }
+    for k, v in common_fixes.items():
+        x = x.replace(k, v)
+    x = re.sub(r'\s+', ' ', x).strip()
     return x
 
 
-def after_until_stop(text: str, start_idx: int) -> str:
-    sub = text[start_idx:]
-    m = re.search(r'(?=[\.;:])', sub)
-    return cleanup(sub[:m.start()] if m else sub)
-
-def after_until_sentence_end(text: str, start_idx: int) -> str:
-    """Return span from start_idx to end-of-sentence (., !, ?), keeping lists across ';' and ':'."""
-    sub = text[start_idx:]
-    m = re.search(r'(?=[\.!\?])', sub)
-    return cleanup(sub[:m.start()] if m else sub)
+def _replace_ci(text: str, pattern: str, repl: str) -> str:
+    return re.sub(pattern, repl, text, flags=re.IGNORECASE)
 
 
-OBJ_STOP_TOKENS = re.compile(r"\b(thì|mà|để|trong khi|khi|nếu|do|vì|bằng việc|nhằm|song|tuy|nhưng)\b", re.IGNORECASE)
-
-def trim_object(obj: str) -> str:
-    # Cut at clause markers
-    m = OBJ_STOP_TOKENS.search(obj)
-    if m and m.start() > 0:
-        obj = obj[:m.start()]
-    # Remove leading 'hành vi' when followed by a verb-like word
-    obj = re.sub(r'^hành vi\s+', '', obj, flags=re.IGNORECASE)
-    # Cut at long comma tails
-    parts = [p.strip() for p in obj.split(',')]
-    if len(parts) > 1:
-        head = ', '.join(parts[:3])  # keep up to first 3 chunks
-        if len(head.split()) <= 15:
-            obj = head
-    # Hard cap length to keep noun phrase concise
-    tokens = obj.split()
-    if len(tokens) > 18:
-        obj = ' '.join(tokens[:18])
-    return cleanup(obj)
+def normalize_terms(text: str) -> str:
+    if not text:
+        return text
+    t = text
+    # Simplify domain-specific terms
+    t = _replace_ci(t, r"\bhình\s+phạt\s+chính\b", "hình phạt")
+    t = _replace_ci(t, r"\bchất\s+ma\s+túy\b", "ma túy")
+    # Collapse duplicated auxiliaries
+    t = re.sub(r"\b(được|bị)\s+(được|bị)\b", r"\1 ", t, flags=re.IGNORECASE)
+    return cleanup_vi_tokens(t)
 
 
-VERB_LIKE_START_RE = re.compile(r'^(phạm|thực hiện|gây|chiếm đoạt|trốn|áp dụng|báo cáo|chấp hành|sử dụng)\b', re.IGNORECASE)
-
-def normalize_object_phrase(obj: str, predicate: str) -> str:
-    o = obj.strip()
-    if not o:
-        return o
-    # Convert common verb-leading phrases to noun phrases
-    low = o.lower()
-    if low.startswith('phạm tội') or low == 'phạm tội mới':
-        return 'tội phạm' if 'mới' not in low else 'tội phạm mới'
-    if VERB_LIKE_START_RE.match(o):
-        # Prefix with 'hành vi'
-        o = re.sub(r'^(thực hiện|gây|chiếm đoạt|trốn|áp dụng|báo cáo|chấp hành|sử dụng)\s+', '', o, flags=re.IGNORECASE)
-        if not o:
-            o = obj
-        o = 'hành vi ' + o
-    # Remove leading 'Người' as object for action predicates
-    if predicate.strip().lower() in {'thực hiện','sử dụng','tàng trữ','mua bán','vận chuyển','phá hoại','trộm cắp'} and low.startswith('người '):
-        return ''
-    return cleanup(o)
+def save_to_json(triples: List[Dict[str, str]], out_path: str) -> None:
+    dir_name = os.path.dirname(out_path) or '.'
+    os.makedirs(dir_name, exist_ok=True)
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(triples, f, ensure_ascii=False, indent=2)
 
 
-def explode_crimes(obj: str) -> List[str]:
-    crimes = [cleanup(x) for x in CRIME_ITEM_RE.findall(obj)]
-    seen = set()
-    out: List[str] = []
-    for c in crimes:
-        if c not in seen:
-            seen.add(c)
-            out.append(c)
-    return out or ([cleanup(obj)] if obj else [])
+# --------------------------
+# VNCoreNLP init
+# --------------------------
+def init_vncorenlp(model_dir: str | None = None, heap: str = "-Xmx2g"):
+    """Khởi tạo VNCoreNLP dựa trên thư mục mô hình cục bộ (không tự tải).
+
+    Yêu cầu:
+    - model_dir phải chứa file jar (ví dụ: VnCoreNLP-1.x.x.jar) và thư mục models/ tương ứng.
+    - Java có trong PATH.
+
+    Nếu thiếu jar, báo lỗi hướng dẫn tải thủ công.
+    """
+    try:
+        from vncorenlp import VnCoreNLP  # type: ignore
+    except Exception as e:
+        raise RuntimeError(
+            "Thiếu thư viện vncorenlp. Cài: pip install vncorenlp (cần Java trong PATH)."
+        ) from e
+
+    # Mặc định thư mục chứa mô hình
+    if not model_dir:
+        model_dir = os.path.join(os.getcwd(), "vncorenlp_models")
+
+    os.makedirs(model_dir, exist_ok=True)
+
+    # Kiểm tra sự tồn tại jar (tên có thể thay đổi theo version)
+    jar_candidates = [f for f in os.listdir(model_dir) if f.lower().startswith("vncorenlp") and f.endswith(".jar")]
+    if not jar_candidates:
+        raise RuntimeError(
+            "Không tìm thấy file jar VNCoreNLP trong thư mục: "
+            f"{model_dir}.\nHướng dẫn: Tải gói VNCoreNLP (jar + models) và giải nén vào thư mục này, sao cho có: \n"
+            "  - VnCoreNLP-*.jar\n  - models/wordsegmenter, models/postagger, models/dependency ..."
+        )
+
+    annotators = ["wseg", "pos", "parse"]
+
+    # Kiểm tra Java
+    if not _java_exists():
+        raise RuntimeError("Không tìm thấy 'java' trong PATH. Cài đặt Java JRE/JDK rồi thử lại.")
+
+    try:
+        return VnCoreNLP(model_dir, annotators=annotators, max_heap_size=heap)
+    except FileNotFoundError as e:
+        raise RuntimeError(f"Thư mục mô hình không hợp lệ: {model_dir}. Chi tiết: {e}") from e
+    except Exception as e:
+        raise RuntimeError(f"Khởi tạo VNCoreNLP thất bại: {e}") from e
 
 
-def normalize_age_subject(subj: str) -> str:
-    # Canonicalize 14-16 group to the phrasing used in expected output
-    subj = subj.replace('Người từ đủ 14 tuổi trở lên nhưng chưa đủ 16 tuổi', 'Người từ 14–16 tuổi')
-    subj = subj.replace('Người từ đủ 14 tuổi trở lên nhưng chưa đủ 16 tuổi', 'Người từ 14–16 tuổi')
-    subj = subj.replace('Người 14–16 tuổi', 'Người từ 14–16 tuổi')
-    # Canonicalize ">=16" variants
-    subj = subj.replace('Người từ đủ 16 tuổi trở lên', 'Người từ đủ 16 tuổi trở lên')
-    return cleanup(subj)
+def _java_exists() -> bool:
+    """Kiểm tra có thể gọi 'java'."""
+    import shutil
+    return shutil.which("java") is not None
 
 
-STOP_TOKENS_RE = re.compile(r'\b(thực hiện|gây|phải|được|chịu|không|là|trong khi|để|nhằm|mà|biết)\b', re.IGNORECASE)
-SUBJ_CONNECTOR_RE = re.compile(r'\b(và|hoặc)\b', re.IGNORECASE)
-ROLE_TOKENS = [
-    'thực hành', 'tổ chức', 'xúi giục', 'giúp sức', 'bào chữa', 'chỉ huy', 'phạm tội', 'bị hại', 'bị thiệt hại', 'đồng phạm'
-]
+# --------------------------
+# Dependency-based triple extraction
+# --------------------------
+SUBJ_LABELS: Set[str] = {"nsubj", "subj"}
+OBJ_LABELS: Set[str] = {"obj", "iobj"}
+OBL_LABELS: Set[str] = {"obl"}
+ATTR_LABELS: Set[str] = {"xcomp", "ccomp", "attr"}
+NP_MOD_LABELS: Set[str] = {"nmod", "amod", "det", "compound", "case", "clf", "name"}
+VP_AUX_LABELS: Set[str] = {"aux", "mark", "advmod", "compound:vv"}
 
 
-def simplify_subject(subj: str, sentence: str) -> str:
-    # Remove duplication like "... Người ..." inside
-    subj = re.sub(r'(.*?\bNgười\b).*?\bNgười\b.*', r'\1', subj, flags=re.IGNORECASE)
-    # Cut at stop tokens inside subject
-    m = STOP_TOKENS_RE.search(subj)
-    if m:
-        subj = subj[:m.start()]
-    subj = cleanup(subj)
-    # Preserve age-form subjects
-    if re.search(r'^Người\s*\d{1,2}[–-]\d{1,2}\s*tuổi$', subj, re.IGNORECASE) or subj.lower().startswith('người từ '):
-        return 'Người 14–16 tuổi' if '14' in subj and '16' in subj else cleanup(subj)
-    # Prefer known compact role subjects if present in the sentence
-    sent_low = sentence.lower()
-    if 'người chỉ huy' in sent_low and 'cấp trên' in sent_low:
-        return 'Người chỉ huy hoặc cấp trên'
-    for role in ROLE_TOKENS:
-        if re.search(rf'\bngười\s+{re.escape(role)}\b', subj, re.IGNORECASE) or re.search(rf'\bngười\s+{re.escape(role)}\b', sentence, re.IGNORECASE):
-            return f"Người {role}"
-    # Cut at connectors like 'và', 'hoặc'
-    m2 = SUBJ_CONNECTOR_RE.search(subj)
-    if m2:
-        subj = cleanup(subj[:m2.start()])
-    # Specific phrase keepers
-    if subj.lower().startswith('người có hành'):
-        subj = 'Người có hành vi'
-    # Limit length: if too long, keep only first 2 tokens after 'Người'
-    tokens = subj.split()
-    if len(tokens) > 6:
-        if tokens and tokens[0].lower() == 'người':
-            kept = tokens[:3]  # Người + 2 tokens
-            subj = ' '.join(kept)
-        else:
-            subj = 'Người'
-    # Standardize capitalization of 'Người'
-    subj = re.sub(r'^người\b', 'Người', subj, flags=re.IGNORECASE)
-    return cleanup(subj)
+def _assemble_span(tokens: List[Dict], idx_set: Set[int]) -> str:
+    if not idx_set:
+        return ""
+    indices = sorted(idx_set)
+    left, right = indices[0], indices[-1]
+    forms = [tokens[i]["form"] for i in range(left, right + 1)]
+    text = " ".join(forms)
+    text = re.sub(r"\s+([,.;:])", r"\1", text)
+    text = re.sub(r"\(\s+", "(", text)
+    text = re.sub(r"\s+\)", ")", text)
+    return cleanup_vi_tokens(text)
 
 
-def extract_action_triples(text: str) -> List[Dict[str, str]]:
+def _collect_with_dependents(tokens: List[Dict], root: int, labels: Set[str]) -> Set[int]:
+    to_visit = [root]
+    collected: Set[int] = set()
+    while to_visit:
+        cur = to_visit.pop()
+        if cur in collected:
+            continue
+        collected.add(cur)
+        for i, tok in enumerate(tokens):
+            if tok.get("head") == cur + 1 and tok.get("depLabel", "").lower() in labels:
+                to_visit.append(i)
+    return collected
+
+
+def _verb_phrase(tokens: List[Dict], v_idx: int) -> str:
+    idxs = {v_idx}
+    for i, tok in enumerate(tokens):
+        if tok.get("head") == v_idx + 1 and tok.get("depLabel", "").lower() in VP_AUX_LABELS:
+            idxs.add(i)
+    return _assemble_span(tokens, idxs)
+
+
+def extract_triples_with_vncorenlp(text: str, nlp) -> List[Dict[str, str]]:
     text = normalize_text(text)
-    sentences = split_sentences(text)
     triples: List[Dict[str, str]] = []
+    sentences = nlp.annotate(text)  # List[List[tokenDict]]
+    for sent in sentences:
+        for v_idx, tok in enumerate(sent):
+            form = (tok.get("form") or "").lower()
+            pos = (tok.get("posTag") or "").upper()
+            if pos.startswith("V") or form == "là":
+                subj_indices = [i for i, t in enumerate(sent) if t.get("head") == v_idx + 1 and t.get("depLabel", "").lower() in SUBJ_LABELS]
+                obj_indices = [i for i, t in enumerate(sent) if t.get("head") == v_idx + 1 and t.get("depLabel", "").lower() in OBJ_LABELS]
+                obl_indices = [i for i, t in enumerate(sent) if t.get("head") == v_idx + 1 and t.get("depLabel", "").lower() in OBL_LABELS]
+                comp_indices = [i for i, t in enumerate(sent) if t.get("head") == v_idx + 1 and t.get("depLabel", "").lower() in ATTR_LABELS]
 
-    OCR_FIXES = {
-        'm ua': 'mua',
-        'ph át': 'phát',
-        'thi ết': 'thiết',
-        'h iếp': 'hiếp',
-        'm ạng': 'mạng',
-        'đ iện': 'điện',
-        'vi ễn': 'viễn',
-        'h ành': 'hành',
-        'm hư hỏng': 'làm hư hỏng',
-    }
+                predicate = _verb_phrase(sent, v_idx) or sent[v_idx]["form"]
 
-    def fix_ocr_chunks(s: str) -> str:
-        for k, v in OCR_FIXES.items():
-            s = s.replace(k, v)
-        return s
+                def build_np(idx: int) -> str:
+                    span = {idx}
+                    span |= _collect_with_dependents(sent, idx, NP_MOD_LABELS)
+                    return _assemble_span(sent, span)
 
-    def contains_any_verb(s: str) -> bool:
-        lower = s.lower()
-        return any(pat.search(lower) for _, pat in VERB_PATTERNS)
+                subjects = [build_np(i) for i in subj_indices]
+                objects = [build_np(i) for i in obj_indices] or [build_np(i) for i in obl_indices] or [build_np(i) for i in comp_indices]
 
-    def looks_like_object_noun(s: str) -> bool:
-        s2 = s.lower()
-        return any(x in s2 for x in ['tội ', 'tội phạm', 'tài sản', 'ma túy', 'mạng', 'phương tiện', 'điện tử', 'vũ lực', 'cơ sở', 'hành vi', 'điều ', 'thời hiệu'])
-
-    HEADING_OFFENSE_RE_PAREN = re.compile(r"Đi\S*\s+(\d+)\s*\((tội[^)]+)\)", re.IGNORECASE)
-    HEADING_OFFENSE_RE_DOT = re.compile(r"Đi\S*\s+(\d+)\s*[\.:\-]\s*(tội[^\n\r;:\.)]+)", re.IGNORECASE)
-    def emit_offenses_from_sentence(sentence: str, subj_for_liability: str | None, enum_predicate: str | None):
-        # Find all offense headings in the sentence and emit liability triples if in context
-        for rex in (HEADING_OFFENSE_RE_PAREN, HEADING_OFFENSE_RE_DOT):
-            for m in rex.finditer(sentence):
-                art_no = m.group(1)
-                offense_raw = m.group(2)
-                offense = fix_ocr_chunks(cleanup(offense_raw))
-                # Include Điều number in the object and default subject to "Người 14–16 tuổi"
-                off_obj = f"{offense} (Điều {art_no})"
-                subject_emit = subj_for_liability or "Người từ 14–16 tuổi"
-                # Predicate for enumerations: default "phạm", but allow context override (e.g., "chuẩn bị phạm")
-                predicate_emit = (enum_predicate or "phạm").strip()
-                # Emit a single triple per offense heading
-                triples.append({
-                    "subject": subject_emit,
-                    "predicate": predicate_emit,
-                    "object": off_obj,
-                })
-
-    active_liability_subject: str | None = None
-    active_enum_predicate: str | None = None
-
-    for s in sentences:
-        subject = normalize_age_subject(pick_subject(s))
-        subject = simplify_subject(subject, s)
-        # Special case: if sentence indicates "nhưng chưa đủ 16 tuổi" then normalize subject to 14–16
-        if ('từ đủ 14' in s or 'từ đủ 14' in s) and ('chưa đủ 16' in s or 'chưa đủ 16' in s):
-            subject = 'Người từ 14–16 tuổi'
-        # If sentence mentions >=16 pattern, ensure canonical subject label
-        if re.search(r'Người\s+từ\s+đủ\s*16\s*tuổi\s*trở\s*lên', s, re.IGNORECASE) or re.search(r'Người\s+từ\s*16\s*tuổi\s*trở\s*lên', s, re.IGNORECASE):
-            subject = 'Người từ đủ 16 tuổi trở lên'
-        idx = 0
-        while idx < len(s):
-            best = None
-            best_m = None
-            for verb, pat in VERB_PATTERNS:
-                m = pat.search(s, idx)
-                if m and (best_m is None or m.start() < best_m.start()):
-                    best = verb
-                    best_m = m
-            if not best_m:
-                break
-
-            verb = cleanup(best)
-            obj = after_until_stop(s, best_m.end())
-            obj = fix_ocr_chunks(obj)
-
-            # Copula/definition subject fallback: take phrase before the verb as subject if it looks noun-like
-            if verb.lower() in {"không phải là", "là", "được quy định"}:
-                pre = cleanup(s[:best_m.start()])
-                # strip leading numbering and labels
-                pre = re.sub(r'^(\d+\.|[a-d]\)|khoản \d+|điều \d+\.?\s*)', '', pre, flags=re.IGNORECASE)
-                if len(pre.split()) >= 2 and not pre.lower().startswith('người'):
-                    subject = pre
-
-            # Composite splitting: "sử dụng <resources> thực hiện (hành vi)? <action>"
-            # Example: "sử dụng mạng máy tính, mạng viễn thông, phương tiện điện tử thực hiện hành vi chiếm đoạt tài sản"
-            # Emit two triples:
-            #  - (subject, "sử dụng", "mạng máy tính, mạng viễn thông, phương tiện điện tử")
-            #  - (subject, "thực hiện", "chiếm đoạt tài sản")
-            handled_composite = False
-            if verb.lower() == 'sử dụng':
-                comp = re.search(r"^(?P<res>.+?)\b(?:để\s+)?thực hiện\b(?:\s+hành vi)?\s+(?P<act>.+)$", obj, re.IGNORECASE)
-                if comp:
-                    resources = cleanup(comp.group('res').rstrip(' ,'))
-                    action_obj = cleanup(re.sub(r'^hành vi\s+', '', comp.group('act'), flags=re.IGNORECASE))
-                    if resources:
-                        triples.append({"subject": subject, "predicate": "sử dụng", "object": resources})
-                    if action_obj:
-                        triples.append({"subject": subject, "predicate": "thực hiện", "object": action_obj})
-                        handled_composite = True
-
-            lowverb = verb.lower().strip()
-            if lowverb == "không chịu trách nhiệm hình sự":
-                # Capture condition phrase (e.g., "nếu Bộ luật có quy định khác") as the object
-                cond = re.search(r"(nếu [^\.;:]+|trừ trường hợp [^\.;:]+)", obj, re.IGNORECASE)
-                objx = cleanup(cond.group(1)) if cond else cleanup(obj)
-                if objx:
-                    triples.append({"subject": subject, "predicate": "không chịu trách nhiệm hình sự", "object": objx})
-                # Do not set liability enumeration context for negative clause
-            elif lowverb.startswith("chịu trách nhiệm hình sự") or lowverb.startswith("phải chịu trách nhiệm hình sự"):
-                # Read until true sentence end to keep lists separated by ';' for Điều 12 patterns
-                obj_full = after_until_sentence_end(s, best_m.end())
-                obj_full = fix_ocr_chunks(obj_full)
-                crimes = explode_crimes(obj_full)
-                if crimes:
-                    for c in crimes:
-                        # Normalize generic term for >=16 group
-                        if subject == 'Người từ đủ 16 tuổi trở lên' and c.lower() == 'tội phạm':
-                            c = 'mọi tội phạm'
-                        # For 14–16 group, emit predicate 'phạm' as expected
-                        if subject == 'Người từ 14–16 tuổi':
-                            triples.append({"subject": subject, "predicate": "phạm", "object": c})
-                        else:
-                            triples.append({"subject": subject, "predicate": "chịu trách nhiệm hình sự về", "object": c})
-                else:
-                    # No explicit crime found; keep a generic liability triple when applicable
-                    triples.append({"subject": subject, "predicate": "phải chịu trách nhiệm hình sự", "object": "trách nhiệm hình sự"})
-                # Track liability context for following enumerations of Điều ...
-                anchor_hit = re.search(r"(một trong các (đi[êe]u|tội)|các (đi[êe]u|tội)\s+sau đây)", obj_full, re.IGNORECASE) or re.search(r"(một trong các (đi[êe]u|tội)|các (đi[êe]u|tội)\s+sau đây)", s, re.IGNORECASE)
-                if anchor_hit:
-                    active_liability_subject = subject
-                    # If context includes "chuẩn bị phạm", prefer that as enumeration predicate; else default to "phạm"
-                    active_enum_predicate = "chuẩn bị phạm" if re.search(r"chuẩn bị\s+phạm", s, re.IGNORECASE) else "phạm"
-            else:
-                if not handled_composite:
-                    obj = CONNECTOR_RE.split(obj)[0]
-                    obj = trim_object(cleanup(obj))
-                    obj = normalize_object_phrase(obj, verb)
-                    # If object still contains verbs (likely a verb-list before a shared noun like "chất ma túy"), skip this noisy triple.
-                    if contains_any_verb(obj) and not looks_like_object_noun(obj):
-                        obj = ''
-                    if obj:
-                        triples.append({"subject": subject, "predicate": verb, "object": obj})
-
-            if handled_composite:
-                # We've already emitted both triples explicitly; stop scanning this sentence to avoid duplicates
-                break
-            else:
-                idx = best_m.end() + max(1, len(obj))
-
-    # After processing verbs in this sentence, emit offenses from heading if we are in liability context
-    emit_offenses_from_sentence(s, active_liability_subject, active_enum_predicate)
-
-    # Enumerated offenses after phrases like "một trong các điều sau đây" (Điều 12 context)
-    def extract_enumerated_offenses(full_text: str) -> List[Dict[str, str]]:
-        """Extract enumerated offenses following anchors like "một trong các điều sau đây".
-        - Default subject is "Người từ 14–16 tuổi"
-        - Predicate is always "phạm" for enumerations
-        - Scan up to ~8000 chars after anchor to avoid bleeding into next articles
-        - OCR-tolerant heading pattern: matches "Đi... <num> (tội ...)"
-        """
-        out: List[Dict[str, str]] = []
-        anchor = re.search(r"(một\s+trong\s+các\s+(đi\S*|tội)\s+sau\s+đây|các\s+(đi\S*|tội)\s+sau\s+đây)\s*:?", full_text, re.IGNORECASE)
-        if not anchor:
-            return out
-        # Default subject for enumerated offenses per requirements
-        subj = 'Người từ 14–16 tuổi'
-        # Decide predicate based on nearby context (detect "chuẩn bị phạm" near anchor)
-        ctx = full_text[max(0, anchor.start()-200): anchor.end()+50]
-        pred = 'chuẩn bị phạm' if re.search(r"chuẩn bị\s+phạm", ctx, re.IGNORECASE) else 'phạm'
-        # Limit scan window to ~8000 chars after anchor
-        block = full_text[anchor.end(): anchor.end()+8000]
-        # Parenthesis style
-        for m in re.finditer(r"Đi\S*\s+(\d+)\s*\((tội[^\)]+)\)", block, re.IGNORECASE | re.DOTALL):
-            art = m.group(1)
-            offense = fix_ocr_chunks(cleanup(m.group(2)))
-            obj = f"{offense} (Điều {art})"
-            out.append({"subject": subj, "predicate": pred, "object": obj})
-        # Dotted style
-        for m in re.finditer(r"Đi\S*\s+(\d+)\s*[\.:\-]\s*(tội[^\n\r;:\.)]+)", block, re.IGNORECASE):
-            art = m.group(1)
-            offense = fix_ocr_chunks(cleanup(m.group(2)))
-            obj = f"{offense} (Điều {art})"
-            out.append({"subject": subj, "predicate": pred, "object": obj})
-        return out
-
-    triples.extend(extract_enumerated_offenses(text))
-
-    # Add a fallback scan for enumerated offenses that explicitly emits predicate 'phạm'
-    def extract_enumerated_offenses_fixed(full_text: str) -> List[Dict[str, str]]:
-        """Fallback scan for enumerated offenses even when anchors are missing or OCR is noisy.
-        - Uses an OCR-tolerant regex description: "Đi\\S* <num> (tội ... )" (ENUM_OFFENSE_RE_FALLBACK)
-        - Also runs an accent-insensitive pass on a per-line basis for extreme OCR cases.
-        - Limits scan region to ~8000 chars after anchor if anchor is present; otherwise scans entire text.
-        - Default subject is "Người từ 14–16 tuổi" and predicate is "phạm" (auto-switch to "chuẩn bị phạm" if context suggests).
-        """
-        out: List[Dict[str, str]] = []
-        subj = "Người từ 14–16 tuổi"
-        seen = set()
-
-        # Optional anchor limitation (tolerant to OCR on words like "trong")
-        anchor_raw = re.search(r"(một\s+t[rôo]ng\s+các\s+(đi\S*|tội)\s+sau\s+đây|các\s+(đi\S*|tội)\s+sau\s+đây)[:\s]*", full_text, re.IGNORECASE)
-        scan_text = full_text[anchor_raw.end(): anchor_raw.end()+8000] if anchor_raw else full_text
-        default_pred = 'chuẩn bị phạm' if re.search(r"chuẩn bị\s+phạm", scan_text[:200], re.IGNORECASE) else 'phạm'
-
-        # Pass 1a: direct OCR-tolerant regex over the scan block (parenthesis style)
-        for m in ENUM_OFFENSE_RE_FALLBACK.finditer(scan_text):
-            art = m.group(1)
-            offense = cleanup(m.group(2))
-            offense = fix_ocr_chunks(offense)
-            obj = f"{offense} (Điều {art})"
-            key = (subj.lower(), default_pred, obj.lower())
-            if key not in seen:
-                seen.add(key)
-                out.append({"subject": subj, "predicate": default_pred, "object": obj})
-        # Pass 1b: dotted heading style
-        for m in ENUM_OFFENSE_RE_DOTTED.finditer(scan_text):
-            art = m.group(1)
-            offense = cleanup(m.group(2))
-            offense = fix_ocr_chunks(offense)
-            obj = f"{offense} (Điều {art})"
-            key = (subj.lower(), default_pred, obj.lower())
-            if key not in seen:
-                seen.add(key)
-                out.append({"subject": subj, "predicate": default_pred, "object": obj})
-
-        # Pass 2: accent-insensitive line-based scan for severely broken diacritics
-        def strip_accents(x: str) -> str:
-            return ''.join(c for c in unicodedata.normalize('NFD', x) if unicodedata.category(c) != 'Mn')
-        for line in scan_text.splitlines():
-            if len(line) < 10:
-                continue
-            raw_line = line.strip()
-            sani = strip_accents(raw_line.lower())
-            for mm in re.finditer(r"dieu\s+(\d+)\s*\((toi[^)]*)\)", sani):
-                art = mm.group(1)
-                offense = cleanup(mm.group(2))  # offense text from accentless line
-                offense = fix_ocr_chunks(offense)
-                obj = f"{offense} (Điều {art})"
-                key = (subj.lower(), default_pred, obj.lower())
-                if key not in seen:
-                    seen.add(key)
-                    out.append({"subject": subj, "predicate": default_pred, "object": obj})
-        
-        return out
-
-    triples.extend(extract_enumerated_offenses_fixed(text))
-
-
-    # Deduplicate
+                for s_text in subjects or [""]:
+                    for o_text in objects or [""]:
+                        s_clean = cleanup_vi_tokens(s_text) or "Người"
+                        p_clean = cleanup_vi_tokens(predicate)
+                        o_clean = cleanup_vi_tokens(o_text)
+                        if not p_clean or not o_clean:
+                            continue
+                        triples.append({"subject": s_clean, "predicate": p_clean, "object": o_clean})
+    # Dedup
     uniq: List[Dict[str, str]] = []
     seen = set()
     for t in triples:
@@ -570,51 +262,127 @@ def extract_action_triples(text: str) -> List[Dict[str, str]]:
             uniq.append(t)
     return uniq
 
-# --------------------------
-# Triple normalization & export
-# --------------------------
 
-NOISY_OBJECT_EXACT = {"hàng tháng", "vào việc", "phát tán"}
+# --------------------------
+# Regex fallback extractor (no VNCoreNLP required)
+# --------------------------
+ENUM_OFFENSE_RE = re.compile(r"Đi\S*\s+(\d+)\s*\((tội[^);]+)\)", re.IGNORECASE)
+# Heading style: "Điều 174. Tội lừa đảo chiếm đoạt tài sản" (no parentheses)
+ARTICLE_OFFENSE_TITLE_RE = re.compile(r"Đi\S*\s+(\d+)\s*[\.|:–-]?\s*(tội\s+[^\n\r\.;:]+)", re.IGNORECASE)
+GEN_OFFENSE_RE = re.compile(r"\b(tội\s+[^\.;:\n\(\)]+)\s*\(\s*Đi\S*\s*(\d+)\s*\)", re.IGNORECASE)
+LIABILITY_RE = re.compile(r"\b(không\s+)?chịu\s+trách\s+nhiệm\s+hình\s+sự(?:\s+(?:về|đối\s+với))?\s+([^.;:\n]+)", re.IGNORECASE)
+SUBJECT_LIABILITY_RE = re.compile(r"\b(?P<subject>Người[^\.;:\n]+?)\s+(?P<neg>không\s+)?chịu\s+trách\s+nhiệm\s+hình\s+sự(?:\s+(?:về|đối\s+với))?\s+(?P<object>[^.;:\n]+)", re.IGNORECASE)
+EXEMPT_RE = re.compile(r"\bđược\s+miễn\s+trách\s+nhiệm\s+hình\s+sự(?:\s+(?:về|đối\s+với))?\s*([^.;:\n]+)?", re.IGNORECASE)
+PENALTY_RE = re.compile(r"\bbị\s+phạt\s+([^.;:\n]+)", re.IGNORECASE)
+PENALTY2_RE = re.compile(r"\bbị\s+xử\s+phạt\s+([^.;:\n]+)", re.IGNORECASE)
+INCLUDE_RE = re.compile(r"\b(Hình\s+phạt\s+(?:chính|bổ\s*sung))\s+bao\s+gồm\s*:\s*([^\n\.]*)", re.IGNORECASE)
 
-def normalize_triples(triples: List[Dict[str, str]]) -> List[Dict[str, str]]:
-    """Light normalization: cleanup tokens, remove clearly noisy objects, deduplicate again."""
-    out: List[Dict[str, str]] = []
-    for t in triples:
-        s = cleanup_vi_tokens(t.get("subject", ""))
-        p = cleanup_vi_tokens(t.get("predicate", ""))
-        o = cleanup_vi_tokens(t.get("object", ""))
-        # Strip generic tokens the user doesn't care about
-        # 1) Remove leading "tội " (but preserve meaningful phrases like "tội phạm" and "mọi tội phạm")
-        if re.match(r'^tội\s+', o, flags=re.IGNORECASE) and not re.match(r'^(tội phạm|mọi\s+tội\s+phạm)\b', o, flags=re.IGNORECASE):
-            o = re.sub(r'^tội\s+', '', o, flags=re.IGNORECASE)
-        # 2) Remove occurrences of "trái phép"
-        o = re.sub(r'\btrái\s+phép\b', '', o, flags=re.IGNORECASE)
-        # 3) Collapse "chất ma túy" -> "ma túy" (and trim leftover spaces)
-        o = re.sub(r'\bchất\s+(ma\s+túy)\b', r'\1', o, flags=re.IGNORECASE)
-        # Tidy double spaces after removals
-        o = re.sub(r'\s{2,}', ' ', o).strip(' ,.;:')
-        s = normalize_age_subject(s)
-        if not s or not p or not o:
-            continue
-        if o.lower() in NOISY_OBJECT_EXACT and not any(k in p.lower() for k in ["phạt", "tử hình"]):
-            continue
-        if len(o) < 3 and o.lower() not in {"án", "tù"}:
-            continue
-        out.append({"subject": s, "predicate": p, "object": o})
-    # Deduplicate
+
+def extract_triples_regex(text: str) -> List[Dict[str, str]]:
+    s = normalize_text(text)
+    triples: List[Dict[str, str]] = []
+    subject_spans: List[tuple[int, str]] = []  # (end_index, subject)
+
+    # Subject-specific liability clauses
+    for m in SUBJECT_LIABILITY_RE.finditer(s):
+        subj = cleanup_vi_tokens(m.group('subject'))
+        pred = "không chịu trách nhiệm hình sự" if m.group('neg') else "chịu trách nhiệm hình sự về"
+        obj = cleanup_vi_tokens(m.group('object'))
+        triples.append({"subject": subj, "predicate": pred, "object": obj})
+        subject_spans.append((m.end(), subj))
+
+    # Enumerated offenses like: "Điều 12 (tội hiếp dâm)"
+    for m in ENUM_OFFENSE_RE.finditer(s):
+        dieu = m.group(1)
+        crime = cleanup_vi_tokens(m.group(2))
+        obj = f"{crime} (Điều {dieu})"
+        subj = "Người"
+        for end_idx, cand in subject_spans[::-1]:
+            if end_idx <= m.start() and (m.start() - end_idx) < 4000:
+                subj = cand
+                break
+        triples.append({"subject": subj, "predicate": "phạm", "object": obj})
+
+    # Heading offenses like: "Điều 174. Tội lừa đảo chiếm đoạt tài sản"
+    for m in ARTICLE_OFFENSE_TITLE_RE.finditer(s):
+        dieu = m.group(1)
+        crime = cleanup_vi_tokens(m.group(2))
+        obj = f"{crime} (Điều {dieu})"
+        subj = "Người"
+        for end_idx, cand in subject_spans[::-1]:
+            if end_idx <= m.start() and (m.start() - end_idx) < 4000:
+                subj = cand
+                break
+        triples.append({"subject": subj, "predicate": "phạm", "object": obj})
+
+    # Generic offenses "tội ... (Điều n)" anywhere
+    for m in GEN_OFFENSE_RE.finditer(s):
+        dieu = m.group(2)
+        crime = cleanup_vi_tokens(m.group(1))
+        obj = f"{crime} (Điều {dieu})"
+        subj = "Người"
+        for end_idx, cand in subject_spans[::-1]:
+            if end_idx <= m.start() and (m.start() - end_idx) < 4000:
+                subj = cand
+                break
+        triples.append({"subject": subj, "predicate": "phạm", "object": obj})
+
+    # Liability sentences
+    for m in LIABILITY_RE.finditer(s):
+        neg = m.group(1)
+        obj = cleanup_vi_tokens(m.group(2))
+        pred = "không chịu trách nhiệm hình sự" if neg else "chịu trách nhiệm hình sự về"
+        triples.append({"subject": "Người", "predicate": pred, "object": obj})
+
+    # Include lists like: "Hình phạt chính bao gồm: a, b, c"
+    for m in INCLUDE_RE.finditer(s):
+        subj = normalize_terms(m.group(1))
+        items = m.group(2)
+        parts = re.split(r",|\bvà\b|\bhoặc\b", items)
+        for p in parts:
+            obj = normalize_terms(p.strip())
+            if obj:
+                triples.append({"subject": subj, "predicate": "bao gồm", "object": obj})
+
+    # Exemption
+    for m in EXEMPT_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(1) or "")
+        if obj:
+            triples.append({"subject": "Người", "predicate": "được miễn trách nhiệm hình sự", "object": obj})
+
+    # Penalties
+    for m in PENALTY_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(1))
+        triples.append({"subject": "Người", "predicate": "bị phạt", "object": obj})
+    for m in PENALTY2_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(1))
+        triples.append({"subject": "Người", "predicate": "bị xử phạt", "object": obj})
+
+    # Catch "mọi tội phạm ..." as liability
+    for m in re.finditer(r"\bmọi\s+tội\s+phạm[^.;:\n]*", s, re.IGNORECASE):
+        obj = cleanup_vi_tokens(m.group(0))
+        triples.append({"subject": "Người", "predicate": "chịu trách nhiệm hình sự về", "object": obj})
+
+    # Normalize and dedup
     uniq: List[Dict[str, str]] = []
     seen = set()
-    for t in out:
-        key = (t["subject"].lower(), t["predicate"].lower(), t["object"].lower())
+    for t in triples:
+        subj_n = normalize_terms(t.get("subject", ""))
+        obj_n = normalize_terms(t.get("object", ""))
+        pred_n = cleanup_vi_tokens(t.get("predicate", ""))
+        key = (subj_n.lower(), pred_n.lower(), obj_n.lower())
         if key not in seen:
             seen.add(key)
-            uniq.append(t)
+            uniq.append({"subject": subj_n, "predicate": pred_n, "object": obj_n})
     return uniq
 
+
+# --------------------------
+# Export helpers
+# --------------------------
 def export_table(triples: List[Dict[str, str]], out_path: str) -> str:
     if not triples:
         raise ValueError("Không có dữ liệu để xuất.")
-    # Always export only 3 columns: subject, predicate, object
     base_cols = ["subject", "predicate", "object"]
     rows = [{c: t.get(c, "") for c in base_cols} for t in triples]
     try:
@@ -636,6 +404,9 @@ def export_table(triples: List[Dict[str, str]], out_path: str) -> str:
         return csv_path
 
 
+# --------------------------
+# Optional Gemini refine
+# --------------------------
 def refine_with_gemini(triples: List[Dict[str, str]], api_key: str, model: str = "gemini-2.5-flash") -> List[Dict[str, str]]:
     try:
         import google.generativeai as genai
@@ -671,74 +442,20 @@ def refine_with_gemini(triples: List[Dict[str, str]], api_key: str, model: str =
     return refined
 
 
-def split_by_articles(text: str) -> List[str]:
-    """Split normalized text by Điều headings, keep heading with its block."""
-    blocks: List[str] = []
-    parts = re.split(r"(?=\bĐi\S*\s+\d+\b)", text)
-    for p in parts:
-        p = p.strip()
-        if len(p) > 80 and re.search(r"\bĐi\S*\s+\d+\b", p):
-            blocks.append(p)
-    return blocks
-
-
-def gemini_extract_triples(text_blocks: List[str], api_key: str, model: str = "gemini-2.5-flash", max_chars: int = 6000) -> List[Dict[str, str]]:
-    """Use Gemini to extract triples from a list of article text blocks."""
-    try:
-        import google.generativeai as genai
-    except Exception as e:
-        raise RuntimeError("Chưa cài google-generativeai. Cài bằng: pip install google-generativeai") from e
-
-    genai.configure(api_key=api_key)
-    mdl = genai.GenerativeModel(model)
-
-    all_triples: List[Dict[str, str]] = []
-    sys_instructions = """Bạn là trợ lý pháp luật. Hãy trích xuất các bộ ba (subject, predicate, object) từ đoạn văn bản pháp luật tiếng Việt.
-YÊU CẦU:
-- Trả về JSON duy nhất dạng [{"subject":"...","predicate":"...","object":"..."}, ...].
-- predicate là động từ/cụm động từ ngắn gọn.
-- object là cụm danh từ; nếu có tham chiếu điều khoản thì ghi kèm (Điều N).
-- Bao gồm tội danh, hành vi bị cấm, trách nhiệm hình sự, hình phạt.
-- Không suy diễn ngoài văn bản.
-"""
-    for block in text_blocks:
-        chunk = block[:max_chars]
-        prompt = f"{sys_instructions}\nVĂN BẢN:\n{chunk}\n\nChỉ trả về JSON như mô tả."
-        try:
-            resp = mdl.generate_content(prompt)
-            txt = (resp.text or "").strip()
-            m = re.search(r"\[.*\]", txt, re.DOTALL)
-            arr = json.loads(m.group(0)) if m else []
-            for t in arr:
-                s = cleanup_vi_tokens(t.get("subject", ""))
-                p = cleanup_vi_tokens(t.get("predicate", ""))
-                o = cleanup_vi_tokens(t.get("object", ""))
-                if s and p and o:
-                    all_triples.append({"subject": s, "predicate": p, "object": o})
-        except Exception:
-            continue
-    return all_triples
-
-
-def save_to_json(triples: List[Dict[str, str]], out_path: str) -> None:
-    dir_name = os.path.dirname(out_path) or '.'
-    os.makedirs(dir_name, exist_ok=True)
-    with open(out_path, "w", encoding="utf-8") as f:
-        json.dump(triples, f, ensure_ascii=False, indent=2)
-
-
+# --------------------------
+# CLI
+# --------------------------
 def main():
-    parser = argparse.ArgumentParser(description="Extract action-based triples (subject, verb, object) from Vietnamese legal PDF.")
+    parser = argparse.ArgumentParser(description="Extract SVO triples from Vietnamese legal PDF using VNCoreNLP.")
     parser.add_argument("--pdf", required=True, help="Đường dẫn file PDF")
     parser.add_argument("--start", type=int, required=True, help="Trang bắt đầu (>=1)")
     parser.add_argument("--end", type=int, required=True, help="Trang kết thúc (>=start)")
     parser.add_argument("--output", default="triples_actions.json", help="File JSON đầu ra")
-    parser.add_argument("--gemini", action="store_true", help="Dùng Google Gemini để refine kết quả")
-    parser.add_argument("--gemini-extract", action="store_true", help="Dùng Google Gemini để bổ sung bộ ba từ văn bản (tăng recall)")
-    parser.add_argument("--gemini-key", help="Gemini API key (hoặc đặt biến môi trường GEMINI_API_KEY)")
-    parser.add_argument("--clean", action="store_true", help="Làm sạch/chuẩn hóa nhẹ các bộ ba trước khi lưu")
     parser.add_argument("--xlsx", help="Xuất thêm Excel/CSV (nếu .xlsx sẽ ưu tiên Excel; thiếu pandas sẽ fallback CSV)")
-    parser.add_argument("--augment", action="store_true", help="Bổ sung cột chuẩn hóa quan hệ và phân loại chủ thể/đối tượng")
+    parser.add_argument("--vncorenlp-dir", help="Thư mục mô hình VNCoreNLP (tuỳ chọn)")
+    parser.add_argument("--heap", default="-Xmx2g", help="Dung lượng heap JVM cho VNCoreNLP")
+    parser.add_argument("--gemini", action="store_true", help="Dùng Google Gemini để refine kết quả")
+    parser.add_argument("--gemini-key", help="Gemini API key hoặc đặt biến GEMINI_API_KEY")
     args = parser.parse_args()
 
     pdf_path = args.pdf
@@ -750,29 +467,20 @@ def main():
         raise FileNotFoundError(f"Không tìm thấy file PDF: {pdf_path}")
 
     raw = extract_text_from_pdf(pdf_path, args.start, args.end)
-    triples = extract_action_triples(raw)
 
-    # Optional: augment triples by extracting with Gemini over article chunks
-    if args.gemini and args.gemini_extract:
-        api_key = args.gemini_key or os.getenv("GEMINI_API_KEY")
-        if not api_key:
-            raise RuntimeError("Thiếu Gemini API key. Truyền --gemini-key hoặc đặt biến GEMINI_API_KEY.")
-        blocks = split_by_articles(normalize_text(raw))
-        llm_triples = gemini_extract_triples(blocks, api_key=api_key)
-        # Merge then dedupe
-        triples.extend(llm_triples)
+    triples: List[Dict[str, str]]
+    try:
+        nlp = init_vncorenlp(model_dir=args.vncorenlp_dir, heap=args.heap)
+        triples = extract_triples_with_vncorenlp(raw, nlp)
+    except RuntimeError as e:
+        print(f"[WARN] VNCoreNLP không sẵn sàng ({e}). Dùng regex fallback.")
+        triples = extract_triples_regex(raw)
 
     if args.gemini:
         api_key = args.gemini_key or os.getenv("GEMINI_API_KEY")
         if not api_key:
             raise RuntimeError("Thiếu Gemini API key. Truyền --gemini-key hoặc đặt biến GEMINI_API_KEY.")
         triples = refine_with_gemini(triples, api_key=api_key)
-
-    if args.clean:
-        triples = normalize_triples(triples)
-
-    if args.augment:
-        triples = augment_triples(triples)
 
     save_to_json(triples, args.output)
     print(f"Đã trích xuất {len(triples)} bộ ba. Đã lưu vào: {args.output}")
@@ -786,6 +494,7 @@ def main():
             print(f"Đã xuất bảng: {written}")
         except Exception as e:
             print(f"[WARN] Xuất bảng thất bại: {e}")
+
 
 # --------------------------
 # Augmentation: predicate normalization + typing
