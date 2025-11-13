@@ -8,3 +8,5 @@ phonlp
 google-generativeai
 openpyxl
 python-dotenv
+PyPDF2
+pdfminer.six

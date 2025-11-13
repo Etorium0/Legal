@@ -199,24 +199,39 @@ def init_vncorenlp(model_dir: str | None = None, heap: str = "-Xmx2g"):
 
     os.makedirs(model_dir, exist_ok=True)
 
-    # Kiểm tra sự tồn tại jar (tên có thể thay đổi theo version)
-    jar_candidates = [f for f in os.listdir(model_dir) if f.lower().startswith("vncorenlp") and f.endswith(".jar")]
-    if not jar_candidates:
+    # Tìm file jar: ưu tiên trong thư mục chỉ định; nếu không, tìm đệ quy
+    jar_path = None
+    direct_jars = [f for f in os.listdir(model_dir) if f.lower().startswith("vncorenlp") and f.endswith(".jar")]
+    if direct_jars:
+        jar_path = os.path.join(model_dir, direct_jars[0])
+    else:
+        for root, _, files in os.walk(model_dir):
+            for f in files:
+                if f.lower().startswith("vncorenlp") and f.endswith(".jar"):
+                    jar_path = os.path.join(root, f)
+                    break
+            if jar_path:
+                break
+    if not jar_path:
         raise RuntimeError(
             "Không tìm thấy file jar VNCoreNLP trong thư mục: "
-            f"{model_dir}.\nHướng dẫn: Tải gói VNCoreNLP (jar + models) và giải nén vào thư mục này, sao cho có: \n"
-            "  - VnCoreNLP-*.jar\n  - models/wordsegmenter, models/postagger, models/dependency ..."
+            f"{model_dir}. Hãy build hoặc tải VnCoreNLP-*.jar (ví dụ bằng Maven: mvn -q -DskipTests package)."
         )
-    jar_path = os.path.join(model_dir, jar_candidates[0])
 
     annotators = "wseg,pos,parse"
 
     # Kiểm tra thư mục models/* (wordsegmenter, postagger, dependency)
-    models_dir = os.path.join(model_dir, "models")
-    if not os.path.isdir(models_dir):
+    # Xác định thư mục models hợp lệ (có thể nằm cạnh model_dir hoặc cạnh jar)
+    candidate_models = [
+        os.path.join(model_dir, "models"),
+        os.path.join(os.path.dirname(jar_path), "models"),
+        os.path.join(os.path.dirname(os.path.dirname(jar_path)), "models"),
+    ]
+    models_dir = next((p for p in candidate_models if os.path.isdir(p)), None)
+    if not models_dir:
         raise RuntimeError(
-            "Thiếu thư mục models/ cho VNCoreNLP trong "
-            f"{model_dir}. Hãy giải nén gói VNCoreNLP để có models/wordsegmenter, models/postagger, models/dependency"
+            "Thiếu thư mục models/ cho VNCoreNLP (wordsegmenter, postagger, dependency).\n"
+            f"Đã kiểm tra: {candidate_models}"
         )
 
     # Kiểm tra Java
@@ -367,9 +382,19 @@ GEN_OFFENSE_RE = re.compile(r"\b(tội\s+[^\.;:\n\(\)]+)\s*\(\s*Đi\S*\s*(\d+)\s
 LIABILITY_RE = re.compile(r"\b(không\s+)?chịu\s+trách\s+nhiệm\s+hình\s+sự(?:\s+(?:về|đối\s+với))?\s+([^.;:\n]+)", re.IGNORECASE)
 SUBJECT_LIABILITY_RE = re.compile(r"\b(?P<subject>Người[^\.;:\n]+?)\s+(?P<neg>không\s+)?chịu\s+trách\s+nhiệm\s+hình\s+sự(?:\s+(?:về|đối\s+với))?\s+(?P<object>[^.;:\n]+)", re.IGNORECASE)
 EXEMPT_RE = re.compile(r"\bđược\s+miễn\s+trách\s+nhiệm\s+hình\s+sự(?:\s+(?:về|đối\s+với))?\s*([^.;:\n]+)?", re.IGNORECASE)
+KHONG_TRUY_CUU_RE = re.compile(r"\bkhông\s+bị\s+truy\s+cứu\s+trách\s+nhiệm\s+hình\s+sự(?:\s+(?:về|đối\s+với))?\s*([^.;:\n]+)?", re.IGNORECASE)
+TRUY_CUU_RE = re.compile(r"\btruy\s+cứu\s+trách\s+nhiệm\s+hình\s+sự(?:\s+(?:về|đối\s+với))?\s+([^.;:\n]+)", re.IGNORECASE)
+MIEN_HINH_PHAT_RE = re.compile(r"\bđược\s+miễn\s+hình\s+phạt\b([^.;:\n]*)", re.IGNORECASE)
+GIAM_NHE_HP_RE = re.compile(r"\bđược\s+giảm\s+nhẹ\s+hình\s+phạt\b([^.;:\n]*)", re.IGNORECASE)
 PENALTY_RE = re.compile(r"\bbị\s+phạt\s+([^.;:\n]+)", re.IGNORECASE)
 PENALTY2_RE = re.compile(r"\bbị\s+xử\s+phạt\s+([^.;:\n]+)", re.IGNORECASE)
-PENALTY_TU_RE = re.compile(r"\bbị\s+phạt\s+tù\s*([^.;:\n]*)", re.IGNORECASE)
+PENALTY_TU_RE = re.compile(r"\b(?:bị\s+)?phạt\s+tù\s*([^.;:\n]*)", re.IGNORECASE)
+# High-recall penalty variants
+PENALTY_FINE_RE = re.compile(r"\b(?:bị\s+)?phạt\s+tiền\s+([^.;:\n]+)", re.IGNORECASE)
+PENALTY_NON_CUSTODIAL_RE = re.compile(r"\b(?:bị\s+)?phạt\s+cải\s+tạo\s+không\s+giam\s+giữ\s+([^.;:\n]+)", re.IGNORECASE)
+PENALTY_WARNING_RE = re.compile(r"\b(?:bị\s+)?phạt\s+cảnh\s+cáo\b([^.;:\n]*)", re.IGNORECASE)
+PENALTY_LIFE_RE = re.compile(r"\b(?:bị\s+)?phạt\s+tù\s+chung\s+thân\b", re.IGNORECASE)
+PENALTY_DEATH_RE = re.compile(r"\b(?:bị\s+)?tử\s+hình\b", re.IGNORECASE)
 CAM_DAM_NHIEM_RE = re.compile(r"\bbị\s+cấm\s+đảm\s+nhiệm\s+[^.;:\n]+", re.IGNORECASE)
 TUOC_QUYEN_RE = re.compile(r"\bbị\s+tước\s+[^.;:\n]+", re.IGNORECASE)
 TRUC_XUAT_RE = re.compile(r"\bbị\s+trục\s+xuất\b[^.;:\n]*", re.IGNORECASE)
@@ -380,6 +405,24 @@ BUOC_RE = re.compile(r"\bbuộc\s+([^.;:\n]+)", re.IGNORECASE)
 DINH_CHI_RE = re.compile(r"\bđình\s+chỉ\s+([^.;:\n]+)", re.IGNORECASE)
 CO_TRACH_NHIEM_RE = re.compile(r"\bcó\s+trách\s+nhiệm\s+([^.;:\n]+)", re.IGNORECASE)
 INCLUDE_RE = re.compile(r"\b(Hình\s+phạt\s+(?:chính|bổ\s*sung))\s+bao\s+gồm\s*:\s*([^\n\.]*)", re.IGNORECASE)
+LIST_BLOCK_RE = re.compile(
+    r"\b((?:Hình\s+phạt\s+(?:chính|bổ\s*sung))|Tình\s+tiết\s+(?:tăng\s+nặng|giảm\s+nhẹ)|Tình\s+tiết\s+định\s+khung|(?:Các|Những)\s+hành\s+vi(?:\s+bị\s+cấm)?|Hành\s+vi(?:\s+bị\s+cấm)?|(?:Các|Những)\s+trường\s+hợp)\s+(?:bao\s+gồm|gồm|gồm\s+có|kể\s+cả|như\s+sau)\s*:?[\s\u2028\u2029]*([\s\S]{1,2000}?)\s*(?=(?:\n\s*\n)|(?:\bĐi\S*\s+\d+\b)|$)",
+    re.IGNORECASE,
+)
+
+# Conditional and supplemental clauses
+COULD_BE_PENALIZED_RE = re.compile(r"\b(còn\s+có\s+thể\s+bị|có\s+thể\s+bị)\s+([^.;:\n]+)", re.IGNORECASE)
+
+# Generic subject patterns
+NGUOI_NAO_THI_RE = re.compile(r"\b(Người\s+nào|Người\s+phạm\s+tội|Pháp\s+nhân\s+thương\s+mại|Người\s+từ\s+[^;:\n]+)\s+([^.;:\n]+?)\s+thì\s+([^.;:\n]+)", re.IGNORECASE)
+
+# Subject-bound generic action templates
+SUBJECT_BI_RE = re.compile(r"\b(?P<subject>(?:Người|Pháp\s+nhân)[^.;:\n]{0,80}?)\s+bị\s+(?P<object>[^.;:\n]+)", re.IGNORECASE)
+SUBJECT_DUOC_RE = re.compile(r"\b(?P<subject>(?:Người|Pháp\s+nhân)[^.;:\n]{0,80}?)\s+được\s+(?P<object>[^.;:\n]+)", re.IGNORECASE)
+SUBJECT_KHONG_DUOC_RE = re.compile(r"\b(?P<subject>(?:Người|Pháp\s+nhân)[^.;:\n]{0,80}?)\s+không\s+được\s+(?P<object>[^.;:\n]+)", re.IGNORECASE)
+SUBJECT_PHAI_RE = re.compile(r"\b(?P<subject>(?:Người|Pháp\s+nhân)[^.;:\n]{0,80}?)\s+phải\s+(?P<object>[^.;:\n]+)", re.IGNORECASE)
+SUBJECT_CO_QUYEN_RE = re.compile(r"\b(?P<subject>(?:Người|Pháp\s+nhân)[^.;:\n]{0,80}?)\s+có\s+quyền\s+(?P<object>[^.;:\n]+)", re.IGNORECASE)
+SUBJECT_CO_NGHIA_VU_RE = re.compile(r"\b(?P<subject>(?:Người|Pháp\s+nhân)[^.;:\n]{0,80}?)\s+có\s+nghĩa\s+vụ\s+(?P<object>[^.;:\n]+)", re.IGNORECASE)
 RIGHT_RE = re.compile(r"\bcó\s+(quyền|nghĩa\s+vụ)\s+([^.;:\n]+)", re.IGNORECASE)
 MUST_RE = re.compile(r"\bphải\s+([^.;:\n]+)", re.IGNORECASE)
 PERMIT_RE = re.compile(r"\bđược\s+(phép|quyền)\s+([^.;:\n]+)", re.IGNORECASE)
@@ -397,6 +440,8 @@ def _split_compound_objects(obj_text: str, aggressive: bool = False) -> List[str
         s = re.sub(r"(?<![\w])([a-z])\)", r" || ", s, flags=re.IGNORECASE)
         s = re.sub(r"(?<![\w])(\d+)\)", r" || ", s)
         s = s.replace(";", " || ")
+        # Split bullets/hyphens and newlines
+        s = re.sub(r"\n\s*[•\-–]\s*", " || ", s)
         s = s.replace("\n", " || ")
     parts = re.split(r"\s+(?:và|hoặc|cũng như|đồng thời)\s+|\|\|", s, flags=re.IGNORECASE)
     out = []
@@ -498,13 +543,18 @@ def extract_triples_regex(text: str, aggressive: bool = False) -> List[Dict[str,
         obj = cleanup_vi_tokens(m.group(2))
         triples.append({"subject": "Tòa án", "predicate": action, "object": obj})
 
-    # Include lists like: "Hình phạt chính bao gồm: a, b, c" (and variants)
-    for m in re.finditer(r"\b(Hình\s+phạt\s+(?:chính|bổ\s*sung))\s+(?:bao\s+gồm|gồm|gồm\s+có|kể\s+cả|như\s+sau)\s*:?\s*([^\n\.]*)", s, re.IGNORECASE):
+    # Include lists like multi-line: "Hình phạt chính/bổ sung ... bao gồm: ..." and other list subjects
+    for m in LIST_BLOCK_RE.finditer(s):
         subj = normalize_terms(m.group(1))
-        items = m.group(2)
-        parts = re.split(r",|\bvà\b|\bhoặc\b", items)
+        block = m.group(2)
+        # Normalize bullets into delimiters
+        block2 = re.sub(r"(?<![\w])([a-z])\)", r" || ", block, flags=re.IGNORECASE)
+        block2 = re.sub(r"(?<![\w])(\d+)\)", r" || ", block2)
+        block2 = block2.replace(";", " || ")
+        block2 = block2.replace("\n", " || ")
+        parts = re.split(r"\|\||,|\bvà\b|\bhoặc\b", block2, flags=re.IGNORECASE)
         for p in parts:
-            obj = normalize_terms(p.strip())
+            obj = normalize_terms(p.strip().strip(',;:'))
             if obj:
                 triples.append({"subject": subj, "predicate": "bao gồm", "object": obj})
 
@@ -513,6 +563,19 @@ def extract_triples_regex(text: str, aggressive: bool = False) -> List[Dict[str,
         obj = cleanup_vi_tokens(m.group(1) or "")
         if obj:
             triples.append({"subject": "Người", "predicate": "được miễn trách nhiệm hình sự", "object": obj})
+    for m in KHONG_TRUY_CUU_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(1) or "")
+        pred = "không bị truy cứu trách nhiệm hình sự"
+        triples.append({"subject": "Người", "predicate": pred, "object": obj})
+    for m in TRUY_CUU_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(1))
+        triples.append({"subject": "Người", "predicate": "truy cứu trách nhiệm hình sự về", "object": obj})
+    for m in MIEN_HINH_PHAT_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(1) or "")
+        triples.append({"subject": "Người", "predicate": "được miễn hình phạt", "object": obj})
+    for m in GIAM_NHE_HP_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(1) or "")
+        triples.append({"subject": "Người", "predicate": "được giảm nhẹ hình phạt", "object": obj})
 
     # Penalties
     for m in PENALTY_RE.finditer(s):
@@ -525,6 +588,56 @@ def extract_triples_regex(text: str, aggressive: bool = False) -> List[Dict[str,
         obj = cleanup_vi_tokens(m.group(1) or "tù")
         obj = ("tù " + obj).strip()
         triples.append({"subject": "Người", "predicate": "bị phạt", "object": obj})
+    for m in PENALTY_FINE_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(1))
+        triples.append({"subject": "Người", "predicate": "bị phạt tiền", "object": obj})
+    for m in PENALTY_NON_CUSTODIAL_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(1))
+        triples.append({"subject": "Người", "predicate": "bị phạt cải tạo không giam giữ", "object": obj})
+    for m in PENALTY_WARNING_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(1) or "")
+        triples.append({"subject": "Người", "predicate": "bị phạt cảnh cáo", "object": obj})
+    for m in PENALTY_LIFE_RE.finditer(s):
+        triples.append({"subject": "Người", "predicate": "bị phạt tù", "object": "chung thân"})
+    for m in PENALTY_DEATH_RE.finditer(s):
+        triples.append({"subject": "Người", "predicate": "bị", "object": "tử hình"})
+
+    # Conditional supplemental penalties
+    for m in COULD_BE_PENALIZED_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(2))
+        triples.append({"subject": "Người", "predicate": "có thể bị", "object": obj})
+
+    # "Người nào ... thì ..." pattern => two triples: action + consequence (if extractable)
+    for m in NGUOI_NAO_THI_RE.finditer(s):
+        subj_raw = m.group(1)
+        act = cleanup_vi_tokens(m.group(2))
+        consq = cleanup_vi_tokens(m.group(3))
+        subj = normalize_terms(subj_raw)
+        if act:
+            triples.append({"subject": subj, "predicate": "thực hiện", "object": act})
+        if consq:
+            # Try map typical consequence starters to predicate
+            if consq.lower().startswith("bị "):
+                triples.append({"subject": subj, "predicate": "bị", "object": consq[3:].strip()})
+            elif consq.lower().startswith("phải "):
+                triples.append({"subject": subj, "predicate": "phải", "object": consq[5:].strip()})
+            else:
+                triples.append({"subject": subj, "predicate": "chịu", "object": consq})
+
+    # Subject-bound generic actions (captures more specific subjects)
+    for pat, pred in [
+        (SUBJECT_BI_RE, "bị"),
+        (SUBJECT_DUOC_RE, "được"),
+        (SUBJECT_KHONG_DUOC_RE, "không được"),
+        (SUBJECT_PHAI_RE, "phải"),
+        (SUBJECT_CO_QUYEN_RE, "có quyền"),
+        (SUBJECT_CO_NGHIA_VU_RE, "có nghĩa vụ"),
+    ]:
+        for m in pat.finditer(s):
+            subj = normalize_terms(cleanup_vi_tokens(m.group('subject')))
+            obj = cleanup_vi_tokens(m.group('object'))
+            if subj and obj:
+                triples.append({"subject": subj, "predicate": pred, "object": obj})
     for m in CAM_DAM_NHIEM_RE.finditer(s):
         triples.append({"subject": "Người", "predicate": "bị cấm đảm nhiệm", "object": cleanup_vi_tokens(m.group(0).split("bị cấm đảm nhiệm",1)[-1])})
     for m in TUOC_QUYEN_RE.finditer(s):
@@ -734,6 +847,7 @@ def main():
     parser.add_argument("--gemini-extract", action="store_true", help="Dùng Gemini để trích xuất bổ sung trước khi dedupe")
     parser.add_argument("--gemini-key", help="Gemini API key hoặc đặt biến GEMINI_API_KEY")
     parser.add_argument("--aggressive", action="store_true", help="Bùng nổ danh sách bằng dấu ';', bullets a)/1) để tăng số lượng triple")
+    parser.add_argument("--hybrid", action="store_true", help="Kết hợp cả VNCoreNLP và regex để tăng recall (gộp & khử trùng)")
     parser.add_argument("--debug", action="store_true", help="In thêm thông tin chẩn đoán (chế độ VNCoreNLP/regex, độ dài văn bản)")
     args = parser.parse_args()
 
@@ -748,6 +862,11 @@ def main():
     raw = extract_text_from_pdf(pdf_path, args.start, args.end, use_pdfminer=args.pdfminer if hasattr(args, 'pdfminer') else False)
     if args.debug:
         print(f"[DEBUG] Extracted chars: {len(raw)} from pages {args.start}-{args.end}")
+    # Auto-enable aggressive splitting for large documents
+    if not args.aggressive and len(raw) >= 200_000:
+        args.aggressive = True
+        if args.debug:
+            print("[DEBUG] Auto-enabled aggressive splitting for large text")
 
     triples: List[Dict[str, str]]
     mode = "regex"
@@ -764,6 +883,21 @@ def main():
         print("[DEBUG] VNCoreNLP path active. If output seems low, check if tokens include depLabel/form via unit test.")
     if mode == "regex" and args.debug:
         print("[DEBUG] Using regex fallback.")
+
+    # Hybrid union: always or on demand combine with regex for recall
+    if mode == "vncorenlp" and (args.hybrid or True):
+        regex_triples = extract_triples_regex(raw, aggressive=args.aggressive)
+        if args.debug:
+            print(f"[DEBUG] VNCoreNLP triples: {len(triples)}; regex triples: {len(regex_triples)} -> merging")
+        # Merge & dedupe
+        merged = []
+        seen_h = set()
+        for t in (triples + regex_triples):
+            k = (t['subject'].lower(), t['predicate'].lower(), t['object'].lower())
+            if k not in seen_h:
+                seen_h.add(k)
+                merged.append(t)
+        triples = merged
 
     api_key = args.gemini_key or os.getenv("GEMINI_API_KEY")
     if (args.gemini or args.gemini_extract) and not api_key:
