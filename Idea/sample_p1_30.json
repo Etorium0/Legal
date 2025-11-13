@@ -1,0 +1,6345 @@
+[
+  {
+    "subject": "Người từ đủ 16 tuổi trở lên phải",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "mọi tội phạm, trừ những tội phạm mà Bộ luật này có quy định khác"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "tội giết người, tội cố ý gây thương tích"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "gây tổn hại cho sức khỏe của người khác, tội hiếp dâm, tội h iếp dâm người dưới 16 tuổi, tội cưỡng dâm người từ đủ 13 tuổi đến dưới 16 tuổi, tội cướp tài sản, tội bắt cóc nhằm chiếm đoạt tài sản"
+  },
+  {
+    "subject": "Người phạm tội chưa đạt phải",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "tội phạm chưa đạt"
+  },
+  {
+    "subject": "người đó phải",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "tội này"
+  },
+  {
+    "subject": "Người đồng phạm không phải",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "hành vi vượt quá của người thực hành"
+  },
+  {
+    "subject": "Người nào không hứa hẹn trước, nhưng sau khi biết tội phạm được thực hiện đã che giấu người phạm tội, dấu vết, tang vật của tội phạm hoặc có hành vi khác cản trở việc phát hiện, điều tra, xử lý người phạm tội, thì phải",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "về tội che giấu tội phạm trong những trường hợp mà Bộ luật này quy định"
+  },
+  {
+    "subject": "Người nào biết rõ tội phạm đang được chuẩn bị, đang được thực hiện hoặc đã được thực hiện mà không tố giác, thì phải",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "tội không tố giác tội phạm trong những trường hợp quy định tại Điều 389 của Bộ luật này",
+    "article_number": "389"
+  },
+  {
+    "subject": "Người bào chữa không phải",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "theo quy ðịnh tại khoản 1 Ðiều này trong trường hợp khô ng tố giác tội phạm do chính ng ười mà mình bào chữa đã thực hiện"
+  },
+  {
+    "subject": "Người bào chữa không phải",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "đã tham gia thực hiện mà người bào chữa biết được khi thực hiện nhiệm vụ bào chữa, trừ trường hợp không tố giác các t ội xâm phạm an ninh quốc gia"
+  },
+  {
+    "subject": "Người bào chữa không phải",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "tội phạm đặc biệt nghiêm trọng khác quy định tại Điều 389 của Bộ luật này",
+    "article_number": "389"
+  },
+  {
+    "subject": "Người có hành vi vượt quá giới hạn phòng vệ chính đáng phải",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "theo quy định của Bộ luật này"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "theo những quy định của Chương này"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội cưỡng dâm (Điều 143)",
+    "article_number": "143"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội mua bán người (Điều 150)",
+    "article_number": "150"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội mua bán người dưới 16 tuổi (Điều 151)",
+    "article_number": "151"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội cưỡng đoạt tài sản (Điều 170)",
+    "article_number": "170"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội trộm cắp tài sản (Điều 173)",
+    "article_number": "173"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội hủy hoại"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "cố ý làm hư hỏng tài sản (Điều 178)",
+    "article_number": "178"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội tàng trữ trái phép ma túy (Điều 249)",
+    "article_number": "249"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội vận chuyển trái phép ma túy (Điều 250)",
+    "article_number": "250"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội mua bán trái phép ma túy (Điều 251)",
+    "article_number": "251"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội chiếm đoạt ma túy (Điều 252)",
+    "article_number": "252"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội tổ chức đua xe trái phép (Điều 265)",
+    "article_number": "265"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội đua xe trái phép (Điều 266)",
+    "article_number": "266"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội khủng bố (Điều 299)",
+    "article_number": "299"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội phá hủy công trình, cơ sở , phương tiện quan trọng về an ninh quốc gia (Điều 303)",
+    "article_number": "303"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội chế tạo, tàng trữ, vận chuyển, sử dụng, mua bán trái phép"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "chiếm đoạt vũ khí quân dụng , phương tiện kỹ thuật quân sự (Điều 304)",
+    "article_number": "304"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội phản bội Tổ quốc (Điều 108)",
+    "article_number": "108"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội gián điệp (Điều 110)",
+    "article_number": "110"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội xâm phạm an ninh lãnh thổ (Điều 111)",
+    "article_number": "111"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội bạo loạn (Điều 112)",
+    "article_number": "112"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội khủng bố nhằm chống chính quyền nhân dân (Điều 113)",
+    "article_number": "113"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội phá hoại cơ sở vật chất - kỹ thuật của nước cộng hòa xã hội chủ nghĩa Việt Nam (Điều 114)",
+    "article_number": "114"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội làm, tàng trữ, phát tán"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tuyên truyền thông tin, tài liệu, vật phẩm nhằm chống Nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam (Điều 117)",
+    "article_number": "117"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội phá rối an ninh (Điều 118)",
+    "article_number": "118"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội chống phá trại giam (Điều 119)",
+    "article_number": "119"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội tổ chức, cưỡng ép, xúi giục người khác trốn đi nước ngoài"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "trốn ở lại nước ngoài nhằm chống chính quyền nhân dân (Điều 120)",
+    "article_number": "120"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội trốn đi nước ngoài"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "trốn ở lại nước ngoài nhằm chống chính quyền nhân dân (Điều 121)",
+    "article_number": "121"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội giết người (Điều 123)",
+    "article_number": "123"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội cố ý gây thương tích"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "gây tổn hại cho sức khỏe của người khác (Điều 134)",
+    "article_number": "134"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội cướp tài sản (Điều 168)",
+    "article_number": "168"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội bắt cóc nhằm chiếm đoạt tài sản (Điều 169)",
+    "article_number": "169"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội tài trợ khủng bố (Điều 300)",
+    "article_number": "300"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội bắt cóc con tin (Điều 301)",
+    "article_number": "301"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội cướp biển (Điều 302)",
+    "article_number": "302"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội phá hủy công trình, cơ sở, phương tiện quan trọng về an ninh quốc gia (Điều 303)",
+    "article_number": "303"
+  },
+  {
+    "subject": "Người từ đủ 14 tuổi trở lên, nhưng chưa đủ 16 tuổi chỉ phải",
+    "predicate": "phạm",
+    "object": "tội rửa tiền (Điều 324)",
+    "article_number": "324"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội buôn lậu (Điều 188)",
+    "article_number": "188"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội vận chuyển trái phép hàng hóa, tiền tệ qua biên giới (Điều 189)",
+    "article_number": "189"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội sản xuất, buôn bán hàng cấm (Điều 190)",
+    "article_number": "190"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội tàng trữ, vận chuyển hàng cấm (Điều 191)",
+    "article_number": "191"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội sản xuất, buôn bán hàng giả (Điều 192)",
+    "article_number": "192"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội sản xuất, buôn bán hàng giả là lương thực, thực phẩm, phụ gia thực phẩm (Điều 193)",
+    "article_number": "193"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội sản xuất, buôn bán hàng giả là thuốc chữa bệnh, thuốc phòng bệnh (Điều 194)",
+    "article_number": "194"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội sản xuất, buôn bán hàng giả là thức ăn dùng để chăn nuôi, phân bón, thuốc thú y, thuốc bảo vệ thực vật, giống cây trồng, vật nuôi (Điều 195)",
+    "article_number": "195"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội trốn thuế (Điều 200)",
+    "article_number": "200"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội in, phát hành, mua bán trái phép hóa đơn, chứng từ (Điều 203)",
+    "article_number": "203"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội cố ý công bố thông tin sai lệch"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "che giấu thông tin trong hoạt động chứng khoán (Điều 209)",
+    "article_number": "209"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội sử dụng thông tin nội bộ để mua bán chứng khoán (Điều 210)",
+    "article_number": "210"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội thao túng thị trường chứng khoán (Điều 211)",
+    "article_number": "211"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội gian lận trong kinh doanh bảo hiểm (Điều 213)",
+    "article_number": "213"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội trốn đóng bảo hiểm xã hội, bảo hiểm y tế, bảo hiểm thất nghiệp cho người lao động (Điều 216)",
+    "article_number": "216"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội vi phạm quy định về cạn h tranh (Điều 217)",
+    "article_number": "217"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội xâm phạm quyền tác giả, quyền liên quan (Điều 225)",
+    "article_number": "225"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội xâm phạm quyền sở hữu công nghiệp (Điều 226)",
+    "article_number": "226"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội vi phạm các quy định về nghiên cứu, thăm dò, khai thác tài nguyên (Điều 227)",
+    "article_number": "227"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội vi phạm các quy định về khai thác"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "bảo vệ rừng (Điều 232)",
+    "article_number": "232"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về quản lý, bảo vệ động vật hoang dã (Điều 234)",
+    "article_number": "234"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội gây ô nhiễm môi trường (Điều 235)",
+    "article_number": "235"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội vi phạm phòng ngừa, ứng phó, khắc phục sự cố môi trường (Điều 237)",
+    "article_number": "237"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội đưa chất thải vào lãnh thổ Việt Nam (Điều 239)",
+    "article_number": "239"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội huỷ hoại nguồn lợi thuỷ sản (Điều 242)",
+    "article_number": "242"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội huỷ hoại rừng (Điều 243)",
+    "article_number": "243"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội vi phạm quy định về quản lý, bảo v ệ động vật nguy cấp, quý, hiếm (Điều 244)",
+    "article_number": "244"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội vi phạm các quy định về quản lý khu bảo tồn thiên nhiên (Điều 245)",
+    "article_number": "245"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tội nhập khẩu, phát tán các loài ngoại lai xâm hại (Điều 246)",
+    "article_number": "246"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "phạm",
+    "object": "tội cố ý gây thương tích"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "phạm",
+    "object": "gây tổn hại cho sức khỏe của người khác (Điều 134)",
+    "article_number": "134"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "phạm",
+    "object": "tội cướp giật tài sản (Điều 171)",
+    "article_number": "171"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "phạm",
+    "object": "tội sản xuất trái phép ma túy (Điều 248)",
+    "article_number": "248"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "phạm",
+    "object": "tội tàng trữ trái phép ma túy (Điều 249)",
+    "article_number": "249"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "phạm",
+    "object": "tội vận chuyển trái phép ma túy (Điều 250)",
+    "article_number": "250"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "phạm",
+    "object": "tội mua bán trái phép ma túy (Điều 251)",
+    "article_number": "251"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "phạm",
+    "object": "tội giết người (Điều 123)",
+    "article_number": "123"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "phạm",
+    "object": "tội hiếp dâm (Điều 141)",
+    "article_number": "141"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "phạm",
+    "object": "tội hiếp dâm người dưới 16 tuổi (Điều 142)",
+    "article_number": "142"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "phạm",
+    "object": "tội cưỡng dâm người từ đủ 13 tuổi đến dưới 16 tuổi (Điều 144)",
+    "article_number": "144"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "phạm",
+    "object": "tội mua bán người (Điều 150)",
+    "article_number": "150"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "phạm",
+    "object": "tội cướp tài sản (Điều 168)",
+    "article_number": "168"
+  },
+  {
+    "subject": "người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải",
+    "predicate": "phạm",
+    "object": "tội chiếm đoạt ma túy (Điều 252)",
+    "article_number": "252"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội phản bội Tổ quốc 1 (Điều 108)",
+    "article_number": "108"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội hoạt động nhằm lật đổ chính quyền nhân dân Người nào hoạt động thành lập"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tham gia tổ chức nhằm lật đổ chính quyền nhân dân, thì bị phạt như sau (Điều 109)",
+    "article_number": "109"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội gián điệp 1 (Điều 110)",
+    "article_number": "110"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội xâm phạm an ninh lãnh thổ Người nào xâm n hập lãnh thổ, có hành động làm sai lệch đường biên giới quốc gia"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "có hành động khác nhằm gây phương hại cho an ninh lãnh thổ của nước Cộng hòa xã hội chủ nghĩa Việt Nam, thì bị phạt như sau (Điều 111)",
+    "article_number": "111"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội bạo loạn Người nào hoạt động vũ trang"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "dùng bạo lực có tổ chức nhằm chống chống chính quyền nhân dân , thì bị phạt như sau (Điều 112)",
+    "article_number": "112"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội khủng bố nhằm chống chính quyền nhân dân 1 (Điều 113)",
+    "article_number": "113"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội phá hoại cơ sở vật chất - kỹ thuật của nước Cộng hòa xã hội chủ nghĩa Việt Nam 1 (Điều 114)",
+    "article_number": "114"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội phá hoại việc thực hiện các chính sách kinh tế - xã hội 1 (Điều 115)",
+    "article_number": "115"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội phá hoại chính sách đoàn kết 1 (Điều 116)",
+    "article_number": "116"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội làm, tàng trữ, phát tán"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tuyên truyền thông tin, tài liệu, vật phẩm nhằm chống Nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam 1 (Điều 117)",
+    "article_number": "117"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội phá rối an ninh 1 (Điều 118)",
+    "article_number": "118"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội chống phá cơ sở giam giữ 1 (Điều 119)",
+    "article_number": "119"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội tổ chức, cưỡng ép, xúi giục người khác trốn đi nước ngoài"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "trốn ở lại nước ngoài nhằm chống chính quyền nhân dân 1 (Điều 120)",
+    "article_number": "120"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội trốn đi nước ngoài"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "trốn ở lại nước ngoài nhằm chống chính quyền nhân dân 1 (Điều 121)",
+    "article_number": "121"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội giết người 1 (Điều 123)",
+    "article_number": "123"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội giết"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "vứt bỏ con mới đẻ 1 (Điều 124)",
+    "article_number": "124"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội giết người trong trạng thái tinh thần bị kích động mạnh 1 (Điều 125)",
+    "article_number": "125"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội giết người do vượt quá giới hạn phòng vệ chí nh đáng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "do vượt quá mức cần thiết khi bắt giữ người phạm tội 1 (Điều 126)",
+    "article_number": "126"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội làm chết người trong khi thi hành công vụ 1 (Điều 127)",
+    "article_number": "127"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vô ý làm chết người do vi phạm quy tắc nghề nghiệp"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "quy tắc hành chính 1 (Điều 129)",
+    "article_number": "129"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội bức tử 1 (Điều 130)",
+    "article_number": "130"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội xúi giục"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "giúp người khác tự sát 1 (Điều 131)",
+    "article_number": "131"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội đe dọa giết người 1 (Điều 133)",
+    "article_number": "133"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cố ý gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "gây tổn hại cho sức khỏe của người khác trong trạng thái tinh thần bị kích động mạnh 1 (Điều 135)",
+    "article_number": "135"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội c ố ý gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "gây tổn hại cho sức khoẻ của người khác do vượt quá giới hạn phòng vệ chính đáng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "do vượt quá mức cần thiết khi bắt giữ người phạm tội 1 (Điều 136)",
+    "article_number": "136"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "gây tổn hại cho sức khoẻ của người khác trong khi thi hành công vụ 1 (Điều 137)",
+    "article_number": "137"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vô ý gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "gây tổn hại cho sức khỏe của người khác 1 (Điều 138)",
+    "article_number": "138"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "gây tổn hại cho sức khoẻ của người khác do vi phạm quy tắc nghề nghiệp"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "quy tắc hành chính 1 (Điều 139)",
+    "article_number": "139"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội hành hạ người khác 1 (Điều 140)",
+    "article_number": "140"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội hiếp dâm 1 (Điều 141)",
+    "article_number": "141"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội hiếp dâm người dưới 16 tuổi 1 (Điều 142)",
+    "article_number": "142"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cưỡng dâm 1 (Điều 143)",
+    "article_number": "143"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cưỡn g dâm người từ đủ 13 tuổi đến dưới 16 tuổi 1 (Điều 144)",
+    "article_number": "144"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội giao cấu"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "thực hiện hành vi quan hệ tình dục khác với người từ đủ 13 tuổi đến dưới 16 tuổi 1 (Điều 145)",
+    "article_number": "145"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội dâm ô đối với người dưới 16 tuổi 1 (Điều 146)",
+    "article_number": "146"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sử dụng người dưới 16 tuổi vào mục đích khiêu dâm 1 (Điều 147)",
+    "article_number": "147"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội lây truyền HIV cho người khác 1 (Điều 148)",
+    "article_number": "148"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cố ý truyền HIV cho người khác 1 (Điều 149)",
+    "article_number": "149"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội mua bán người 1 (Điều 150)",
+    "article_number": "150"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội mua bán người dưới 16 tuổi 1 (Điều 151)",
+    "article_number": "151"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội đánh tráo người dưới 01 tuổi 1 (Điều 152)",
+    "article_number": "152"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội chiếm đoạt người dưới 16 tuổi 1 (Điều 153)",
+    "article_number": "153"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội mua bán, chiếm đoạt mô"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "bộ phận cơ thể người 1 (Điều 154)",
+    "article_number": "154"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội làm nhục người khác 1 (Điều 155)",
+    "article_number": "155"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vu khống 1 (Điều 156)",
+    "article_number": "156"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội bắt, giữ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "giam người trái pháp luật 1 (Điều 157)",
+    "article_number": "157"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội xâm phạm chỗ ở của người khác 1 (Điều 158)",
+    "article_number": "158"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội xâm phạm bí mật"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "an toàn thư tín, điện thoại, điện tín"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "hình thức trao đổi thông tin riêng tư khác của người khác 1 (Điều 159)",
+    "article_number": "159"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội xâm phạm quyền của công dân về bầu cử, ứng cử"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "biểu quyết khi Nhà nước trưng cầu ý dân 1 (Điều 160)",
+    "article_number": "160"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội làm sai lệch kết quả bầu cử, kết quả trưng cầu ý dân 1 (Điều 161)",
+    "article_number": "161"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội buộc công chức, viên chức thôi việc"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "sa thải người lao động trái pháp luật 1 (Điều 162)",
+    "article_number": "162"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội xâm phạm quyền hội họp, lập hội của công dân 1 (Điều 163)",
+    "article_number": "163"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội xâm phạm quyền tự do tín ngưỡng, tôn giáo của người khác 1 (Điều 164)",
+    "article_number": "164"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội xâm phạ m quyền bình đẳng giới 1 (Điều 165)",
+    "article_number": "165"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội xâm phạm quyền khiếu nại, tố cáo 1 (Điều 166)",
+    "article_number": "166"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội xâm phạm quyền tự do ngôn luận, tự do báo chí, tiếp cận thông tin, quyền biểu tình c ủa công dân 1 (Điều 167)",
+    "article_number": "167"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội bắt cóc nhằm chiếm đoạt tài sản 1 (Điều 169)",
+    "article_number": "169"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cưỡng đoạt tài sản 1 (Điều 170)",
+    "article_number": "170"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cướp giật tài sản 1 (Điều 171)",
+    "article_number": "171"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội trộm cắp t ài sản 1 (Điều 173)",
+    "article_number": "173"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội lừa đảo chiếm đoạt tài sản 1 (Điều 174)",
+    "article_number": "174"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội lạm dụng tín nhiệm chiếm đoạt tài sản 1 (Điều 175)",
+    "article_number": "175"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội chiếm giữ trái phép tài sản 1 (Điều 176)",
+    "article_number": "176"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sử dụng trái phép tài sản 1 (Điều 177)",
+    "article_number": "177"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội hủy hoại"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "cố ý làm hư h ỏng tài sản 1 (Điều 178)",
+    "article_number": "178"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội thiếu trách nhiệm gây thiệt hại đến tài sản của Nhà nước , cơ quan , tổ chức , doanh nghiệp 1 (Điều 179)",
+    "article_number": "179"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vô ý gây thiệt hại nghiêm trọng đến tài sản 1 (Điều 180)",
+    "article_number": "180"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cưỡng ép kết hôn, ly hôn"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "cản trở hôn nhân tự nguyện, tiến bộ, cản trở ly hôn tự nguyện Người nào cưỡng ép người khác kết hôn trái với sự tự nguyện của họ, cản trở người khác kết hôn"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "duy trì quan hệ hôn nhân tự nguyện, tiến bộ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "cưỡng ép"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "cản trở người khác ly hôn bằng cách hành hạ, ngược đãi, uy hiếp tinh thần, yêu sách của cải"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "bằng thủ đoạn khác , đã bị xử phạt vi phạm hành chính về hành vi này mà còn vi phạm, thì bị phạt cảnh cáo, phạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "phạt tù từ 03 tháng đến 03 năm (Điều 181)",
+    "article_number": "181"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm chế đ ộ một vợ, một chồng 1 (Điều 182)",
+    "article_number": "182"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội tổ chức tảo hôn Người nào tổ chức việc lấy vợ, lấy chồng cho những người chưa đến tuổi kết hôn, đã bị xử phạt vi phạm hành chính về hành vi này mà còn vi phạm, thì bị phạt tiền từ 10 (Điều 183)",
+    "article_number": "183"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội loạn luân Người nào giao cấu với người mà biết rõ người đó cùng dòng máu về trực hệ, là anh chị em cùng cha mẹ, anh chị em cùng cha khác mẹ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "cùng mẹ khác cha, thì bị ph ạt tù từ 01 năm đến 05 năm (Điều 184)",
+    "article_number": "184"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội ngược đãi"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "hành hạ ông bà, cha mẹ, vợ chồng, con, cháu"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "người có công nuôi dưỡng mình 1 (Điều 185)",
+    "article_number": "185"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội từ chối"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "trốn tránh nghĩa vụ cấp dưỡng Người nào có nghĩa vụ cấp dưỡng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "có khả năng thực tế để thực hiện việc cấp dưỡng đối với người mà mình có nghĩa vụ cấp dưỡng theo quyết định của Tòa án mà từ chối"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "trốn tránh nghĩa vụ cấp dưỡng, làm cho người được cấp dưỡng lâm tình trạng nguy hiểm đến tính mạng, sức khỏe"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "đã bị xử phạt vi phạm hành chính về hành vi này mà còn vi phạm, thì bị phạt cảnh cáo, phạt cải tạo không giam giữ đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "phạt t ù từ 03 tháng đến 02 năm (Điều 186)",
+    "article_number": "186"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội tổ chức mang thai hộ vì mục đích thương mại 1 (Điều 187)",
+    "article_number": "187"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội buôn lậu 1 (Điều 188)",
+    "article_number": "188"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vận chuyển trái phép hàng h óa, tiền tệ qu a biên giới 1 (Điều 189)",
+    "article_number": "189"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sản xuất, buôn bán hàng cấm 1 (Điều 190)",
+    "article_number": "190"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội tàng trữ, vận chuyển hàng cấm 1 (Điều 191)",
+    "article_number": "191"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sản xuất, buôn bán hàng giả 1 (Điều 192)",
+    "article_number": "192"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sản xuất, buôn bán hàng giả là lương thực, thực phẩm, phụ gia thực phẩm 1 (Điều 193)",
+    "article_number": "193"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội s ản xuất, buôn bán hàng giả là thuốc chữa bệnh, thuốc phòng bệnh 1 (Điều 194)",
+    "article_number": "194"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sản xuất, buôn bán hàng giả là thức ăn dùng để chăn nuôi, phân bón, thuốc thú y, thuốc bảo vệ thực vật, giống cây trồng, vật nuôi 1 (Điều 195)",
+    "article_number": "195"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội đầu cơ 1 (Điều 196)",
+    "article_number": "196"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội quảng cáo gian dối 1 (Điều 197)",
+    "article_number": "197"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội lừa dối khách hàng 1 (Điều 198)",
+    "article_number": "198"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm các quy định về cung ứng điện 1 (Điều 199)",
+    "article_number": "199"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội trốn thuế 1 (Điều 200)",
+    "article_number": "200"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cho vay lãi nặng trong giao dịch dân sự 1 (Điều 201)",
+    "article_number": "201"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội làm , buôn bán tem giả, vé giả 1 (Điều 202)",
+    "article_number": "202"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội in, phát hành, mu a bán trái phép hóa đơn, chứng từ thu nộp ngân sách nhà nước 1 (Điều 203)",
+    "article_number": "203"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về bảo quản, quản lý hóa đơn, ch ứng từ thu nộp ngân sách nhà nước 1 (Điều 204)",
+    "article_number": "204"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội lập quỹ trái phép 1 (Điều 205)",
+    "article_number": "205"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định trong hoạt động của các tổ chứ c tín dụng, chi nhánh ngân hàng nước ngoài 1 (Điều 206)",
+    "article_number": "206"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội làm, tàng trữ, vận chuyển, lưu hành tiền giả 1 (Điều 207)",
+    "article_number": "207"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội làm, tàng trữ, vận chuyển, lưu hành công cụ chuyển nhượng giả"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "các giấy tờ có giá giả khác 1 (Điều 208)",
+    "article_number": "208"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "che giấu thông tin trong hoạt động chứng khoán 1 (Điều 209)",
+    "article_number": "209"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sử dụng thông tin nội bộ để mua bán chứng khoán 1 (Điều 210)",
+    "article_number": "210"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội thao túng thị trư ờng chứng khoán 1 (Điều 211)",
+    "article_number": "211"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội làm giả tài liệu trong hồ sơ chào bán, niêm yết chứng khoán 1 (Điều 212)",
+    "article_number": "212"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội gian lận trong kin h doanh bảo hiểm 1 (Điều 213)",
+    "article_number": "213"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội gian lận bảo hiểm xã hội, bảo hiểm thất nghiệp 1 (Điều 214)",
+    "article_number": "214"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội gian lận bảo hiểm y tế 1 (Điều 215)",
+    "article_number": "215"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội trốn đóng bảo hiểm xã hội, bảo hiểm y tế, bảo hiểm thất nghiệp cho người lao động 1 (Điều 216)",
+    "article_number": "216"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về cạnh tranh 1 (Điều 217)",
+    "article_number": "217"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về hoạt động bán đấu giá tài sản 1 (Điều 218)",
+    "article_number": "218"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về quản lý, sử dụng tài sản Nhà nước gây thất thoát, lãng phí 1 (Điều 219)",
+    "article_number": "219"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm qui định của Nhà nước về quản lý"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "sử dụng vốn đầu tư công gây hậu quả nghiêm trọng 1 (Điều 220)",
+    "article_number": "220"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định của Nhà nước về kế toán gây hậu q uả nghiêm trọng 1 (Điều 221)",
+    "article_number": "221"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về đấu thầu gây hậu quả nghiêm trọng 1 (Điều 222)",
+    "article_number": "222"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về đầu tư công trình xây dựng gây hậu quả nghiêm trọng 1 (Điều 224)",
+    "article_number": "224"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội xâm phạm quyền tác giả, quyền liên quan 1 (Điều 225)",
+    "article_number": "225"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội xâm phạm quyền sở hữu công nghiệp 1 (Điều 226)",
+    "article_number": "226"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm các quy định về nghiên cứu, thăm dò, khai thác tài nguyên 1 (Điều 227)",
+    "article_number": "227"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm các quy định về sử dụng đất đai 1 (Điều 228)",
+    "article_number": "228"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm các quy định về quản lý đất đai 1 (Điều 229)",
+    "article_number": "229"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về bồi thường, hỗ trợ, tái định cư khi Nhà nước thu hồi đất 1 (Điều 230)",
+    "article_number": "230"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cố ý làm trái quy định về phân phối tiền, hàng cứu trợ 1 (Điều 231)",
+    "article_number": "231"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm các quy định về khai thác, bảo v ệ rừng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "quản lý lâm sản 1 (Điều 232)",
+    "article_number": "232"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm các quy định về quản lý rừng 1 (Điều 233)",
+    "article_number": "233"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về quản lý, bảo vệ động vật hoang dã 1 (Điều 234)",
+    "article_number": "234"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội gây ô nhiễm môi trường 1 (Điều 235)",
+    "article_number": "235"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về quản lý chất thải nguy hại 1 (Điều 236)",
+    "article_number": "236"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về phòng ngừa, ứng phó, khắc phục sự cố môi trường 1 (Điều 237)",
+    "article_number": "237"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về bảo vệ an toàn công trình thủy lợi, đê điều"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "phòng, chống thiên tai (Điều 238)",
+    "article_number": "238"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội đưa chất thải vào lãnh thổ Việt Nam 1 (Điều 239)",
+    "article_number": "239"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội làm lây lan dịch bệnh truyền nhiễm nguy hiểm cho người 1 (Điều 240)",
+    "article_number": "240"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội làm lây lan dịch bệnh nguy hiểm cho động vật, thực vật 1 (Điều 241)",
+    "article_number": "241"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội huỷ hoại nguồn lợi thuỷ sản 1 (Điều 242)",
+    "article_number": "242"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội huỷ hoại rừng 1 (Điều 243)",
+    "article_number": "243"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về quản lý, bảo vệ động vật nguy cấp, quý, hiếm 1 (Điều 244)",
+    "article_number": "244"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm các quy định về quản lý khu bảo tồn thiên nhiên 1 (Điều 245)",
+    "article_number": "245"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội nhập khẩu, phát tán các loài ngoại lai xâm hại 1 (Điều 246)",
+    "article_number": "246"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội trồng cây thuốc phiện , cây côca, cây cần sa"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "các loại cây khác có chứa ma túy 1 (Điều 247)",
+    "article_number": "247"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sản xuất trái phép ma túy 1 (Điều 248)",
+    "article_number": "248"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội tàng trữ trái phép ma túy 1 (Điều 249)",
+    "article_number": "249"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vận chuyển trái phép ma túy 1 (Điều 250)",
+    "article_number": "250"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội mua bán trái phép ma túy 1 (Điều 251)",
+    "article_number": "251"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội tàng trữ, vận chuyển, mua bán"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "chiếm đoạt tiền chất dùng vào việc sản xuất trái phép ma túy 1 (Điều 253)",
+    "article_number": "253"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sản xuất, tàng trữ, vận chuyển"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "mua bán phương tiện , dụng cụ dùng vào việc sản xuất"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "sử dụng trái phép ma túy 1 (Điều 254)",
+    "article_number": "254"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội tổ chức sử dụng trái phép ma túy 1 (Điều 255)",
+    "article_number": "255"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội chứa chấp việc sử dụng trái phép chất ma t úy 1 (Điều 256)",
+    "article_number": "256"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cưỡng bức người khác sử dụng trái phép ma túy 1 (Điều 257)",
+    "article_number": "257"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội lôi kéo người khác sử dụng trái ph ép ma túy 1 (Điều 258)",
+    "article_number": "258"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về quản lý, sử dụng ma túy, tiền chất, thuốc gây nghiện, thuốc hướng thần 1 (Điều 259)",
+    "article_number": "259"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về tham gia giao thông đường bộ 1 (Điều 260)",
+    "article_number": "260"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cản trở giao thông đường bộ 1 (Điều 261)",
+    "article_number": "261"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội đưa vào sử dụng các phương tiện giao thông cơ giới đường bộ, xe máy chuyên dùng không bảo đảm tiêu chuẩn an toàn kỹ thuật tham gia giao thông 1 (Điều 262)",
+    "article_number": "262"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội điều độn g người không đủ điều kiện điều khiển các phương tiện tham gia giao thông đường bộ 1 (Điều 263)",
+    "article_number": "263"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội giao cho người không đủ điều kiện điều khiển các phương tiện tham gia giao thông đường bộ 1 (Điều 264)",
+    "article_number": "264"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội tổ chức đua xe trái phép 1 (Điều 265)",
+    "article_number": "265"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội đua xe trái phép 1 (Điều 266)",
+    "article_number": "266"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội đưa vào sử dụng các phương tiện, thiết bị giao thông đường sắt không bảo đảm an toàn 1 (Điều 269)",
+    "article_number": "269"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội điều động người không đủ điều kiện điều khiển các phương tiện giao thông đường sắt 1 (Điều 270)",
+    "article_number": "270"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội giao cho người không đủ điều kiện điều khiển các phương tiện giao thông đường sắt 1 (Điều 271)",
+    "article_number": "271"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về điều khiển phương tiện gi ao thông đường thuỷ 1 (Điều 272)",
+    "article_number": "272"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cản trở gi ao thông đường thuỷ 1 (Điều 273)",
+    "article_number": "273"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội đưa"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "o sử dụng các phương tiện giao thông đường thuỷ không bảo đảm an toàn 1 (Điều 274)",
+    "article_number": "274"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội điều động người khô ng đủ điều kiện điều khiển các phương tiện giao thông đường thuỷ 1 (Điều 275)",
+    "article_number": "275"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội giao cho người không đủ điều kiện điều khiển các phương tiện giao thông đường th uỷ 1 (Điều 276)",
+    "article_number": "276"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định điều khiển tàu bay 1 (Điều 277)",
+    "article_number": "277"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cản trở giao thông đường không 1 (Điều 278)",
+    "article_number": "278"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội đưa vào sử dụng phương tiện giao thông đường không không bảo đảm an toàn 1 (Điều 279)",
+    "article_number": "279"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội điều động"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "giao cho người không đủ điều kiện điều khiển các phương tiện giao thông đường không 1 (Điều 280)",
+    "article_number": "280"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về duy tu, sửa chữa, quản lý các công trình giao thông 1 (Điều 281)",
+    "article_number": "281"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội chiếm đoạt tàu bay, tàu thuỷ 1 (Điều 282)",
+    "article_number": "282"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội điều khiển tàu bay vi phạm các quy định về hàng không của nước Cộng hòa xã hội chủ nghĩa Việt Nam 1 (Điều 283)",
+    "article_number": "283"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội điều khiển phương tiện hàng hải vi phạm các quy định về hàng hải của nước Cộng hòa xã hội chủ nghĩa Việt Nam 1 (Điều 284)",
+    "article_number": "284"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sản xuất, mua bán, trao đổi"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tặng cho công cụ, thi ết bị, phần mềm để sử dụng vào mục đích trái pháp luật 1 (Điều 285)",
+    "article_number": "285"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội phát tán chương trình tin học gây hại cho hoạt động của mạng máy tính, mạng viễn thông, phương tiện điện tử 1 (Điều 286)",
+    "article_number": "286"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cản trở"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "gây rối loạn hoạt động của mạng máy tính, mạng viễn thông, phương tiện điện tử 1 (Điều 287)",
+    "article_number": "287"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "sử dụng trái phép thông tin mạng máy tính, mạng viễn thông 1 (Điều 288)",
+    "article_number": "288"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội xâm nhập trái phép vào mạng máy tính, mạng viễn thông"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "phương tiện điện tử của người khác 1 (Điều 289)",
+    "article_number": "289"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sử dụng mạng máy tính, mạng viễn thông, phương tiện điện tử thực hiện hành vi chiếm đoạt tài sản 1 (Điều 290)",
+    "article_number": "290"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội thu thập, tàng trữ, trao đổi, mua bán, công khai hóa trái phép thông tin về tài khoản ngân hàng 1 (Điều 291)",
+    "article_number": "291"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cung cấp dịch vụ trái phép trên mạng máy tính, mạng viễn thông 1 (Điều 292)",
+    "article_number": "292"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sử dụng trái phép tần số vô tuyến điện dành riêng cho mục đích cấp cứu, an toàn, tìm kiếm, cứu hộ, cứu n ạn, quốc phòng, an ninh 1 (Điều 293)",
+    "article_number": "293"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cố ý gây nhiễu có hại 1 (Điều 294)",
+    "article_number": "294"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về an toàn lao động, vệ sinh lao động, về an toàn ở những nơi đông người 1 (Điều 295)",
+    "article_number": "295"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về sử dụng người lao động dưới 16 tuổi 1 (Điều 296)",
+    "article_number": "296"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cưỡng bức lao động 1 (Điều 297)",
+    "article_number": "297"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về xây dựng gây hậu quả nghiêm trọng 1 (Điều 298)",
+    "article_number": "298"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội khủng bố 1 (Điều 299)",
+    "article_number": "299"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội tài trợ khủng bố 1 (Điều 300)",
+    "article_number": "300"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội bắt cóc con tin 1 (Điều 301)",
+    "article_number": "301"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cướp biển 1 (Điều 302)",
+    "article_number": "302"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội phá huỷ công trình, cơ sở, phương tiện quan trọng về an ninh quốc gia 1 (Điều 303)",
+    "article_number": "303"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội chế tạo, tàng trữ, vận chuyển, sử dụng, mua bán trái phép"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "chiếm đoạt vũ khí quân dụng, phương tiện kỹ thuật quân sự 1 (Điều 304)",
+    "article_number": "304"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "chiếm đoạt vật liệu nổ 1 (Điều 305)",
+    "article_number": "305"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "chiếm đoạt súng săn, vũ khí thô sơ, vũ khí thể thao, công cụ hỗ trợ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "các vũ khí khác có tính năng tác dụng tương tự 1 (Điều 306)",
+    "article_number": "306"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về quản lý vũ khí, vật liệu nổ, công cụ hỗ trợ 1 (Điều 307)",
+    "article_number": "307"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội thiếu trách nhiệm trong việc giữ vũ khí, vật liệu nổ, công cụ hỗ trợ gây hậu quả nghiêm trọng 1 (Điều 308)",
+    "article_number": "308"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sản xuất, tàng trữ, vận chuyển, sử dụng, phát tán, mua bán trái phép"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "chiếm đoạt chất phóng xạ, vật liệu hạt nhân 1 (Điều 309)",
+    "article_number": "309"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về quản lý chất phóng xạ, vật liệu hạt nhân 1 (Điều 310)",
+    "article_number": "310"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sản xuất, tàng trữ, vận chuyển, sử dụng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "mua bán trái phép chất cháy , chất độc 1 (Điều 311)",
+    "article_number": "311"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về quản lý chất cháy, chất độc 1 (Điều 312)",
+    "article_number": "312"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về phòng cháy, chữa cháy 1 (Điều 313)",
+    "article_number": "313"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về an toàn vận hành công trình điện 1 (Điều 314)",
+    "article_number": "314"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về khám bệnh, chữa bệnh, sản xuất, pha chế thuốc, cấp phát thuốc, bán thuốc"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "dịch vụ y tế khác 1 (Điều 315)",
+    "article_number": "315"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội phá thai trái phép 1 (Điều 316)",
+    "article_number": "316"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm quy định về vệ sinh an toàn thực phẩm 1 (Điều 317)",
+    "article_number": "317"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội gây rối trật tự công cộng 1 (Điều 318)",
+    "article_number": "318"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội đánh bạc 1 (Điều 321)",
+    "article_number": "321"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội tổ chức đánh bạc"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "gá bạc 1 (Điều 322)",
+    "article_number": "322"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội chứa chấp"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tiêu thụ tài sản do người khác phạm tội mà có 1 (Điều 323)",
+    "article_number": "323"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội rửa tiền 1 (Điều 324)",
+    "article_number": "324"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội dụ dỗ, ép buộc"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "chứa chấp người dưới 18 tuổi phạm pháp 1 (Điều 325)",
+    "article_number": "325"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội truyền bá văn hóa phẩm đồi trụy 1 (Điều 326)",
+    "article_number": "326"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội chứa mại dâm 1 (Điều 327)",
+    "article_number": "327"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội mua dâm người dưới 18 tuổi 1 (Điều 329)",
+    "article_number": "329"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội chống người thi hành công vụ 1 (Điều 330)",
+    "article_number": "330"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội lợi dụng các quyền tự do dân chủ xâm phạm lợi ích của Nhà nước, quyền, lợi ích hợp pháp của tổ chức, cá nhân 1 (Điều 331)",
+    "article_number": "331"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội trốn tránh nghĩa vụ quân sự 1 (Điều 332)",
+    "article_number": "332"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội không chấp hành lệnh gọi quân nhân dự bị nhập ngũ 1 (Điều 333)",
+    "article_number": "333"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội làm trái quy định về việc thực hiện nghĩa vụ quân sự 1 (Điều 334)",
+    "article_number": "334"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cản trở việc thực hiện nghĩa vụ quân sự 1 (Điều 335)",
+    "article_number": "335"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội đăng ký hộ tịch trái pháp luật 1 (Điều 336)",
+    "article_number": "336"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội cố ý làm lộ bí mật nhà nước (Điều 337)",
+    "article_number": "337"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vô ý làm lộ bí mật nhà nước (Điều 338)",
+    "article_number": "338"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội giả mạo chức vụ, cấp bậc, vị trí công tác Người nào giả mạo chức vụ, cấp bậc, vị trí công tác thực hiện hành vi trái pháp luật nhưng không nhằm mục đích chiếm đoạt tài sản, thì bị phạt cải tạo không giam giữ đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "phạt tù từ 03 tháng đến 02 năm (Điều 339)",
+    "article_number": "339"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội sửa chữa"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "sử dụng giấy chứng nhận, các tài liệu của cơ quan, tổ chức 1 (Điều 340)",
+    "article_number": "340"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội làm giả con dấu, tài liệu của cơ quan, tổ chức (Điều 341)",
+    "article_number": "341"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội chiếm đoạt, mua bán, tiêu hủy con dấu, tài liệu của cơ quan, tổ chức 1 (Điều 342)",
+    "article_number": "342"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi phạm các quy định về quản lý nhà ở 1 (Điều 343)",
+    "article_number": "343"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "Tội vi p hạm các quy định về hoạt động xuất bản 1 (Điều 344)",
+    "article_number": "344"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "mọi tội phạm, trừ những tội phạm mà Bộ luật này có quy định khác"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "tội giết người, tội cố ý gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "gây tổn hại cho sức khỏe của người khác, tội hiếp dâm, tội h iếp dâm người dưới 16 tuổi, tội cưỡng dâm người từ đủ 13 tuổi đến dưới 16 tuổi, tội cướp tài sản, tội bắt cóc nhằm chiếm đoạt tài sản"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "tội phạm chưa đạt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "tội này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "hành vi vượt quá của người thực hành"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "về tội che giấu tội phạm trong những trường hợp mà Bộ luật này quy định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "tội không tố giác tội phạm trong những trường hợp quy định tại Điều 389 của Bộ luật này",
+    "article_number": "389"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "theo quy ðịnh tại khoản 1 Ðiều này trong trường hợp khô ng tố giác tội phạm do chính ng ười mà mình bào chữa đã thực hiện"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "đã tham gia thực hiện mà người bào chữa biết được khi thực hiện nhiệm vụ bào chữa, trừ trường hợp không tố giác các t ội xâm phạm an ninh quốc gia"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "tội phạm đặc biệt nghiêm trọng khác quy định tại Điều 389 của Bộ luật này",
+    "article_number": "389"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "theo quy định của Bộ luật này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "theo những quy định của Chương này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "khi có đủ các điều kiện sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "không loại trừ trách nhiệm hình sự của cá nhân"
+  },
+  {
+    "subject": "Người",
+    "predicate": "chịu trách nhiệm hình sự về",
+    "object": "của pháp nhân thương mại Pháp nhân thương mại chỉ phải chịu trách nhiệm hình sự về các tội phạm sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có nghĩa vụ",
+    "object": "tích cực tham gia phòng, chống tội phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có nghĩa vụ",
+    "object": "phải cứu giúp"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có nghĩa vụ",
+    "object": "cấp dưỡng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có nghĩa vụ",
+    "object": "có khả năng thực tế để thực hiện việc cấp dưỡng đối với người mà mình có nghĩa vụ cấp dưỡng theo quyết định của Tòa án mà từ chối"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có nghĩa vụ",
+    "object": "trốn tránh nghĩa vụ cấp dưỡng, làm cho người được cấp dưỡng lâm tình trạng nguy hiểm đến tính mạng, sức khỏe"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có nghĩa vụ",
+    "object": "đã bị xử phạt vi phạm hành chính về hành vi này mà còn vi phạm, thì bị phạt cảnh cáo, phạt cải tạo không giam giữ đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có nghĩa vụ",
+    "object": "phạt t ù từ 03 tháng đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có nghĩa vụ",
+    "object": "đóng bảo hiểm xã hội, bảo hiểm y tế, bảo hiểm thất nghiệp cho người lao động mà gian dối"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có nghĩa vụ",
+    "object": "bằng thủ đoạn khác để không đóng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có nghĩa vụ",
+    "object": "không đóng đầy đủ theo quy định từ 06 tháng trở lên thuộc một trong những trường hợp sau đây, đã bị xử phạt vi phạm hành chính về hành vi này mà còn vi phạm, thì bị phạt tiền từ 50"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chịu trách nhiệm hình sự"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "được phát hiện kịp thời, xử lý nhanh chóng, công minh theo đúng pháp luật"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành hình phạt tại các cơ sở giam giữ, phải lao động , học tập để trở thành người có ích cho xã hội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "bị xử lý hình sự"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "là tội phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "được xử lý bằng các biện pháp khác"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "thấy trước"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "có thể thấy trước hậu quả đó"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chịu trách nhiệm hình sự về mọi tội phạm, trừ những tội phạm mà Bộ luật này có quy định khác"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chịu trách nhiệm hình sự về tội giết người, tội cố ý gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "gây tổn hại cho sức khỏe của người khác, tội hiếp dâm, tội h iếp dâm người dưới 16 tuổi, tội cưỡng dâm người từ đủ 13 tuổi đến dưới 16 tuổi, tội cướp tài sản, tội bắt cóc nhằm chiếm đoạt tài sản"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chịu trách nhiệm hình sự về tội phạm chưa đạt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chịu trách nhiệm hình sự về tội này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chịu trách nhiệm hình sự về hành vi vượt quá của người thực hành"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chịu trách nhiệm hình sự về tội che giấu tội phạm trong những trường hợp mà Bộ luật này quy định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chịu trách nhiệm hình sự về tội không tố giác tội phạm trong những trường hợp quy định tại Điều 389 của Bộ luật này",
+    "article_number": "389"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chịu trách nhiệm theo quy định tại khoản 1 Điều này, trừ trường hợp không tố giác các tội xâm phạm an ninh quốc gia"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "tội đặc biệt nghiêm trọng khác quy định tại Điều 389 của Bộ luật này",
+    "article_number": "389"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chịu trách nhiệm hình sự theo quy ðịnh tại khoản 1 Ðiều này trong trường hợp khô ng tố giác tội phạm do chính ng ười mà mình bào chữa đã thực hiện"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "đã tham gia thực hiện mà người bào chữa biết được khi thực hiện nhiệm vụ bào chữa, trừ trường hợp không tố giác các t ội xâm phạm an ninh quốc gia"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "tội phạm đặc biệt nghiêm trọng khác quy định tại Điều 389 của Bộ luật này",
+    "article_number": "389"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "thấy trước hậu quả của hành vi đó, thì không phải chịu trách nhiệm hình sự"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chịu trách nhiệm hình sự theo quy định của Bộ luật này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "gây một thiệt hại nhỏ hơn thiệt hại cần ngăn ngừa"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "sử dụng vũ lực cần thiết gây thiệt hại cho người bị bắt giữ thì không phải là tội phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chị u trách nhiệm hình sự"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "cách ly người phạm tội khỏi xã hội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "thực hiện một số nghĩa vụ theo các quy định về cải tạo không giam giữ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "bị khấu trừ mộ t phần thu nhập từ 05% đến 20% để sung quỹ nhà nước"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "ghi rõ lý do trong bản án"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "thực hiện một số công việc lao động phục vụ cộng đồng trong thời gian cải tạo không giam giữ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "thực hiện những nghĩa vụ quy định tại Luật thi hành án hình sự"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "rời khỏi lãnh thổ nước Cộng hòa xã hội chủ nghĩa Việt Nam"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành hình phạ t tại cơ sở giam giữ trong một thời hạn nhất định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "cư trú, làm ăn sinh sống"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "cải tạo ở một địa phương nhất định dưới sự kiểm soát, giáo dục của chính quyền"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "nhân dân địa phương"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "trả lại tài sản đã chiếm đoạt cho chủ sở hữu"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "người quản lý hợp pháp, phải sửa ch ữa"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "bồi thường thiệt hại vật chất đã được xác định do hành vi phạm tội gây ra"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "bồi thường về vật chất, công khai xin lỗi người bị hại"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "tiếp tục chấp hành hình phạt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "do mình tự gây ra"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "do lỗi của mình gây ra"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "ghi rõ lý do giảm nhẹ trong bản án"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "trong khung hình phạt liền kề nhẹ hơn của điều luật khi người phạm tội có ít nhất hai tình tiết giảm nhẹ quy định tại khoản 1 Điều 51 của Bộ luật này",
+    "article_number": "51"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "trong khung hình phạt liền kề nhẹ hơn của điều luật đối với người phạm tội lần đầu là người giúp sức trong vụ án đồng phạm nhưng có vai t rò không đáng kể"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "được ghi rõ trong bản án"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành tất cả các hình phạt đã tuyên"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành một bản án mà lại bị xét xử về tội đã phạm trước khi có b ản án này, thì Tòa án quyết định hình phạt đối với tội đang bị xét xử, sau đó quyết định hình phạt chung theo quy định tại Điều 55 của Bộ luật này",
+    "article_number": "55"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành một bản án mà lại thực hiện hành vi phạm tội mới, Tòa án quyết định hình phạt đối với tội mới, sau đó tổng hợp với phần hình phạt chưa chấp hành của bản án trước rồi quyết định hình phạt chung theo quy định tại Điều 55 củ a Bộ luật này",
+    "article_number": "55"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành nhiều bản án đã có hiệu lực pháp luật mà các hình phạt của các bản án chưa được tổng hợp, thì Chánh án T òa án có thẩm quyền ra quyết định tổng hợp hình phạt của các bản án theo quy định tại khoản 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "khoản 2 Điều này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "xét đến tính chất của đồng phạm, tính chất"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "mức độ tham gia phạm t ội của từng người đồng phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành bản án đã tuyên"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "thực hiện đầy đủ các nghĩa vụ dân sự do Tòa án tuyên trong bản án"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "bảo đảm chấp hành được một phần hai mức hình phạt đã tuyên"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "bảo đảm thời hạn thực tế chấp hành hình phạt là 20 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "bảo đảm thời gian thực tế chấp hàn h là 25 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "bảo đảm thời hạn thực tế chấp hành hình phạt là 30 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "bắt chấp hành hình phạt tù, thì Tòa án cho hưởng án treo"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "ấn định thời gian thử thách từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "thực hiện các nghĩa vụ trong thời gian thử thách the o quy định của Luật thi hành án hình sự"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành hình phạt tù của bản án đã cho hưởng án treo"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành hình phạt của bản án trước"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "tổng hợp với hình phạt của bản án mới theo quy định tại Điều 56 của Bộ luật này",
+    "article_number": "56"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "thực hiện các nghĩa vụ trong thời gia n thử thách"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành phần hình phạt tù còn lại chưa chấp hành"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành hình phạt tù thì gia đình sẽ gặp kh ó khăn đặc biệt, được hoãn đến 01 năm, trừ trường hợp người đó bị kết án về các tội xâm phạm an ninh quốc gia"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "các tội khác là tội phạm rất nghiêm trọng, tội phạm đặc biệt nghiêm trọng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành hình phạt trước"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "về các tội quy định tại Chương XIII"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "Chương XXVI của Bộ luật này khi họ đã ch ấp hành xong h ình ph ạt chính, thời gian thử thách án treo"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "hết thời hiệu thi hành bản án"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "đáp ứng các điều kiện quy định tại khoản 2"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "khoản 3 Điều này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chịu trách nhiệm hình sự theo những quy định của Chương này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chịu trách nhiệm hình sự khi có đủ các điều kiện sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chịu trách nhiệm hình sự về các tội phạm sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "khôi phục lại tình trạng ban đầu đã bị thay đổi do hành vi phạm phạm tội của mình gây ra"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "thực hiện một"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "một số biện pháp sau đây nhằm khắc phục, ngăn ch ặn hậu quả của tội phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành một bản án mà lại thực hiện hành vi phạm tội mới, Tòa án quyết định hình phạt đối với tội mới, sau đó tổng hợp với ph ần hình phạt chưa chấp hành của bản án trước rồi quyết định hình phạt chung theo quy định tại Điều 86 của Bộ luật này",
+    "article_number": "86"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành nhiều bản án đã có hiệu lực pháp luật mà các hình phạt của các bản án chưa đư ợc tổng hợp, thì Chánh án Tòa án có thẩm quyền ra quyết định tổng hợp hình phạt của các bản án theo quy định tại khoản 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "bảo đảm lợi ích tốt nhất của người dưới 18 tuổi"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chủ yếu nhằm mục đích giáo dục, giúp đỡ họ sửa chữa sai lầm, phát triển lành mạnh , trở thành công dân có ích cho xã hội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "căn cứ vào độ tuổi, khả năng nhận thức của họ về tính chất nguy hiểm cho xã hội của hành vi phạm tội, nguyên nhân"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "điều kiện gây ra tội phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "căn cứ vào những đặc điểm về nhân thân của họ, tính chất nguy hiểm cho xã hội của hành vi phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "yêu cầu của việc phòng ngừa tội phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "có sự chứng kiến của cha mẹ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "người đại diện hợp pháp c ủa ngư ời dưới 18 tuổi"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "thực hiện các nghĩa vụ sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "th ực hiện các nghĩa vụ sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành đầy đủ những nghĩa vụ về học tập, h ọc ngh ề, lao động, si nh ho ạt dưới sự qu ản lý, giáo dục của nh à trường"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấp hành một bản án mà l ại bị xét xử về tội đã phạm trước"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "sau khi có bản án này, được thực hiện theo quy định tại Điều 55",
+    "article_number": "55"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "Điều 56 của Bộ luật này",
+    "article_number": "56"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "bảo đảm đã chấp hành ít nhất là hai phần năm mức hình phạt đã tuyên"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "cứu giúp"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "miễn cưỡng giao cấu"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "miễn cưỡng thực hiện hành vi quan hệ tình dục khác, thì bị phạt tù từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "miễn cưỡng thực hiện hành vi quan hệ tì nh dục khác, thì bị phạt tù từ 05 năm đến 10 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "tổ chức lại việc bầu cử"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "trưng cầu ý dân"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "thôi vi ệc"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "chấm dứt việc chung sống như vợ chồng trái với c hế độ một vợ, một chồng mà vẫn duy trì quan hệ đó"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "nộp"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "làm tăng số tiền thuế được miễn, số tiền thuế được giảm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "tăng số tiền thuế được khấu trừ, số tiền thuế được hoàn"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "nộp, số tiền thuế được hoàn"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "là các bên của thỏa thuận"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "nộp từ 100"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "loại trừ theo quy định tại Phụ lục A Công ước Stockholm về các chất ô nhiễm hữu cơ khó phân hủy trái quy định của pháp luật từ 3"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "loại trừ theo quy định tại Phụ lục A Công ước Stockholm về các chất ô nhiễm hữu cơ khó phân hủy trái quy định của pháp luật 5"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "loại trừ theo quy định tại Phụ lục A Công ước Stockholm về các chất ô nhiễm hữu cơ khó phân hủy trái quy định của pháp luật từ 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "loại trừ theo quy định tại Phụ lục A Công ước Stockholm về các chấ t ô nhiễm hữu cơ khó phân hủy từ 3"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "loại trừ theo quy định tại Phụ lục A Công ước Stockholm về các chất ô nhiễm hữu cơ khó phân hủy từ 5"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "loại trừ theo quy định tại Phụ lục A Công ước Stockholm về các chất ô nhiễm hữu cơ khó phân hủy 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "loại trừ theo quy định tại Phụ lục A Công ước Stockholm từ 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "loại trừ theo quy định tại Phụ lục A Công ước Stockholm có khối lượng từ 3"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "loại trừ theo quy định tại Phụ lục A Công ước Stockholm có khối lượng 5"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "công bố dịch thuộc thẩm quyền của Chủ tịch Ủy ban nhân dân tỉnh"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "Bộ trưởng Bộ Y tế"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "công bố dịch thuộc thẩm quyền của Thủ tướng Chính phủ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "công bố dịch thuộc thẩm quyền của Chủ tịch Ủy ban nhân dân cấp huyện"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "Chủ tịc h Ủy ban nhân dân cấp tỉnh"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "công bố dịch thuộc thẩm quyền của Bộ trưởng Bộ Nông nghiệp"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "phát triển nông thôn"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "sử dụng trái phép ma túy t rái với ý muốn của họ, thì bị phạt tù từ 02 năm đến 07 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phải",
+    "object": "lao động thuộc một trong các trường hợp sau đây, thì bị phạt tiền từ 50"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "lưu hành, chưa được phép sử dụng tại V iệt Nam thuộc một trong các trường hợp sau đây, nếu không thuộc trường hợp quy định tại các điều 248, 251, 253, 254, 304, 305, 306, 309",
+    "article_number": "248"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "311 của Bộ luật này, thì bị phạt tiền từ 100"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "lưu hành, chưa được phép sử dụng tại Việt Nam thuộc một trong các trường hợp sau đây, nếu không thuộc trường hợp quy định tại các điều 249, 250, 253, 254, 304, 305, 306, 309",
+    "article_number": "249"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "311 của Bộ luật này, thì bị phạt tiền từ 50"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "của chủ thể quyền tác giả, quyền liên quan mà cố ý thực hiện một trong các hành vi sau đây, xâm phạm quyền tác giả, quyền liên quan đang được bảo hộ tại Việt Nam, thu lợi bất chính từ 50"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "cất giữ, sử dụng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "chạy trên đường sắt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "phá hoại phương tiện giao thông vận tải đường sắt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "lấn chiếm hành lang an toàn giao thông đường sắt, phạm vi bảo vệ công trình giao thông đường sắt cản trở giao thông đường sắt, gây thiệt hại thuộc một trong các trường hợp sau đây, thì bị phạt tiền từ 30"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "lấn chiếm hành lang an toàn giao thông đường sắt, phạm vi bảo vệ công trình giao thông đường sắt cản trở giao thông đường sắt gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "gây tổn hại cho sức khỏe của 01 người với tỷ lệ tổn thương cơ thể từ 31% đến 60%"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "gây tổn hại cho sức khỏe của 02 người trở lên mà tổng tỷ lệ tổn thương cơ thể của những người này từ 31% đến 60%, thì bị phạt tiền từ 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "hoạt động theo quy định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "của chủ sở hữu thông tin đó"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "sử dụng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "không rõ nguồn gốc xuất xứ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "không đúng quy định trong sản xuất, sơ chế, chế biến, bảo quản thực phẩm trong trồng trọt, chăn nuôi, nuôi trồng thủy sản, làm muối tạo ra dư lượng vượt ngưỡng cho phép trong sản phẩm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "đã bị xử phạt vi phạm hành chính về một trong các hành vi tại điểm này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "điểm a khoản này mà còn vi phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được phép",
+    "object": "không rõ nguồn gốc xuất xứ trong sản xuất, sơ chế, chế biến, bảo quản thực phẩm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "áp dụng đối với hành vi phạm tội đã thực hiện trước khi điều luật đó có hiệu lực thi hành"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "thấp hơn 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "tạm trú"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "thường trú ở một số địa phương nhất định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "tự ý ra khỏi nơi cư trú, bị tước một số quyền công dân theo quy định tại Điều 44 của Bộ luật này",
+    "article_number": "44"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "bị cấm hành nghề"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "làm công việc nhất định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "coi là tình tiết giảm nhẹ trong khi quyết định hình phạt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "vượt quá 03 năm đối với hình phạ t cải tạo không giam giữ, 30 năm đối với hình phạt tù có thời hạn"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "tính vào thời gian chấp hành hình phạt tù"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "thấp hơn 50"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "coi là tình tiết giảm nhẹ trong khi quyết định h ình phạt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "coi là tình tiết tăng nặng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "phép"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "vượt quá 18 năm đối với người từ đủ 16 tuổi đến dưới 18 tuổi khi phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "12 năm đối với người từ đủ 14 tuổi đến dưới 1 6 tuổi khi phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "vượt quá mức hình phạt cao nhất quy định tại kho ản 1 Điều này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "vượt quá mức hình phạt cao nhất quy định tại Điều 103 của Bộ luật này",
+    "article_number": "103"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "sự đồng ý của chủ nhà"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "người quản lý hợp pháp"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "cấp tín dụng trừ trường hợp cấp dưới hình thức phát hành thẻ tín dụng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "cấp tín dụng theo quy định của pháp luật"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "của chủ thể quyền tác giả, quyền liên quan mà cố ý thực hiện một trong các hành vi sau đây, xâm phạm quyền tác giả, quyền liên quan đang được bảo hộ tại Việt Nam, thu lợi bất chính từ 50"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "cất giữ, sử dụng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "ngăn chặn kịp thời, thì bị phạt tiền từ 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "ngăn chặn kịp thời, thì bị phạt tiền từ 5"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "chạy trên đường sắt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "phá hoại phương tiện giao thông vận tải đường sắt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "lấn chiếm hành lang an toàn giao thông đường sắt, phạm vi bảo vệ công trình giao thông đường sắt cản trở giao thông đường sắt, gây thiệt hại thuộc một trong các trường hợp sau đây, thì bị phạt tiền từ 30"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "lấn chiếm hành lang an toàn giao thông đường sắt, phạm vi bảo vệ công trình giao thông đường sắt cản trở giao thông đường sắt gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "gây tổn hại cho sức khỏe của 01 người với tỷ lệ tổn thương cơ thể từ 31% đến 60%"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "gây tổn hại cho sức khỏe của 02 người trở lên mà tổng tỷ lệ tổn thương cơ thể của những người này từ 31% đến 60%, thì bị phạt tiền từ 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "ngăn chặn kị p thời, thì bị phạt tiền từ 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "ngăn chặn kịp thời, thì bị phạt tiền từ 30"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "của chủ sở hữu thông tin đó"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "ngăn chặn kịp thời, thì bị phạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "phạt tù từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "ngăn chặn kịp thời, thì b ị phạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "ngăn chặn kịp thời, thì bị phạt cảnh cáo, phạt cải tạo không giam giữ đến 0 1 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "bị phạt tù từ 03 tháng đến 01 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "không được phép",
+    "object": "ngăn chặn kịp thời, thì bị phạt tiền từ 20"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hình phạt nhẹ hơn hình phạt tù, giao họ cho cơ quan, tổ chức"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "gia đình giám sát, giáo dục"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "mọi hành vi phạm tội thực hiện trên lãnh thổ nước Cộng hòa xã hội c hủ nghĩa Việt Nam"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hành vi phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hậu quả của hành vi phạm tội xảy ra trên tàu bay, tàu biển mang quốc tịch Việt Nam"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "tại vùng đặc quyền kinh tế, thềm lục địa của Việt Nam"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "người không quốc tịch thường trú ở Việt Nam"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "một hành vi phạm tội là điều luật đang có hiệu lực thi hành tại thời điểm mà hành vi phạm tội được thực hiện"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "án treo, miễn trách nhiệm hình sự, loại trừ trách nhiệm hình sự, miễn hình phạt, giảm hình phạt, xóa án tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "quy định khác không có lợi cho người phạm tội, thì không được áp dụng đối với hành vi phạm tội đã thực hiện trước khi điều luật đó có hiệu lực thi hành"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "án treo, miễn trách nhiệm hình sự, loại trừ trách nhiệm hình sự , miễn hình phạt, giảm hình phạt, tha tù trước thời hạn có điều kiện, xóa án tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "quy định khác có lợi cho người phạm tội, thì được áp dụng đối với hành vi phạm tội đã th ực hiện trước khi điều luật đó có hiệu lực thi hành"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "tiến bộ khoa học, kỹ thuật"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "công nghệ Hành vi gây ra thiệt hại trong khi thực hiện việc nghiên cứu, thử nghiệ m, áp dụng tiến bộ khoa học, kỹ thuật"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "công nghệ mới mặc dù đã tuân thủ đúng quy trình, quy phạm, áp dụng đầy đủ biện pháp phòng ngừa thì không phải là tội phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "đúng quy trình, quy phạm, không áp dụng đầy đủ biện pháp phòng ngừa mà gây thiệt hại thì vẫn phải chịu trách nhiệm hình sự"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "các trường hợp quy định tại khoản 2 Điều 421, khoản 2 Điều 422",
+    "article_number": "421"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "khoản 2 Điều 423 của Bộ luật này",
+    "article_number": "423"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "thời hiệu truy cứu trách nhiệ m hình sự Không áp dụng thời hiệu truy cứu trách nhiệm hình sự quy định tại Điều 27 của Bộ luật này đối với các tội phạm sau đây",
+    "article_number": "27"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "người"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "pháp nhân thương mại phạm tội nhằm tước bỏ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hạn chế quyền, lợi ích của người, pháp nhân thương mại đó"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "là hình phạt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị áp dụng",
+    "object": "một hình phạt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị áp dụng",
+    "object": "có thể bị áp dụng một"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị áp dụng",
+    "object": "một số hình phạt bổ sung"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "người phạm tội ít nghiêm trọng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "có nhiều tình tiết giảm nhẹ, nhưng chưa đến mức m iễn hình phạt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "là hình phạt đối với các trường hợp sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "là hình phạt bổ sung đối với người phạm tội về tham nhũng, ma túy"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "những tội phạm khác do Bộ luật này quy định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "từ 06 tháng đến 03 năm đối với người phạm tội ít nghiêm trọng, phạm tội nghiêm trọng do Bộ luật này quy định mà đang có nơi làm việc ổn định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "có nơi cư trú rõ ràng nếu xét thấy không cần thiết phải cách ly người phạm tội khỏi xã hội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "biện pháp lao động phục vụ cộng đồng đối với phụ nữ có thai"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "đang nuôi con dưới 06 tháng tuổi, người già yếu, người bị bệnh hiểm nghèo, người khuyết tật nặng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "khuyết tật đặc biệt nặng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hình phạt bổ sung trong từng trường hợp cụ thể"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hình phạt tù có thời hạn đối với người lần đầu phạm tội ít nghiêm trọng do vô ý"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "có nơi cư trú rõ ràng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "người phạm tội đặc biệt nghiêm tr ọng, nhưng chưa đến mức bị xử phạt tử hình"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hình phạt tù chung thân đối với người dưới 18 tuổi phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "người phạm tội đặc biệt nghiêm trọng thuộc một trong nhóm các tội x âm phạm an ninh quốc gia, xâm phạm tính mạng con người, các tội phạm về ma túy, tham nhũng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "một số tội phạm đặc biệt nghiêm trọng khác do Bộ luật này quy định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hình phạt tử hình đối với người dưới 18 tuổi khi phạm tội, phụ nữ có thai, ph ụ nữ đang nuôi con dưới 36 tháng tuổi"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "người đủ 75 tuổi trở lên khi phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "khi xét xử"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "khi xét thấy nếu để người bị kết án đảm nhiệm chức vụ, hành nghề"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "làm công việc đó thì có thể gây nguy hại cho xã hội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "người phạm tội xâm phạm an ninh quốc gia, người tái phạm nguy hiểm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "trong những trường hợp khác do Bộ luật này quy định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "người bị kết án về tội phạm nghiêm trọng, tội phạm rất nghiêm trọng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "tội phạm đặc biệt nghiêm trọng xâm phạm an ninh quốc gia, t ội phạm về ma tu ý, tham nhũng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "tội phạm khác do Bộ luật này quy định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "đối với"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hình phạt tiền, ngoài căn cứ quy định tại khoản 1 Điều này, Tòa án căn cứ vào tình hình tài sản, khả năng thi hành của người phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "nhưng phải trong khung hình phạt liền kề nhẹ hơn của điều luật khi người phạm tội có ít nhất hai tình tiết giảm nhẹ quy định tại khoản 1 Điều 51 của Bộ luật này",
+    "article_number": "51"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "nhưng không bắt buộc phải trong khung hình phạt liền kề nhẹ hơn của điều luật đối với người phạm tội lần đầu là người giúp sức trong vụ án đồng phạm nhưng có vai t rò không đáng kể"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "có quy định hình phạt cao nhất là tù chung thân"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "tử hình thì áp dụng hình phạt tù không quá 20 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "người đó"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "thời hiệu thi hành bản án Không áp dụng thời hiệu thi hành bản án đối với các tội quy định tại Chương XIII"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "Chương XXVI của Bộ luật này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "người được hưởng án treo hình phạt bổ sung nếu trong điều luật áp dụng có quy định hình phạt này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "quy định của Điều này đối với người bị kết án thuộc một trong các trường hợp sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "đối v ới người b ị kết án không phải về các tội quy định tại Chương XIII"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "Chương XXVI của Bộ luật này khi họ đã ch ấp hành xong h ình ph ạt chính, thời gian thử thách án treo"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hết thời hiệu thi hành bản án"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "đáp ứng các điều kiện quy định tại khoản 2"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "khoản 3 Điều này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "người b ị kết án về các tội quy định tại Chương XIII"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "Chương XXVI của Bộ luật này khi họ đã ch ấp hành xong h ình phạt chính, thời gian thử thách án treo"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "quy định của Bộ luật hình s ự đối với pháp nhân thương mại phạm tội Pháp nhân thương mại phạm tội phải chịu trách nhiệm hình sự theo những quy định của Chương này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hình phạt bổ sung đ ối với pháp nhân thương mại phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "khi xét thấy nếu để pháp nhân thương mại bị kết án tiếp tục kinh doanh"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hoạt động trong lĩnh vực đó, thì có thể gây nguy hại cho tính mạng, sức khỏe của con người"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "cho xã hội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "khi xét thấy nếu để pháp nhân thương mại bị kết án huy động vốn thì có nguy cơ tiếp tục phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "một"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "một số hình thức cấm huy động vốn quy định tại khoản 2 Điều này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "pháp nhân thương mại phạm tội 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "các biện tư pháp sau đây đối với pháp nhân thương mại phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "biện pháp tư pháp buộc pháp nhân thương mại phạm tội phải khôi phục lại tình trạng ban đầu đã bị thay đổi do hành vi phạm phạm tội của mình gây ra"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "pháp nhân thương mại"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "pháp nhân thương mại 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "Bộ luật hình sự đối với người dưới 18 tuổi phạm tội Người từ đủ 14 tuổi đến dưới 18 tuổi phạm tội phải chịu trách nhiệm hình sự theo những quy định của Chương này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "các biện pháp quy định tại Mục 2 Chương này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hình ph ạt đối với ngư ời dưới 18 tuổ i phạm tội nếu xét thấy việc miễn trách nhiệm hình sự"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "áp dụng một trong các biện pháp quy định tại M ục 2"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "việc áp dụng biện pháp giáo dục tại trường giáo dưỡng quy định tại Mục 3 Chương này không b ảo đảm hiệu quả giáo dục, phòng ng ừa"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hình phạt tù có thời hạn đối với người dưới 18 tuổi phạm tội khi xét thấy các hình phạt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "biện pháp giáo dục khác không có tác dụng răn đe, phòng ngừa"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "người đủ 18 tuổi trở lên phạm tội tương ứng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "v ới thời h ạn thích hợp ngắn nhất"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hình phạt bổ sung đối với người dưới 18 tuổi phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "TRONG TRƯỜNG HỢP ĐƯỢC MIỄN TRÁCH NHIỆM HÌNH SỰ Điều 92",
+    "article_number": "92"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "biện pháp khiển trách, hòa giải tại cộng đồng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "biện pháp giáo dục tại xã, phường, thị trấn, n ếu người dưới 18 tuổi phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "ngư ời đại diện hợp pháp của họ đồng ý với việc áp dụng một trong các biện pháp này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "ngư ời dưới 18 tuổi phạm tội trong những trường hợp sau đây nh ằm giúp họ nhận thức rõ hành vi phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "h ậu quả gây ra đ ối với cộng đồng, x ã hội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "nghĩa vụ của h ọ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "biện pháp khiển trách"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "ngư ời dưới 18 tuổi phạm tội trong những trường hợp sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "bi ện pháp hòa gi ải tại cộng đồng ph ải thực hiện các nghĩa vụ sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "biện pháp giáo dục tại xã, phường, thị trấn từ 01 năm đến 02 năm đối với người dưới 18 tuổi phạm t ội trong những trường hợp sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "biện pháp này có thể quyết định chấm dứt thời hạn giáo dục tại xã, phường, thị trấn"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "biện pháp gi áo dục tại trường giáo dưỡng từ 01 năm đến 02 năm đối với người dưới 18 tuổi phạm tội, nếu thấy do tính chất nghiêm trọn g của hành vi phạm tội, do nhân thân"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "môi trường sống của người đó mà cần đưa người đó vào một tổ chức giáo dục có kỷ luật chặt chẽ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "người dưới 18 tuổi phạm tội Người dưới 18 tuổi phạm tội chỉ bị áp dụng một trong các hình phạt sau đây đối với mỗi tội phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "là hình phạt đối với người từ đủ 16 tuổi đến dưới 18 tuổi, nếu người đó có thu nhập"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "có tài sản riêng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "ngư ời từ đủ 16 đến dưới 18 tuổi phạm tội ít nghiêm tr ọng, phạm t ội nghiêm tr ọng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "phạm t ội rất nghiêm tr ọng do vô ý"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "ngư ời từ đủ 14 tuổi đến dưới 16 tu ổi phạm tội rất nghiêm tr ọng do c ố ý"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "hình phạt cải tạo không giam giữ đối với người dưới 18 tuổi phạm tội, thì không khấu trừ thu nhập của người đó"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "người dưới 18 tuổi phạm tội được quy định như sau"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "quy định hình phạt tù chung thân"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "tử hình, thì mức hình phạt cao nhất đượ c áp dụng không quá 18 năm tù"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "không quá ba phần tư mức phạt tù mà điều luật quy định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "tử hình, thì mức hình phạt cao nhất được áp dụng không quá 12 năm tù"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "không quá một phần hai mức phạt tù mà điều luật quy định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "ngư ời từ đủ 14 tuổi đến dưới 16 tuổi phạm tội chưa đạt khôn g quá một phần ba m ức hình ph ạt cao nh ất quy đ ịnh tại Điều 100 v à Điều 101 của B ộ luật này",
+    "article_number": "100"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "ngư ời từ đủ 16 tu ổi đến dư ới 18 tu ổi không qu á một phần hai m ức phạt quy đ ịnh tại các đi ều 99, 100"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "101 của B ộ luật này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "không quá 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "không được vượt quá 18 năm đối với người từ đủ 16 tuổi đến dưới 18 tuổi khi phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "12 năm đối với người từ đủ 14 tuổi đến dưới 1 6 tuổi khi phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "như sau"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "tội được thực hiện khi ngư ời đó đã đủ 18 tu ổi, thì hình phạt chung không được vượt quá mức hình phạt cao nhất quy định tại kho ản 1 Điều này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được áp dụng",
+    "object": "đ ối với tội thực hiện khi ngư ời đó chưa đ ủ 18 tu ổi thì hình phạt chung áp dụng như đối với người đ ủ 18 tu ổi trở lên phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị áp dụng",
+    "object": "biện pháp tư pháp quy định tại Mục 3 Chương này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị áp dụng",
+    "object": "biện pháp đưa vào cơ sở giáo dục bắt buộc, đưa vào trường giáo dưỡng, cơ sở cai nghiện bắt buộc"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "giao",
+    "object": "người bị phạt cải tạo không giam giữ cho cơ quan, tổ chức nơi người đó làm việc, học tập"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "giao",
+    "object": "Ủy ban nhân dân cấp xã nơi người đó cư trú để giám sát, giáo dục"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "hình phạt đối với tội đang bị xét xử, sau đó quyết định hình phạt chung theo quy định tại Điều 55 của Bộ luật này",
+    "article_number": "55"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "hình phạt đối với tội mới, sau đó tổng hợp với phần hình phạt chưa chấp hành của bản án trước rồi quyết định hình phạt chung theo quy định tại Điều 55 củ a Bộ luật này",
+    "article_number": "55"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "giao",
+    "object": "người được hưởng án treo cho cơ quan, tổ chức nơi người đó làm việc"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "giao",
+    "object": "chính quyền địa phương nơi người đó cư trú để giám sát, giáo dục"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "tha tù trước thời hạn có điều kiện đối với người bị kết án"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "việc x óa án tích đối với những người đã bị kết án về các tội quy định tại Chương XII I"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "Chương XXVI của Bộ luật này, căn cứ vào tính chất của tội phạm đã thực hiện, thái độ chấp hành pháp luật, thái độ lao động của người bị kết án"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "x óa án tích, n ếu từ khi ch ấp hành xong h ình ph ạt chính"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "thời gian thử thách án treo, ngư ời đó đã chấp hành xong h ình phạt bổ sung, c ác quy ết định khác của bản án"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "không thực hiện hành vi phạm tội m ới trong thời hạn sau đây"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "x óa án tích, nếu từ khi h ết thời hiệu thi h ành bản án, người đó không thực hiện hành vi phạm tội mới trong thời hạn quy định tại khoản 2 Điều này"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "lĩnh vực cụ thể bị cấm kinh doanh"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "cấm hoạt động"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "áp dụng một"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "một số hình thức cấm huy động vốn quy định tại khoản 2 Điều này"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "hình phạt đối với từng tội"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "tổng hợp hình phạt theo quy định sau đây"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "hình phạt đối với tội mới, sau đó tổng hợp với ph ần hình phạt chưa chấp hành của bản án trước rồi quyết định hình phạt chung theo quy định tại Điều 86 của Bộ luật này",
+    "article_number": "86"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "áp dụng biện pháp khiển trách"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "giao",
+    "object": "cho Ủy ban nhân dân cấp xã tổ chức gi ám sát, giáo dục phải th ực hiện các nghĩa vụ sau đây"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "hình ph ạt đối với từng tội"
+  },
+  {
+    "subject": "Tòa án",
+    "predicate": "quyết định",
+    "object": "tổng hợp hình ph ạt chung theo quy đ ịnh tại Điều 55 của Bộ luật này",
+    "article_number": "55"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được miễn trách nhiệm hình sự",
+    "object": "tội định phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được miễn trách nhiệm hình sự",
+    "object": "khi có một trong các căn cứ sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được miễn trách nhiệm hình sự",
+    "object": "Điều 92",
+    "article_number": "92"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được miễn trách nhiệm hình sự",
+    "object": "tội này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù thì buộc họ phải chấp hành hình phạt tại các cơ sở giam giữ, phải lao động , học tập để trở thành người có ích cho xã hội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cải tạo không giam giữ cho cơ quan, tổ chức nơi người đó làm việc, học tập"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "Ủy ban nhân dân cấp xã nơi người đó cư trú để giám sát, giáo dục"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cải tạo không giam giữ không có việc làm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "bị mất việc làm trong thời gian chấp hành hình phạt này thì phải thực hiện một số công việc lao động phục vụ cộng đồng trong thời gian cải tạo không giam giữ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cấm cư trú"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "quản chế, nếu đã chấp hành được một phần hai thời hạn hình phạt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cải tạo tốt, thì theo đề nghị của cơ quan thi hành án hình sự cấp huyện nơi người đó chấp hành hình phạt, Tòa án có thể quyết định miễn chấp hành phần hình phạt còn lại"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cảnh cáo, phạt tiền, cải tạo không giam giữ, phạt tù nhưng được hưởng án treo"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cảnh cáo, cải tạo không giam giữ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt tù đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cải tạo không giam giữ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt tù, nếu có tiến bộ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "đã chấp hành được một phần tư thời hạn, thì được T òa án xét giảm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt tù, nếu lập công"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "mắc bệnh hiểm nghèo, thì được xét giảm ngay"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "có thể được miễn chấp hành phần hình phạt còn lại"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền nhưng bị lâm vào hoàn cảnh kinh tế đặc biệt khó khăn kéo dài do thiên tai, hoả hoạn, tai nạn"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "ốm đau gây ra"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "lập công lớn, thì theo đề nghị của Viện trưởng Viện kiểm sát, T òa án có thể quyết định giảm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "miễ n việc chấp hành phần tiền phạt còn lại"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 12 năm đến 20 năm, tù chung thân"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tử hình"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 07 năm đến 15 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "như sau"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 05 năm đến 12 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 05 năm đến 15 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 12 năm đến 20 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù chung thân"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 10 năm đến 15 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "t ù từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 07 năm đến 15 nă m"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 03 năm đến 07 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 02 năm đến 07 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 10 năm đến 20 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 03 năm đến 12 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cải tạo không giam giữ đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "bị phạt tù từ 03 tháng đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt tù từ 03 tháng đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 02 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 05 năm đến 10 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 08 năm đến 15 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt tù từ 01 năm đến 0 5 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 03 năm đến 10 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt tù từ 06 tháng đến 0 3 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cảnh cáo, phạt cải tạo không giam giữ đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt tù từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 04 năm đến 07 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 07 năm đến 12 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 5"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 03 tháng đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 01 năm đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "bị phạt tù từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cảnh cáo, phạt tiền từ 5"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 20"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù 20 năm, tù chung thân"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 10 năm đến 18 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 1 2 năm đến 20 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù t ừ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 18 năm đến 20 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 50"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù chun g thân"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cảnh cáo, phạt tiền từ 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cảnh cáo, phạt tiền từ 20"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cảnh cáo, phạt cải tạo không giam giữ đến 01 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt tù từ 03 tháng đến 01 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 01 năm đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "ti ền từ 100"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cải tạo không giam giữ đến 01 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cảnh cáo, ph ạt tiền từ 5"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 15 năm đến 20 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "t iền từ 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cảnh cáo"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt cải tạo không giam giữ đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cảnh cáo, phạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt tù từ 03 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt t ù từ 03 tháng đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 300"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 3"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 7"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 200"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 500"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 2"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 100"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 6"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 9"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 4"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 15"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 30"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 150"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "ti ền từ 500"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "ti ền từ 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt tù từ 01 năm đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền 200"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "c ải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt tù từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 05 năm đến 12 nă m"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cảnh cáo, phạt tiền từ 50"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền t ừ 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 0 7 năm đến 1 2 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "n hư sau"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 10 năm đến 12 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 05 năm đến 10 nă m"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 03 năm đến 07 nă m"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 10 đến 15 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù 15 đến 20 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 01 năm đến 06 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 06 năm đến 13 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 13 năm đến 20 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù 20 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "từ từ 03 năm đến 07 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 03 nă m đến 10 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiề n từ 30"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 10 nă m đến 15 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "quản chế"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cấm cư trú từ 01 năm đến 0 5 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền từ 5 00"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 0 3 năm đến 0 7 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 08 năm đến 20 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 10 năm đến 20 năm, tù chung thân"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "quản chế, cấm cư trú từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tịch thu một phần"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "toàn bộ tài sản"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 10 năm đến 15 nă m"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "qu ản chế từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 01 năm đến 07 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 0 2 năm đến 0 7 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "phạt tù từ 02 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 05 năm đến 08 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cải tạo không g iam giữ đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cảnh cáo, phạt cải tạo không giam giữ đến 0 1 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "bị phạt tù từ 03 tháng đến 01 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "bị phạt tù từ 01 năm đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tiền t ừ 200"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 07 năm đến 10 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "quản chế từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "cảnh cáo, p hạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 0 3 năm đến 07 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "tử hình"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính 02 lần trở lên trong thời gian thử thách, thì Tòa án có thể h ủy bỏ quyết định tha tù trước thời hạn có điều kiện đối với người đó"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "buộc họ phải chấp hành phần hình phạt tù còn lại chưa chấp hành"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "tù có thể được hoãn chấp hành hình phạt trong các trường hợp sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "theo Điều này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "theo mức hình phạt quy định tại các khoản đó"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về hành vi chiếm đoạt tài sản mà còn vi phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về hành vi chiếm đoạt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "về một trong các t ội quy định tại các điều 168, 169, 170, 171, 172, 173, 174",
+    "article_number": "168"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "290 của Bộ luật này, chưa được xóa án tích mà còn vi phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "tài sản là phương tiện kiếm sống chính của người bị hại"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "tài sản có giá trị đặc biệt về mặt tinh thần đối với người bị hại, thì bị phạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "phạt tù từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về hành vi này mà còn vi phạm, thì bị phạt cảnh cáo, phạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "phạt tù từ 03 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về hành vi này mà còn vi phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về hành vi này mà còn vi phạm, thì bị phạt tiền từ 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về hành vi này mà còn vi phạm, thì bị phạt cảnh cáo, phạt cải tạo không giam giữ đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "phạt t ù từ 03 tháng đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về hành vi quy định tại Điều này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "tại m ột trong các điều 189, 190, 191, 192, 193, 194, 195, 196",
+    "article_number": "189"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "200 của Bộ luật này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về một trong các tội này, chưa được xóa án tích mà còn vi phạm, nếu không thuộc trường hợp quy định tại các điều 248, 249, 250, 251, 252, 253, 254, 304, 305, 306, 309",
+    "article_number": "248"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "311 của Bộ luật này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "tại một trong các điều 189, 190, 191, 192, 193, 194, 195, 196",
+    "article_number": "189"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về một trong các tội này, chưa được xóa án tích mà còn vi phạm, trừ trường hợp quy định tại điểm đ khoản này, thì bị phạt tiền từ 300"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "tại một trong các điều 188, 190, 191, 192, 193, 194, 195, 196",
+    "article_number": "188"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về một trong các tội này, chưa được xóa án tích mà còn vi phạm, nếu không thuộc trường hợp quy định tại các điều 248, 249, 250, 251, 252, 253, 2 54, 304, 305, 306, 309",
+    "article_number": "248"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về một trong các tội này, chưa được xóa án tích mà còn vi phạm, trừ trường hợp quy định tại điểm d khoản này, thì bị phạt tiền từ 200"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về hành vi quy định tại Đi ều này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "tại một trong các điều 188, 189, 191, 192, 193, 194, 195, 196",
+    "article_number": "188"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về một trong các tội này, chưa được xóa án tích mà còn vi phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "tại một trong các điều 188, 189, 190, 192, 193, 194, 195, 196",
+    "article_number": "188"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "tại một trong các điều 188, 189, 190, 191, 193, 194, 195, 196",
+    "article_number": "188"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "2 00 của Bộ luật này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "tại một trong các điều 188, 189, 190, 191, 192, 193, 194, 196",
+    "article_number": "188"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "như sau"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về hành vi này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này, chưa được xóa án tích mà còn vi phạm, thì bị phạt tiền từ 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này, chưa được xóa án tích mà còn vi phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về hành vi trốn thuế"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "về một trong các tội quy định tại các điều 188, 189, 190, 1 91, 192, 193, 194, 195, 196, 202, 248, 249, 250, 251, 252, 253, 254, 304, 305, 306, 309",
+    "article_number": "188"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "311 của Bộ luật này, chưa được xóa án tích mà còn vi phạm, thì bị phạt tiền từ 100"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này , chưa được xóa án tích mà còn vi phạm, thì bị phạt tiền từ 300"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này, chưa được xóa án tích mà còn vi phạm, thì bị phạt tiền từ 50"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về hành vi công bố thông tin sai lệch"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "che giấu thông tin trong hoạt động chứng khoán mà còn vi phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về hành vi này mà còn vi phạm, thì bị phạt tiền từ 50"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này, chưa được xóa án tích mà còn vi phạm, thì bị phạt tiền từ 300"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này, chưa được xóa án tích mà còn vi phạm, thì bị phạt tiền từ 500"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về t ội này, chưa được xóa án tích mà còn vi phạm, thì bị phạt tiền từ 300"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này, chưa được xóa án tích mà còn vi phạm, thì bị phạt tiền từ 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về hành vi này mà còn vi phạm, trừ trường hợp q uy định tại điểm g khoản 1 Điều này, thì bị phạt tiền từ 300"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về một trong những hành vi này mà còn vi phạm, thì bị phạt tiền từ 50"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về một trong những hành vi này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về các hành vi này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về một trong những hành vi này mà còn vi phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi p hạm hành chính về hành vi này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về một trong các hành vi này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về hành vi này mà còn vi phạm, nếu không thuộc trường hợp quy định tại Điều 110",
+    "article_number": "110"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "Điều 111 của Bộ luật này, thì bị phạt tiền từ 50",
+    "article_number": "111"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đ ã bị kết án về tội này, chưa được xóa án tích mà còn vi phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này , chưa được xóa án tích mà còn vi phạm, thì bị phạt tiền từ 50"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này, chưa được xóa án tích mà còn vi phạm, thì bị phạt tù từ 03 tháng đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về một trong các hành vi tại điểm này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "điểm a khoản này mà còn vi phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này, chưa được xóa án tích mà còn vi phạm, thì bị phạt tiền từ 5"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "hành vi quy định tại Điều 32 2 của Bộ luật này",
+    "article_number": "32"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "bị kết án về tội này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "tội quy định tại Điều 322 của Bộ luật này, chưa đượ c xóa án tích mà còn vi phạm, thì bị phạt cải tạo không giam giữ đến 03 năm",
+    "article_number": "322"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này, chưa được xóa án tích mà còn vi phạm, thì bị phạt cải tạo không giam giữ đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "phạt tù từ 03 tháng đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này, chưa được xóa án tích mà còn vi phạm, thì bị phạt cảnh cáo, phạt tiền từ 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này, chưa được xóa án tích mà còn vi phạm, thì b ị phạt cải tạo không giam giữ đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "vi phạm hành chính về một trong các hành vi quy định tại điểm b"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "điểm c khoản này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị xử phạt",
+    "object": "đã bị kết án về tội này , chưa được xóa án tích mà còn vi phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 03 tháng đến 01 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị cấm đảm nhiệm",
+    "object": "chức vụ, cấm hành nghề"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị cấm đảm nhiệm",
+    "object": "làm công việc nhất định từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị cấm đảm nhiệm",
+    "object": "chức vụ, cấm hành ngh ề"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị cấm đảm nhiệm",
+    "object": "chức vụ nhất định từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị cấm đảm nhiệm",
+    "object": "ch ức vụ, cấm hành ngh ề"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị cấm đảm nhiệm",
+    "object": "làm công vi ệc nhất định từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị cấm đảm nhiệm",
+    "object": "chức vụ từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị cấm đảm nhiệm",
+    "object": "tịch thu một phần"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị cấm đảm nhiệm",
+    "object": "toàn bộ tài sản"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị cấm đảm nhiệm",
+    "object": "chức vụ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị cấm đảm nhiệm",
+    "object": "làm công việc nhất định từ 01 năm đến 05 năm, có thể bị phạt tiền từ 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị cấm đảm nhiệm",
+    "object": "t ịch thu một phần"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị cấm đảm nhiệm",
+    "object": "tịch thu mộ t phần"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị cấm đảm nhiệm",
+    "object": "làm cô ng việc nhất định từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị tước",
+    "object": "tước một số quyền công dân theo quy định tại Điều 44 của Bộ luật này",
+    "article_number": "44"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị tước",
+    "object": "bị cấm hành nghề"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị tước",
+    "object": "làm công việc nhất định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị tước",
+    "object": "tước một"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị tước",
+    "object": "một số quyền công dân sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị tước",
+    "object": "tước một số quyền công dân, phạt quản chế, cấm cư trú từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị tước",
+    "object": "tịch thu một phần"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị tước",
+    "object": "toàn bộ tài sản"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị tước",
+    "object": "toàn bộ tài s ản"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "họ phải chấp hành hình phạt tại các cơ sở giam giữ, phải lao động , học tập để trở thành người có ích cho xã hội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "phải thấy trước hậu quả của hành vi đó, thì không phải chịu trách nhiệm hình sự"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "phải sử dụng vũ lực cần thiết gây thiệt hại cho người bị bắt giữ thì không phải là tội phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người nước ngoài bị kết án phải rời khỏi lãnh thổ nước Cộng hòa xã hội chủ nghĩa Việt Nam"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người bị kết án phải chấp hành hình phạ t tại cơ sở giam giữ trong một thời hạn nhất định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người bị kế t án phạt tù không được tạm trú"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "thường trú ở một số địa phương nhất định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người bị kết án phạt tù phải cư trú, làm ăn sinh sống"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "cải tạo ở một địa phương nhất định dưới sự kiểm soát, giáo dục của chính quyền"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "nhân dân địa phương"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "công khai xin lỗi"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "chữa bệnh"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "công khai xin lỗi 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người phạm tội phải bồi thường về vật chất, công khai xin lỗi người bị hại"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "chữa bệnh 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "chữa bệnh được trừ vào thời hạn chấp hành hình phạt tù"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "phải trong khung hình phạt liền kề nhẹ hơn của điều luật đối với người phạm tội lần đầu là người giúp sức trong vụ án đồng phạm nhưng có vai t rò không đáng kể"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người đó phải chấp hành hình phạt tù của bản án đã cho hưởng án treo"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người đó phải chấp hành hình phạt của bản án trước"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "tổng hợp với hình phạt của bản án mới theo quy định tại Điều 56 của Bộ luật này",
+    "article_number": "56"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "họ phải chấp hành phần hình phạt tù còn lại chưa chấp hành"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người đó chấp hành hình phạt của bản án mới"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "tổng hợp với phần hình phạt tù chưa chấp hành của bản án trước theo quy định tại Điều 56 của Bộ luật này",
+    "article_number": "56"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người đó phải chấp hành hình phạt trước"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "khôi phục lại tình trạng ban đầu"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "thực hiện một số biện pháp nhằm khắc phục, ngăn chặn hậu quả tiếp tục xảy ra"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "pháp nhân thương mại phạm tội phải khôi phục lại tình trạng ban đầu đã bị thay đổi do hành vi phạm phạm tội của mình gây ra"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "pháp nhân thương mại phạm tội phải thực hiện một"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "một số biện pháp sau đây nhằm khắc phục, ngăn ch ặn hậu quả của tội phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "tháo dỡ công trình, phần công trình xây dựng không có giấy phép"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "xây dựng không đúng với giấy phép"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "khắc phục tình trạng ô nhiễm môi trường, lây lan dịch bệnh"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "đưa ra khỏi lãnh thổ nước Cộng hòa xã hội c hủ nghĩa Việt Nam"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "tái xuất hàng h óa, vật phẩm, phương tiện được đưa vào lãnh thổ nước Cộng hòa xã hội chủ nghĩa Việt Nam, nhập khẩu trái với quy định của pháp luật"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "được tạm nhập, tái xuất nhưng không tái xuất theo đúng quy định của pháp luật"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "tiêu hủy hàng hóa, vật phẩm gây hại cho sức khỏe con người, vật nuôi, cây trồng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "môi trường, văn hóa phẩm có nội dung độc hại"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "tang vật khác thuộc đối tượng bị tiêu hủy theo quy định của pháp luật"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "loại bỏ yếu tố vi phạm trên hàng h óa, bao bì hàng hóa, phương tiện kinh doanh, vật phẩm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "thu hồi sản phẩm, hàng hóa vi phạm đang lưu thông trên thị trường"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người dưới 16 tuổi tr ình diễn khiêu dâm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "trực tiếp chứng kiến việc trình diễn khiêu dâm dưới mọi hình thức, thì bị phạt tù từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người khác ph ải rời khỏi chỗ ở hợp pháp của họ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "công chức, viên chức thôi việc"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "sa thải người lao động trái pháp luật 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "thôi vi ệc trái pháp luật đối với công chức, viên chức"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "ngư ời lao đ ộng, công ch ức, viên ch ức phải thôi vi ệc"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "thôi vi ệc, người bị sa thải t ự sát"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người khác lập hội, hội họp hợp pháp, đã bị xử lý kỷ luật"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "xử phạt vi phạm hành chính về một trong các hành vi này mà còn vi phạm, thì b ị phạt cải tạo không giam giữ đến 01 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "phạt tù từ 03 tháng đến 01 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người khác thực hiện quyền tự do tín ngưỡng, tôn giáo, theo"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "không theo một tôn giáo nào, đã bị xử lý kỷ luật"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "xử phạt vi phạm hành chính về một trong các hành vi này mà còn vi phạm, thì bị phạt cải tạo không giam giữ đến 01 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "phải chấm dứt việc chung sống như vợ chồng trái với c hế độ một vợ, một chồng mà vẫn duy trì quan hệ đó"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "doanh nghiệp khác chấp nhận nghĩa vụ không liên quan trực tiếp đến đối tượng của hợp đồng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người khác giả mạo, khai man, tẩy xóa tài liệu kế toán"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người khác cung cấp, xác nhận thông tin, số liệu kế toán sai sự thật"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "họ phải sử dụng trái phép ma túy t rái với ý muốn của họ, thì bị phạt tù từ 02 năm đến 07 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người khác phải lao động thuộc một trong các trường hợp sau đây, thì bị phạt tiền từ 50"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "hoặc chứa chấp người dưới 18 tuổi phạm pháp 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "người dưới 18 tuổi hoạt động phạm tội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "họ thực hiện hành vi trái pháp luật, thì bị phạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "buộc",
+    "object": "phạt tù từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động có thời hạn"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động vĩnh viễn"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "chấp hành hình phạt, nếu trong thời gian được tạm đình chỉ mà đã lập công"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "chấp hành tốt pháp luật, hoàn cảnh gia đ ình đặc biệt khó khăn"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "xét thấy người đó không còn nguy hiểm cho xã hội nữa, thì theo đề nghị của Viện trưởng Viện kiểm sát, Tòa án có thể quyết định miễn chấp hành phần hình phạt còn lại"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "chấp hành hình phạt tù 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "chấp hành hình phạt tù"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "không được tính vào thời gian chấp hành hình phạt tù"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động có thời hạn 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động có thời hạn là tạm dừng hoạt động của pháp nhân thương mại trong một"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "một số lĩnh vực mà pháp nhân thương mại phạm tội gây thiệt hại đến tính mạng, sức khỏe con người, môi trường"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "an ninh, trật tự, an toàn xã hội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hậu quả gây ra có khả năng khắc phục trên thực tế"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động vĩnh viễn 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động vĩnh viễn là chấm dứt hoạt động của pháp nhân thương mại trong một"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "một số lĩnh vực mà pháp nhân thương mại phạm tội gây thiệt hại"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "có khả năng thực tế gây thiệt hại đến tính mạng của nhiều người, gây sự cố môi trường"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "gây ảnh hưởng xấu đến an ninh, trật tự, an toàn xã hội"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "không có khả năng khắc p hục hậu quả gây ra"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "vĩnh viễn toàn bộ hoạt động"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động có thời hạn đối với từng lĩnh vực cụ thể thì không tổng hợp"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động có thời hạn, cấm kinh doanh, cấm hoạt động trong một số lĩnh vực n hất định"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "cấm huy động vốn được trừ vào thời hạn chấp hành hình phạt chung"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động có thời hạn từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động v ĩnh viễn"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động có thời hạ n từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động có thời h ạn từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động có thời hạn từ 01 năm đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động có thời hạn từ 06 tháng đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạt động từ 06 tháng đến 01 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "hoạ t động có thời hạn từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "h oạt động có thời hạn từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "phát hành, bị thu hồi, tịch thu, cấm lưu hành, tiêu hủy"
+  },
+  {
+    "subject": "Người",
+    "predicate": "đình chỉ",
+    "object": "nhập khẩu trái phép với số lượng 500 bản trở lên đối với từng xuất bản phẩm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "th ực hiện đầy đủ chức năng, nhiệm vụ, quyền hạn của mình"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "hướng dẫn, giúp đỡ các cơ qu an khác của Nhà nước, tổ chức, cá nhân phòng ngừa"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "đấu tranh chống tội phạm, giám sát"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "giáo dục người phạm tội tại cộng đồng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "phối hợp với cơ quan, tổ chức"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "Ủy ban nhân dân cấp xã trong việc giám sát, giáo dục người đó"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "phát hiện"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "điều tra tội phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "phối hợp với cơ quan, tổ chức, chính quyền địa phương trong việc giám sát, giáo dục người đó"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "giám sát, giáo dục, Tòa án có thể quyết định rút ngắn thời gian thử thách"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "chăm sóc, giáo dục, chữa bệnh"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "chăm sóc, nuôi dưỡng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "chă m sóc, nuôi dưỡng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "trong việc tổ chức, giám sát việc bầu cử, tổ chức trưng cầu ý dân mà giả mạo giấy tờ, gian lận phiếu"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "dùng thủ đoạ n khác để làm sai lệch kết quả bầu cử, kết quả trưng cầu ý dân, thì bị phạt cải tạo không giam giữ đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "phạt tù từ 03 tháng đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "tài sản trị giá từ 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "mà thực hiện một trong các hành vi sau đây gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "gây tổn hại cho sức khỏe của 01 người với tỷ lệ tổn thương cơ thể từ 31% đến 60%, gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "gây tổn hại cho sức khỏe của 02 ng ười trở lên mà tổng tỷ lệ tổn thương cơ thể của những người này từ 31% đến 60%"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "gây thiệt hại về tài sản từ 100"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "bảo quản, quản lý hóa đơn, chứng từ mà vi phạm quy định của Nhà nước về bảo quản, quản lý hóa đơn, chứng từ thu nộp ngân sách nhà nước gây thiệt hại cho ngân sách Nhà nước"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "cho người khác từ 100"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "trong việc sản xuất, vận chuyển, bảo quản, t ồn trữ, mua bán, phân phối, sử dụng, xử lý, trao đổi, xuất khẩu, nhập khẩu, quá cảnh lãnh thổ Việt Nam, kê đơn, bán thuốc, giám định, nghiên cứu ma túy, tiền chất, thuốc gây nghiện, thuốc hướng thần mà thực hiện một trong các hành vi sau đây, đã bị xử lý kỷ luật"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "xử phạt vi phạm hành chính về một trong các hành vi này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "đã bị kết án về một trong các tội phạm về ma túy , chưa được xóa án tích mà còn vi phạm, thì bị phạt tiền từ 10"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "bảo đảm trật tự, an toàn giao thông"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "người có trách nhiệm giải tán cuộc đua xe trái phép"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "trực tiếp bảo đảm an toàn giao thông đường không"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "trực ti ếp quản lý các thiết bị an toàn giao thông đường không"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "trực tiếp về việc điều động"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "về tình trạng kỹ thuật của các phương tiện giao thông đường không mà cho đưa vào sử dụng các phương tiện rõ ràng không bảo đảm an toàn kỹ thuật, thì bị phạt tù từ 01 năm đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "về tình trạng kỹ thuật của các phương tiện giao thông đường không mà cho đưa vào sử dụng các phương tiện rõ ràng không bảo đảm an toàn kỹ thuật, gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "gây tổn hại cho sức khỏe của 01 người với tỷ lệ tổn thương cơ thể từ 31% đến 60%"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "gây tổn hại cho sức khỏe của 02 người trở lên mà tổng tỷ lệ tổn thương cơ thể của những người này từ 31% đến 60%, thì bị phạt tù từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "trong việc duy tu, sửa chữa, quản lý các công trình giao thông đường bộ, đường sắt, đường thuỷ, đường không mà có một trong các hành vi sau đây, gây thương tích"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "gây tổn hại cho sức khỏ e của 02 người trở lên mà tổng tỷ lệ tổn thương cơ thể của những người này từ 31% đến 60%, thì bị phạt tiền từ 30"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "về an toàn lao động, vệ sinh lao động, về an toàn ở những nơi đông người"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội cưỡng dâm (Điều 143)",
+    "article_number": "143"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội mua bán người (Điều 150)",
+    "article_number": "150"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội mua bán người dưới 16 tuổi (Điều 151)",
+    "article_number": "151"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội cưỡng đoạt tài sản (Điều 170)",
+    "article_number": "170"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội trộm cắp tài sản (Điều 173)",
+    "article_number": "173"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội hủy hoại"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "cố ý làm hư hỏng tài sản (Điều 178)",
+    "article_number": "178"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội tàng trữ trái phép ma túy (Điều 249)",
+    "article_number": "249"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội vận chuyển trái phép ma túy (Điều 250)",
+    "article_number": "250"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội mua bán trái phép ma túy (Điều 251)",
+    "article_number": "251"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội chiếm đoạt ma túy (Điều 252)",
+    "article_number": "252"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội tổ chức đua xe trái phép (Điều 265)",
+    "article_number": "265"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội đua xe trái phép (Điều 266)",
+    "article_number": "266"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội khủng bố (Điều 299)",
+    "article_number": "299"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội phá hủy công trình, cơ sở , phương tiện quan trọng về an ninh quốc gia (Điều 303)",
+    "article_number": "303"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội chế tạo, tàng trữ, vận chuyển, sử dụng, mua bán trái phép"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "chiếm đoạt vũ khí quân dụng , phương tiện kỹ thuật quân sự (Điều 304)",
+    "article_number": "304"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội phản bội Tổ quốc (Điều 108)",
+    "article_number": "108"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội gián điệp (Điều 110)",
+    "article_number": "110"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội xâm phạm an ninh lãnh thổ (Điều 111)",
+    "article_number": "111"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội bạo loạn (Điều 112)",
+    "article_number": "112"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội khủng bố nhằm chống chính quyền nhân dân (Điều 113)",
+    "article_number": "113"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội phá hoại cơ sở vật chất - kỹ thuật của nước cộng hòa xã hội chủ nghĩa Việt Nam (Điều 114)",
+    "article_number": "114"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội làm, tàng trữ, phát tán"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tuyên truyền thông tin, tài liệu, vật phẩm nhằm chống Nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam (Điều 117)",
+    "article_number": "117"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội phá rối an ninh (Điều 118)",
+    "article_number": "118"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội chống phá trại giam (Điều 119)",
+    "article_number": "119"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội tổ chức, cưỡng ép, xúi giục người khác trốn đi nước ngoài"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "trốn ở lại nước ngoài nhằm chống chính quyền nhân dân (Điều 120)",
+    "article_number": "120"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội trốn đi nước ngoài"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "trốn ở lại nước ngoài nhằm chống chính quyền nhân dân (Điều 121)",
+    "article_number": "121"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội giết người (Điều 123)",
+    "article_number": "123"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội cố ý gây thương tích"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "gây tổn hại cho sức khỏe của người khác (Điều 134)",
+    "article_number": "134"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội cướp tài sản (Điều 168)",
+    "article_number": "168"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội bắt cóc nhằm chiếm đoạt tài sản (Điều 169)",
+    "article_number": "169"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội tài trợ khủng bố (Điều 300)",
+    "article_number": "300"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội bắt cóc con tin (Điều 301)",
+    "article_number": "301"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội cướp biển (Điều 302)",
+    "article_number": "302"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội phá hủy công trình, cơ sở, phương tiện quan trọng về an ninh quốc gia (Điều 303)",
+    "article_number": "303"
+  },
+  {
+    "subject": "Người từ 14-16 tuổi",
+    "predicate": "phạm",
+    "object": "tội rửa tiền (Điều 324)",
+    "article_number": "324"
+  }
+]

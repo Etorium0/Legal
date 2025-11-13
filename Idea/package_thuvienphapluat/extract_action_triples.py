@@ -30,7 +30,15 @@ from PyPDF2 import PdfReader
 # PDF text extraction
 # --------------------------
 
-def extract_text_from_pdf(file_path: str, start_page: int, end_page: int) -> str:
+def extract_text_from_pdf(file_path: str, start_page: int, end_page: int, use_pdfminer: bool = False) -> str:
+    """Extract text using PyPDF2 by default; optionally pdfminer.six for better OCR/scan handling."""
+    if use_pdfminer:
+        try:
+            from pdfminer.high_level import extract_text  # type: ignore
+            pages = list(range(max(0, start_page - 1), end_page))
+            return extract_text(file_path, page_numbers=pages) or ""
+        except Exception as e:
+            print(f"[WARN] pdfminer extract lỗi ({e}). Fallback PyPDF2.")
     reader = PdfReader(file_path)
     text_parts: List[str] = []
     end_index = min(end_page, len(reader.pages))
@@ -59,13 +67,18 @@ def normalize_text(raw: str) -> str:
 # --- Additional preprocessing helpers ---
 ARTICLE_SPLIT_RE = re.compile(r'(?=\bĐiều\s+\d+\b)', re.IGNORECASE)
 KHOAN_SPLIT_RE = re.compile(r'(?=\bKhoản\s+\d+\b)', re.IGNORECASE)
+MUC_SPLIT_RE = re.compile(r'(?=\bMục\s+\d+\b)', re.IGNORECASE)
 
 CLAUSE_CONJ_RE = re.compile(r'\s+(và|hoặc|đồng thời|cũng như)\s+', re.IGNORECASE)
 
 PRONOUNS = {"người này", "họ", "người đó"}
 
 def split_articles(text: str) -> List[str]:
-    parts = [p.strip() for p in ARTICLE_SPLIT_RE.split(text) if p.strip()]
+    # First split by Mục (if any), then further split by Điều to keep blocks manageable
+    parts_muc = [p.strip() for p in MUC_SPLIT_RE.split(text) if p.strip()]
+    parts: List[str] = []
+    for seg in parts_muc:
+        parts.extend([p.strip() for p in ARTICLE_SPLIT_RE.split(seg) if p.strip()])
     return parts
 
 def split_khoan(article_text: str) -> List[str]:
@@ -151,8 +164,14 @@ def normalize_terms(text: str) -> str:
 def save_to_json(triples: List[Dict[str, str]], out_path: str) -> None:
     dir_name = os.path.dirname(out_path) or '.'
     os.makedirs(dir_name, exist_ok=True)
-    with open(out_path, "w", encoding="utf-8") as f:
-        json.dump(triples, f, ensure_ascii=False, indent=2)
+    # If filename ends with .jsonl, write JSON Lines (one object per line)
+    if out_path.lower().endswith('.jsonl'):
+        with open(out_path, 'w', encoding='utf-8') as f:
+            for t in triples:
+                f.write(json.dumps(t, ensure_ascii=False) + "\n")
+    else:
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(triples, f, ensure_ascii=False, indent=2)
 
 
 # --------------------------
@@ -188,15 +207,25 @@ def init_vncorenlp(model_dir: str | None = None, heap: str = "-Xmx2g"):
             f"{model_dir}.\nHướng dẫn: Tải gói VNCoreNLP (jar + models) và giải nén vào thư mục này, sao cho có: \n"
             "  - VnCoreNLP-*.jar\n  - models/wordsegmenter, models/postagger, models/dependency ..."
         )
+    jar_path = os.path.join(model_dir, jar_candidates[0])
 
-    annotators = ["wseg", "pos", "parse"]
+    annotators = "wseg,pos,parse"
+
+    # Kiểm tra thư mục models/* (wordsegmenter, postagger, dependency)
+    models_dir = os.path.join(model_dir, "models")
+    if not os.path.isdir(models_dir):
+        raise RuntimeError(
+            "Thiếu thư mục models/ cho VNCoreNLP trong "
+            f"{model_dir}. Hãy giải nén gói VNCoreNLP để có models/wordsegmenter, models/postagger, models/dependency"
+        )
 
     # Kiểm tra Java
     if not _java_exists():
         raise RuntimeError("Không tìm thấy 'java' trong PATH. Cài đặt Java JRE/JDK rồi thử lại.")
 
     try:
-        return VnCoreNLP(model_dir, annotators=annotators, max_heap_size=heap)
+        # Truyền đường dẫn file jar thay vì thư mục, phù hợp với wrapper vncorenlp
+        return VnCoreNLP(jar_path, annotators=annotators, max_heap_size=heap)
     except FileNotFoundError as e:
         raise RuntimeError(f"Thư mục mô hình không hợp lệ: {model_dir}. Chi tiết: {e}") from e
     except Exception as e:
@@ -264,9 +293,15 @@ def extract_triples_with_vncorenlp(text: str, nlp) -> List[Dict[str, str]]:
     for art in article_chunks:
         for kc in split_khoan(art):
             sentences_all.extend(nlp.annotate(kc))
+    # Guard: if VNCoreNLP returns tokens as strings (no dep parse), fallback to regex
+    if sentences_all and sentences_all[0] and not isinstance(sentences_all[0][0], dict):
+        return extract_triples_regex(text)
     prev_subject = ""
     sentences = sentences_all
     for sent in sentences:
+        if not sent or (sent and not isinstance(sent[0], dict)):
+            # Skip malformed sentences (no dependency info)
+            continue
         for v_idx, tok in enumerate(sent):
             form = (tok.get("form") or "").lower()
             pos = (tok.get("posTag") or "").upper()
@@ -334,6 +369,16 @@ SUBJECT_LIABILITY_RE = re.compile(r"\b(?P<subject>Người[^\.;:\n]+?)\s+(?P<neg
 EXEMPT_RE = re.compile(r"\bđược\s+miễn\s+trách\s+nhiệm\s+hình\s+sự(?:\s+(?:về|đối\s+với))?\s*([^.;:\n]+)?", re.IGNORECASE)
 PENALTY_RE = re.compile(r"\bbị\s+phạt\s+([^.;:\n]+)", re.IGNORECASE)
 PENALTY2_RE = re.compile(r"\bbị\s+xử\s+phạt\s+([^.;:\n]+)", re.IGNORECASE)
+PENALTY_TU_RE = re.compile(r"\bbị\s+phạt\s+tù\s*([^.;:\n]*)", re.IGNORECASE)
+CAM_DAM_NHIEM_RE = re.compile(r"\bbị\s+cấm\s+đảm\s+nhiệm\s+[^.;:\n]+", re.IGNORECASE)
+TUOC_QUYEN_RE = re.compile(r"\bbị\s+tước\s+[^.;:\n]+", re.IGNORECASE)
+TRUC_XUAT_RE = re.compile(r"\bbị\s+trục\s+xuất\b[^.;:\n]*", re.IGNORECASE)
+QUAN_CHE_RE = re.compile(r"\bbị\s+quản\s+chế\b[^.;:\n]*", re.IGNORECASE)
+CAM_CU_TRU_RE = re.compile(r"\bbị\s+cấm\s+cư\s+trú\b[^.;:\n]*", re.IGNORECASE)
+TICH_THU_RE = re.compile(r"\bbị\s+tịch\s+thu\b[^.;:\n]*", re.IGNORECASE)
+BUOC_RE = re.compile(r"\bbuộc\s+([^.;:\n]+)", re.IGNORECASE)
+DINH_CHI_RE = re.compile(r"\bđình\s+chỉ\s+([^.;:\n]+)", re.IGNORECASE)
+CO_TRACH_NHIEM_RE = re.compile(r"\bcó\s+trách\s+nhiệm\s+([^.;:\n]+)", re.IGNORECASE)
 INCLUDE_RE = re.compile(r"\b(Hình\s+phạt\s+(?:chính|bổ\s*sung))\s+bao\s+gồm\s*:\s*([^\n\.]*)", re.IGNORECASE)
 RIGHT_RE = re.compile(r"\bcó\s+(quyền|nghĩa\s+vụ)\s+([^.;:\n]+)", re.IGNORECASE)
 MUST_RE = re.compile(r"\bphải\s+([^.;:\n]+)", re.IGNORECASE)
@@ -343,7 +388,26 @@ APPLY_RE = re.compile(r"\b(được|bị)?\s*áp\s+dụng\s+(?:đối\s+với\s+
 COURT_RE = re.compile(r"\bTòa\s+án\s+(quyết\s+định|giao|tước)\s+([^.;:\n]+)", re.IGNORECASE)
 
 
-def extract_triples_regex(text: str) -> List[Dict[str, str]]:
+def _split_compound_objects(obj_text: str, aggressive: bool = False) -> List[str]:
+    if not obj_text:
+        return []
+    s = obj_text
+    # Normalize bullets like a) b) 1) into a common delimiter
+    if aggressive:
+        s = re.sub(r"(?<![\w])([a-z])\)", r" || ", s, flags=re.IGNORECASE)
+        s = re.sub(r"(?<![\w])(\d+)\)", r" || ", s)
+        s = s.replace(";", " || ")
+        s = s.replace("\n", " || ")
+    parts = re.split(r"\s+(?:và|hoặc|cũng như|đồng thời)\s+|\|\|", s, flags=re.IGNORECASE)
+    out = []
+    for p in parts:
+        q = p.strip().strip(',;:')
+        if q:
+            out.append(q)
+    return out
+
+
+def extract_triples_regex(text: str, aggressive: bool = False) -> List[Dict[str, str]]:
     s = normalize_text(text)
     triples: List[Dict[str, str]] = []
     subject_spans: List[tuple[int, str]] = []  # (end_index, subject)
@@ -457,6 +521,43 @@ def extract_triples_regex(text: str) -> List[Dict[str, str]]:
     for m in PENALTY2_RE.finditer(s):
         obj = cleanup_vi_tokens(m.group(1))
         triples.append({"subject": "Người", "predicate": "bị xử phạt", "object": obj})
+    for m in PENALTY_TU_RE.finditer(s):
+        obj = cleanup_vi_tokens(m.group(1) or "tù")
+        obj = ("tù " + obj).strip()
+        triples.append({"subject": "Người", "predicate": "bị phạt", "object": obj})
+    for m in CAM_DAM_NHIEM_RE.finditer(s):
+        triples.append({"subject": "Người", "predicate": "bị cấm đảm nhiệm", "object": cleanup_vi_tokens(m.group(0).split("bị cấm đảm nhiệm",1)[-1])})
+    for m in TUOC_QUYEN_RE.finditer(s):
+        triples.append({"subject": "Người", "predicate": "bị tước", "object": cleanup_vi_tokens(m.group(0).split("bị",1)[-1])})
+    for m in TRUC_XUAT_RE.finditer(s):
+        triples.append({"subject": "Người", "predicate": "bị trục xuất", "object": cleanup_vi_tokens(m.group(0).split("bị trục xuất",1)[-1])})
+    for m in QUAN_CHE_RE.finditer(s):
+        triples.append({"subject": "Người", "predicate": "bị quản chế", "object": cleanup_vi_tokens(m.group(0).split("bị quản chế",1)[-1])})
+    for m in CAM_CU_TRU_RE.finditer(s):
+        triples.append({"subject": "Người", "predicate": "bị cấm cư trú", "object": cleanup_vi_tokens(m.group(0).split("bị cấm cư trú",1)[-1])})
+    for m in TICH_THU_RE.finditer(s):
+        triples.append({"subject": "Người", "predicate": "bị tịch thu", "object": cleanup_vi_tokens(m.group(0).split("bị tịch thu",1)[-1])})
+    for m in BUOC_RE.finditer(s):
+        triples.append({"subject": "Người", "predicate": "buộc", "object": cleanup_vi_tokens(m.group(1))})
+    for m in DINH_CHI_RE.finditer(s):
+        triples.append({"subject": "Người", "predicate": "đình chỉ", "object": cleanup_vi_tokens(m.group(1))})
+    for m in CO_TRACH_NHIEM_RE.finditer(s):
+        triples.append({"subject": "Người", "predicate": "có trách nhiệm", "object": cleanup_vi_tokens(m.group(1))})
+
+    # Enumerated offenses after anchors like "một trong các điều/tội sau đây"
+    anchor = re.search(r"(một\s+trong\s+các\s+(đi\S*|tội)\s+sau\s+đây|các\s+(đi\S*|tội)\s+sau\s+đây)\s*:?", s, re.IGNORECASE)
+    if anchor:
+        block = s[anchor.end(): anchor.end()+10000]
+        for m in re.finditer(r"Đi\S*\s+(\d+)\s*\((tội[^\)]+)\)", block, re.IGNORECASE):
+            art = m.group(1)
+            offense = cleanup_vi_tokens(m.group(2))
+            obj = f"{offense} (Điều {art})"
+            triples.append({"subject": "Người từ 14–16 tuổi", "predicate": "phạm", "object": obj})
+        for m in re.finditer(r"Đi\S*\s+(\d+)\s*[\.:\-]\s*(tội[^\n\r;:\.)]+)", block, re.IGNORECASE):
+            art = m.group(1)
+            offense = cleanup_vi_tokens(m.group(2))
+            obj = f"{offense} (Điều {art})"
+            triples.append({"subject": "Người từ 14–16 tuổi", "predicate": "phạm", "object": obj})
 
     # Catch "mọi tội phạm ..." as liability
     for m in re.finditer(r"\bmọi\s+tội\s+phạm[^.;:\n]*", s, re.IGNORECASE):
@@ -470,8 +571,8 @@ def extract_triples_regex(text: str) -> List[Dict[str, str]]:
         subj_n = normalize_terms(t.get("subject", ""))
         obj_n = normalize_terms(t.get("object", ""))
         pred_n = cleanup_vi_tokens(t.get("predicate", ""))
-        # Split compound objects by conjunctions
-        obj_parts = re.split(r"\s+(?:và|hoặc|cũng như|đồng thời)\s+", obj_n)
+        # Split compound objects by conjunctions; if aggressive, also split by ';', bullets, and newlines
+        obj_parts = _split_compound_objects(obj_n, aggressive=aggressive)
         for obj_piece in obj_parts:
             obj_piece = obj_piece.strip().strip(',;')
             if not obj_piece:
@@ -521,12 +622,17 @@ def export_table(triples: List[Dict[str, str]], out_path: str) -> str:
 # --------------------------
 def refine_with_gemini(triples: List[Dict[str, str]], api_key: str, model: str = "gemini-2.5-flash") -> List[Dict[str, str]]:
     try:
-        import google.generativeai as genai
-    except Exception as e:
-        raise RuntimeError("Chưa cài google-generativeai. Cài bằng: pip install google-generativeai") from e
+        import google.generativeai as genai  # type: ignore
+    except Exception:
+        print("⚠️  Chưa cài google-generativeai. Bỏ qua bước refine.")
+        return triples
 
-    genai.configure(api_key=api_key)
-    mdl = genai.GenerativeModel(model)
+    try:
+        genai.configure(api_key=api_key)
+        mdl = genai.GenerativeModel(model)
+    except Exception as e:
+        print(f"[WARN] Gemini init lỗi: {e}. Bỏ qua refine.")
+        return triples
 
     refined: List[Dict[str, str]] = []
     for t in triples:
@@ -538,20 +644,76 @@ def refine_with_gemini(triples: List[Dict[str, str]], api_key: str, model: str =
         )
         try:
             resp = mdl.generate_content(prompt)
-            txt = (resp.text or "").strip()
+            txt = (getattr(resp, 'text', '') or '').strip()
             m = re.search(r'\{.*\}', txt, re.DOTALL)
             if m:
-                obj = json.loads(m.group(0))
-                refined.append({
-                    "subject": obj.get("subject", t["subject"]),
-                    "predicate": obj.get("predicate", t["predicate"]),
-                    "object": obj.get("object", t["object"]),
-                })
+                try:
+                    objj = json.loads(m.group(0))
+                    refined.append({
+                        "subject": objj.get("subject", t["subject"]),
+                        "predicate": objj.get("predicate", t["predicate"]),
+                        "object": objj.get("object", t["object"]),
+                    })
+                except Exception:
+                    refined.append(t)
             else:
                 refined.append(t)
         except Exception:
             refined.append(t)
     return refined
+
+
+def gemini_extract_triples(text: str, api_key: str, model: str = "gemini-2.5-flash") -> List[Dict[str, str]]:
+    """Use Gemini to extract additional triples directly from text chunks.
+    The function expects the model to return JSON lines: one triple per line with keys subject, predicate, object.
+    """
+    try:
+        import google.generativeai as genai  # type: ignore
+    except Exception:
+        print("⚠️  Chưa cài google-generativeai. Bỏ qua bước Gemini extraction.")
+        return []
+
+    try:
+        genai.configure(api_key=api_key)
+        mdl = genai.GenerativeModel(model)
+    except Exception as e:
+        print(f"[WARN] Gemini init lỗi: {e}. Bỏ qua extraction.")
+        return []
+
+    triples: List[Dict[str, str]] = []
+
+    # Chunk by Article to keep prompts compact
+    chunks = split_articles(normalize_text(text))
+    sys_prompt = (
+        "Bạn là trợ lý pháp lý. Hãy trích xuất tất cả bộ ba (chủ thể, hành động, đối tượng) từ đoạn văn bản luật tiếng Việt.\n"
+        "- Chủ thể là danh ngữ (ví dụ: Người, Tòa án, Cơ quan điều tra, Người từ 14–16 tuổi).\n"
+        "- Hành động là động từ/cụm động từ (ví dụ: phạm, bị phạt, có quyền, có nghĩa vụ, chịu trách nhiệm hình sự về, được miễn trách nhiệm hình sự).\n"
+        "- Đối tượng là danh ngữ/khái niệm pháp lý; kèm 'Điều X' nếu xuất hiện.\n"
+        "- Trả về theo định dạng JSON Lines, mỗi dòng một JSON với 3 trường: subject, predicate, object.\n"
+        "- Không thêm giải thích nào khác.\n"
+    )
+
+    for ch in chunks:
+        prompt = sys_prompt + "\n---\n" + ch[:6000]
+        try:
+            resp = mdl.generate_content(prompt)
+            txt = (getattr(resp, 'text', '') or '').strip()
+            for line in txt.splitlines():
+                line = line.strip()
+                if not line or not line.startswith('{'):
+                    continue
+                try:
+                    obj = json.loads(line)
+                    s = cleanup_vi_tokens(obj.get('subject', ''))
+                    p = cleanup_vi_tokens(obj.get('predicate', ''))
+                    o = cleanup_vi_tokens(obj.get('object', ''))
+                    if s and p and o:
+                        triples.append({'subject': s, 'predicate': p, 'object': o})
+                except Exception:
+                    continue
+        except Exception:
+            continue
+    return triples
 
 
 # --------------------------
@@ -564,10 +726,15 @@ def main():
     parser.add_argument("--end", type=int, required=True, help="Trang kết thúc (>=start)")
     parser.add_argument("--output", default="triples_actions.json", help="File JSON đầu ra")
     parser.add_argument("--xlsx", help="Xuất thêm Excel/CSV (nếu .xlsx sẽ ưu tiên Excel; thiếu pandas sẽ fallback CSV)")
+    parser.add_argument("--jsonl", action="store_true", help="Ghi JSON Lines (mỗi dòng 1 bộ ba)")
     parser.add_argument("--vncorenlp-dir", help="Thư mục mô hình VNCoreNLP (tuỳ chọn)")
     parser.add_argument("--heap", default="-Xmx2g", help="Dung lượng heap JVM cho VNCoreNLP")
-    parser.add_argument("--gemini", action="store_true", help="Dùng Google Gemini để refine kết quả")
+    parser.add_argument("--pdfminer", action="store_true", help="Dùng pdfminer.six để trích xuất text (tốt hơn cho PDF scan)")
+    parser.add_argument("--gemini", action="store_true", help="Dùng Google Gemini để refine kết quả (chuẩn hóa)")
+    parser.add_argument("--gemini-extract", action="store_true", help="Dùng Gemini để trích xuất bổ sung trước khi dedupe")
     parser.add_argument("--gemini-key", help="Gemini API key hoặc đặt biến GEMINI_API_KEY")
+    parser.add_argument("--aggressive", action="store_true", help="Bùng nổ danh sách bằng dấu ';', bullets a)/1) để tăng số lượng triple")
+    parser.add_argument("--debug", action="store_true", help="In thêm thông tin chẩn đoán (chế độ VNCoreNLP/regex, độ dài văn bản)")
     args = parser.parse_args()
 
     pdf_path = args.pdf
@@ -578,24 +745,58 @@ def main():
     if not os.path.isfile(pdf_path):
         raise FileNotFoundError(f"Không tìm thấy file PDF: {pdf_path}")
 
-    raw = extract_text_from_pdf(pdf_path, args.start, args.end)
+    raw = extract_text_from_pdf(pdf_path, args.start, args.end, use_pdfminer=args.pdfminer if hasattr(args, 'pdfminer') else False)
+    if args.debug:
+        print(f"[DEBUG] Extracted chars: {len(raw)} from pages {args.start}-{args.end}")
 
     triples: List[Dict[str, str]]
+    mode = "regex"
     try:
         nlp = init_vncorenlp(model_dir=args.vncorenlp_dir, heap=args.heap)
         triples = extract_triples_with_vncorenlp(raw, nlp)
+        mode = "vncorenlp"
     except RuntimeError as e:
         print(f"[WARN] VNCoreNLP không sẵn sàng ({e}). Dùng regex fallback.")
-        triples = extract_triples_regex(raw)
+        triples = extract_triples_regex(raw, aggressive=args.aggressive)
+
+    # Nếu VNCoreNLP trả về dạng không có parse (đã có guard), vẫn rơi vào regex
+    if mode == "vncorenlp" and args.debug:
+        print("[DEBUG] VNCoreNLP path active. If output seems low, check if tokens include depLabel/form via unit test.")
+    if mode == "regex" and args.debug:
+        print("[DEBUG] Using regex fallback.")
+
+    api_key = args.gemini_key or os.getenv("GEMINI_API_KEY")
+    if (args.gemini or args.gemini_extract) and not api_key:
+        raise RuntimeError("Thiếu Gemini API key cho chức năng Gemini. Truyền --gemini-key hoặc đặt biến GEMINI_API_KEY.")
+
+    # Gemini extraction (augmentation) before refine
+    if args.gemini_extract:
+        gem_add = gemini_extract_triples(raw, api_key=api_key)
+        if args.debug:
+            print(f"[DEBUG] Gemini extraction thêm {len(gem_add)} bộ ba (trước gộp)")
+        triples.extend(gem_add)
+        # Dedupe sau bổ sung
+        dedup = []
+        seen_aug = set()
+        for t in triples:
+            k = (t['subject'].lower(), t['predicate'].lower(), t['object'].lower())
+            if k not in seen_aug:
+                seen_aug.add(k)
+                dedup.append(t)
+        triples = dedup
 
     if args.gemini:
-        api_key = args.gemini_key or os.getenv("GEMINI_API_KEY")
-        if not api_key:
-            raise RuntimeError("Thiếu Gemini API key. Truyền --gemini-key hoặc đặt biến GEMINI_API_KEY.")
         triples = refine_with_gemini(triples, api_key=api_key)
 
-    save_to_json(triples, args.output)
-    print(f"Đã trích xuất {len(triples)} bộ ba. Đã lưu vào: {args.output}")
+    # Decide JSON format
+    out_path = args.output
+    if args.jsonl and not out_path.lower().endswith('.jsonl'):
+        root, _ = os.path.splitext(out_path)
+        out_path = root + '.jsonl'
+    save_to_json(triples, out_path)
+    print(f"Đã trích xuất {len(triples)} bộ ba. Đã lưu vào: {out_path}")
+    if args.debug:
+        print(f"[DEBUG] Mode: {mode}; aggressive={args.aggressive}")
 
     xout = args.xlsx
     if not xout and args.output.lower().endswith('.xlsx'):
