@@ -852,7 +852,9 @@ def normalize_triples_simple(triples: List[Dict[str, str]]) -> List[Dict[str, st
         # bổ sung theo yêu cầu
         "phản bội", "khủng bố", "phá rối", "tuyên truyền",
         # mở rộng thêm các cụm phổ biến trong BLHS
-        "trộm cắp", "cướp giật", "hiếp dâm", "cưỡng dâm", "gây rối"
+        "trộm cắp", "cướp giật", "hiếp dâm", "cưỡng dâm", "gây rối",
+        # bổ sung theo yêu cầu mới
+        "sử dụng", "thao túng", "gian lận"
     }
 
     def normalize_object_phrase(obj: str) -> str:

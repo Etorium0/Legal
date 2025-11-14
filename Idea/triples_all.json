@@ -321,18 +321,18 @@
   },
   {
     "subject": "Người",
-    "predicate": "sử",
-    "object": "dụng thông tin nội bộ để mua bán chứng khoán"
+    "predicate": "sử dụng",
+    "object": "thông tin nội bộ để mua bán chứng khoán"
   },
   {
     "subject": "Người",
-    "predicate": "thao",
-    "object": "túng thị trường chứng khoán"
+    "predicate": "thao túng",
+    "object": "thị trường chứng khoán"
   },
   {
     "subject": "Người",
-    "predicate": "gian",
-    "object": "lận trong kinh doanh bảo hiểm"
+    "predicate": "gian lận",
+    "object": "trong kinh doanh bảo hiểm"
   },
   {
     "subject": "Người",
@@ -886,8 +886,8 @@
   },
   {
     "subject": "Người",
-    "predicate": "sử",
-    "object": "dụng người dưới 16 tuổi vào mục đích khiêu dâm 1"
+    "predicate": "sử dụng",
+    "object": "người dưới 16 tuổi vào mục đích khiêu dâm 1"
   },
   {
     "subject": "Người",
@@ -1051,8 +1051,8 @@
   },
   {
     "subject": "Người",
-    "predicate": "sử",
-    "object": "dụng trái phép tài sản 1"
+    "predicate": "sử dụng",
+    "object": "trái phép tài sản 1"
   },
   {
     "subject": "Người",
@@ -1291,13 +1291,13 @@
   },
   {
     "subject": "Người",
-    "predicate": "sử",
-    "object": "dụng thông tin nội bộ để mua bán chứng khoán 1"
+    "predicate": "sử dụng",
+    "object": "thông tin nội bộ để mua bán chứng khoán 1"
   },
   {
     "subject": "Người",
-    "predicate": "thao",
-    "object": "túng thị trư ờng chứng khoán 1"
+    "predicate": "thao túng",
+    "object": "thị trư ờng chứng khoán 1"
   },
   {
     "subject": "Người",
@@ -1306,18 +1306,18 @@
   },
   {
     "subject": "Người",
-    "predicate": "gian",
-    "object": "lận trong kin h doanh bảo hiểm 1"
+    "predicate": "gian lận",
+    "object": "trong kin h doanh bảo hiểm 1"
   },
   {
     "subject": "Người",
-    "predicate": "gian",
-    "object": "lận bảo hiểm xã hội, bảo hiểm thất nghiệp 1"
+    "predicate": "gian lận",
+    "object": "bảo hiểm xã hội, bảo hiểm thất nghiệp 1"
   },
   {
     "subject": "Người",
-    "predicate": "gian",
-    "object": "lận bảo hiểm y tế 1"
+    "predicate": "gian lận",
+    "object": "bảo hiểm y tế 1"
   },
   {
     "subject": "Người",
@@ -1726,8 +1726,8 @@
   },
   {
     "subject": "Người",
-    "predicate": "sử",
-    "object": "dụng mạng máy tính, mạng viễn thông, phương tiện điện tử thực hiện hành vi chiếm đoạt tài sản 1"
+    "predicate": "sử dụng",
+    "object": "mạng máy tính, mạng viễn thông, phương tiện điện tử thực hiện hành vi chiếm đoạt tài sản 1"
   },
   {
     "subject": "Người",
@@ -1741,8 +1741,8 @@
   },
   {
     "subject": "Người",
-    "predicate": "sử",
-    "object": "dụng trái phép tần số vô tuyến điện dành riêng cho mục đích cấp cứu, an toàn, tìm kiếm, cứu hộ, cứu n ạn, quốc phòng, an ninh 1"
+    "predicate": "sử dụng",
+    "object": "trái phép tần số vô tuyến điện dành riêng cho mục đích cấp cứu, an toàn, tìm kiếm, cứu hộ, cứu n ạn, quốc phòng, an ninh 1"
   },
   {
     "subject": "Người",
@@ -2387,7 +2387,112 @@
   {
     "subject": "Người",
     "predicate": "vi",
-    "object": "phạm quy định về trực ban, trực chiến , trực chỉ huy"
+    "object": "phạm quy định về trực ban, trực chiến , trực chỉ huy 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "vi",
+    "object": "phạm quy định về bảo vệ 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "vi",
+    "object": "phạm các quy định về bảo đảm an toàn trong chiến đấu"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "trong huấn luyện 1 (Điều 411"
+  },
+  {
+    "subject": "Người",
+    "predicate": "vi",
+    "object": "phạm quy định về sử dụng vũ khí quân dụng, trang b ị kỹ thuật quân sự 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "huỷ",
+    "object": "hoại"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "cố ý làm hư hỏng vũ khí quân dụng, trang bị kỹ thuật quân sự 1 (Điều 413"
+  },
+  {
+    "subject": "Người",
+    "predicate": "quấy",
+    "object": "nhiễu nhân dân 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "cố",
+    "object": "ý bỏ thương binh, tử sỹ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "không chăm sóc, cứu chữa thương binh 1 (Điều 417"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "huỷ hoại di vật của tử sỹ 1 (Điều 418"
+  },
+  {
+    "subject": "Người",
+    "predicate": "ngược",
+    "object": "đãi tù binh, hàng binh Người nào ngược đãi tù binh, hàng binh, thì bị phạt cải tạo không giam giữ đến 01 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "phạt tù từ 03 tháng đến 02 năm (Điều 420"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phá hoại",
+    "object": "hòa bình, gây chiến tranh xâm lược 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "c",
+    "object": "hống loài người 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "chiến tranh 1"
+  },
+  {
+    "subject": "Người",
+    "predicate": "tuyển",
+    "object": "mộ, huấn luyện"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "sử dụng lính đánh thuê Người nào tuyển mộ, huấn luyện"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "sử dụng lính đánh thuê nhằm chống lại một quốc gia"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "một vùng lãnh thổ độc lập, có chủ quyền, thì bị phạt tù từ 10 năm đến 20 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tù chung thân (Điều 424"
+  },
+  {
+    "subject": "Người",
+    "predicate": "làm",
+    "object": "lính đánh thuê Người nào làm lính đánh thuê nhằm chống một quốc gia h oặc một vùng lãnh thổ độc lập, có chủ quyền, thì bị phạt tù từ 05 năm đến 15 năm"
   },
   {
     "subject": "Người",
@@ -5503,6 +5608,16 @@
     "subject": "Người",
     "predicate": "bị phạt",
     "object": "phạt tù từ 0 6 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "tù từ 07 nă m đến 12 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị phạt",
+    "object": "t ù từ 10 nãm ðến 20 nãm, tù chung thân"
   },
   {
     "subject": "Người",
@@ -9986,6 +10101,206 @@
   },
   {
     "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "không chấp hành nghiêm chỉnh chế độ trực ban, trực chiến, trực chỉ huy gây hậu quả nghiêm trọng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "không chấp hành nghiêm chỉnh quy định về tuần tra, canh gác, áp tải, hộ tống thuộc một trong các trường hợp sau đây"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "không chấp hành nghiêm chỉnh những quy định bảo đảm an toàn trong chiến đấu"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "trong huấn luyện gây hậu quả nghiêm trọng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "vi phạm quy định về sử dụng vũ khí quân dụng, trang b ị kỹ thuật quân s ự gây hậu quả nghiêm trọng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "hủy hoại"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "cố ý làm hư hỏ ng vũ khí quân dụng, trang b ị kỹ thuật quân s ự, nếu không thuộc một trong các trường hợp quy định tại Điều 114"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "Điều 303 của Bộ luật này"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "được giao quản lý, được trang bị vũ khí quân dụng, phương tiện kỹ thuật quân sự mà làm mất"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "vô ý làm hư hỏng gây hậu quả nghiêm trọng"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "có hành vi quấy nhiễu nhân dân đã bị xử lý kỷ luật về hành vi này mà còn vi phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "có trách nhiệm mà cố ý bỏ t hương binh, tử sĩ tại trận địa"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "không chăm sóc, cứu chữa thương binh dẫn đến không tìm thấy thương binh, tử sỹ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "thương binh bị chết"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "chiếm đoạt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "huỷ hoại di vật của tử sỹ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "ph ạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "trong chiến đấu"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "khi thu dọn chiến trường mà chiếm đoạt"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "huỷ hoại chiến lợi phẩm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "ngược đãi tù binh, hàng binh"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "tuyên truyền, kích động chiến tranh xâm lược"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "chuẩn bị, tiến hành, tham gia chiến tranh xâm lược nhằm chống lại độc lập, chủ quyền"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "toàn vẹn lãnh thổ của một quốc gia"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "một vùng lãnh thổ độc lập, có chủ quyền khác"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "trong thời bình hay trong chiến tranh mà thực hiện hành vi tiêu diệt hàng loạt dân cư của một khu vực, phá hủy nguồn sống, phá hoại cuộc sống văn hóa, tinh thần của một quốc gia"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "một vùng lãnh thổ độc lập, có chủ quyền, làm đảo lộn nền tảng của một xã hội nhằm phá hoại xã hội đó"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "thực hiện hành vi diệt chủng khác"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "thực hiện hành vi diệt sinh, diệt môi trường tự nhiên"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "trong thời kỳ chiến tranh mà ra lệnh"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "trực tiếp tiến hành việc giết hại dân thường, người bị thương, tù binh, cướp phá tài sản, tàn phá các nơi dân cư, sử dụng các phương tiện"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "phương pháp chiến tranh bị cấm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "thực hiện hành vi khác vi phạm nghiêm trọng pháp luật quốc tế"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "các điều ước quốc tế mà Cộng hòa xã hội chủ nghĩa Việt Nam ký kết"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "tham gia"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "phạt t ù từ 10 nãm ðến 20 nãm, tù chung thân"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "tuyển mộ, huấn luyện"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "sử dụng lính đánh thuê nhằm chống lại một quốc gia"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "một vùng lãnh thổ độc lập, có chủ quyền"
+  },
+  {
+    "subject": "Người",
+    "predicate": "thực hiện",
+    "object": "làm lính đánh thuê nhằm chống một quốc gia h oặc một vùng lãnh thổ độc lập, có chủ quyền"
+  },
+  {
+    "subject": "Người",
     "predicate": "bị",
     "object": "phạt tù thì buộc họ phải chấp hành hình phạt tại các cơ sở giam giữ, phải lao động , học tập để trở thành người có ích cho xã hội"
   },
@@ -12511,6 +12826,86 @@
   },
   {
     "subject": "Người",
+    "predicate": "bị",
+    "object": "tổn thương cơ thể"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "vũ khí quân dụng, phương tiện kỹ thuật quân sự mà làm mất"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "vô ý làm hư hỏng gây hậu quả nghiêm trọng, thì bị phạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "phạt tù từ 06 tháng đến 05 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "xử lý kỷ luật về hành vi này mà còn vi phạm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "gây hậu quả nghiêm trọng, thì bị phạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "phạt tù từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "ph ạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "phạt tù từ 06 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "phạt cải tạo không giam giữ đến 01 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "phạt tù từ 03 tháng đến 02 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "thương, tù binh, cướp phá tài sản, tàn phá các nơi dân cư, sử dụng các phương tiện"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "phương pháp chiến tranh bị cấm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "thực hiện hành vi khác vi phạm nghiêm trọng pháp luật quốc tế"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "các điều ước quốc tế mà Cộng hòa xã hội chủ nghĩa Việt Nam ký kết"
+  },
+  {
+    "subject": "Người",
+    "predicate": "bị",
+    "object": "tham gia, thì bị phạt t ù từ 10 nãm ðến 20 nãm, tù chung thân"
+  },
+  {
+    "subject": "Người",
     "predicate": "được",
     "object": "Bộ luật hình sự quy định mới phải chịu trách nhiệm hình sự"
   },
@@ -13348,6 +13743,31 @@
     "subject": "Người",
     "predicate": "được",
     "object": "phạt tù từ 03 tháng đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được",
+    "object": "bảo vệ, hộ tống bị tổn thương cơ thể"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được",
+    "object": "bảo vệ, hộ tống chết"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được",
+    "object": "giao quản lý, được trang bị vũ khí quân dụng, phương tiện kỹ thuật quân sự mà làm mất"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được",
+    "object": "vô ý làm hư hỏng gây hậu quả nghiêm trọng, thì bị phạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "được",
+    "object": "phạt tù từ 06 tháng đến 05 năm"
   },
   {
     "subject": "Người",
@@ -14556,6 +14976,11 @@
   },
   {
     "subject": "Người",
+    "predicate": "buộc",
+    "object": "hoặc do thi hành mệnh lệnh của cấp trên, thì bị phạt tù từ 10 năm đến 20 năm"
+  },
+  {
+    "subject": "Người",
     "predicate": "đình chỉ",
     "object": "hoạt động có thời hạn"
   },
@@ -14938,6 +15363,26 @@
     "subject": "Người",
     "predicate": "có trách nhiệm",
     "object": "cấp các giấy tờ, tài liệu"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "mà cố ý bỏ t hương binh, tử sĩ tại trận địa"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "không chăm sóc, cứu chữa thương binh dẫn đến không tìm thấy thương binh, tử sỹ"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "thương binh bị chết, thì bị phạt cải tạo không giam giữ đến 03 năm"
+  },
+  {
+    "subject": "Người",
+    "predicate": "có trách nhiệm",
+    "object": "phạt tù từ 06 tháng đến 05 năm"
   },
   {
     "subject": "Người",
@@ -15356,18 +15801,18 @@
   },
   {
     "subject": "Người",
-    "predicate": "sử",
-    "object": "dụng thông tin nội bộ để mua bán chứng khoán (Điều"
+    "predicate": "sử dụng",
+    "object": "thông tin nội bộ để mua bán chứng khoán (Điều"
   },
   {
     "subject": "Người",
-    "predicate": "thao",
-    "object": "túng thị trường chứng khoán (Điều"
+    "predicate": "thao túng",
+    "object": "thị trường chứng khoán (Điều"
   },
   {
     "subject": "Người",
-    "predicate": "gian",
-    "object": "lận trong kinh doanh bảo hiểm (Điều"
+    "predicate": "gian lận",
+    "object": "trong kinh doanh bảo hiểm (Điều"
   },
   {
     "subject": "Người",
@@ -15806,8 +16251,8 @@
   },
   {
     "subject": "Người",
-    "predicate": "sử",
-    "object": "dụng người dưới 16 tuổi vào mục đích khiêu dâm 1 (Điều"
+    "predicate": "sử dụng",
+    "object": "người dưới 16 tuổi vào mục đích khiêu dâm 1 (Điều"
   },
   {
     "subject": "Người",
@@ -15946,8 +16391,8 @@
   },
   {
     "subject": "Người",
-    "predicate": "sử",
-    "object": "dụng trái phép tài sản 1 (Điều"
+    "predicate": "sử dụng",
+    "object": "trái phép tài sản 1 (Điều"
   },
   {
     "subject": "Người",
@@ -16111,13 +16556,13 @@
   },
   {
     "subject": "Người",
-    "predicate": "sử",
-    "object": "dụng thông tin nội bộ để mua bán chứng khoán 1 (Điều"
+    "predicate": "sử dụng",
+    "object": "thông tin nội bộ để mua bán chứng khoán 1 (Điều"
   },
   {
     "subject": "Người",
-    "predicate": "thao",
-    "object": "túng thị trư ờng chứng khoán 1 (Điều"
+    "predicate": "thao túng",
+    "object": "thị trư ờng chứng khoán 1 (Điều"
   },
   {
     "subject": "Người",
@@ -16126,18 +16571,18 @@
   },
   {
     "subject": "Người",
-    "predicate": "gian",
-    "object": "lận trong kin h doanh bảo hiểm 1 (Điều"
+    "predicate": "gian lận",
+    "object": "trong kin h doanh bảo hiểm 1 (Điều"
   },
   {
     "subject": "Người",
-    "predicate": "gian",
-    "object": "lận bảo hiểm xã hội, bảo hiểm thất nghiệp 1 (Điều"
+    "predicate": "gian lận",
+    "object": "bảo hiểm xã hội, bảo hiểm thất nghiệp 1 (Điều"
   },
   {
     "subject": "Người",
-    "predicate": "gian",
-    "object": "lận bảo hiểm y tế 1 (Điều"
+    "predicate": "gian lận",
+    "object": "bảo hiểm y tế 1 (Điều"
   },
   {
     "subject": "Người",
@@ -16491,8 +16936,8 @@
   },
   {
     "subject": "Người",
-    "predicate": "sử",
-    "object": "dụng mạng máy tính, mạng viễn thông, phương tiện điện tử thực hiện hành vi chiếm đoạt tài sản 1 (Điều"
+    "predicate": "sử dụng",
+    "object": "mạng máy tính, mạng viễn thông, phương tiện điện tử thực hiện hành vi chiếm đoạt tài sản 1 (Điều"
   },
   {
     "subject": "Người",
@@ -16506,8 +16951,8 @@
   },
   {
     "subject": "Người",
-    "predicate": "sử",
-    "object": "dụng trái phép tần số vô tuyến điện dành riêng cho mục đích cấp cứu, an toàn, tìm kiếm, cứu hộ, cứu n ạn, quốc phòng, an ninh 1 (Điều"
+    "predicate": "sử dụng",
+    "object": "trái phép tần số vô tuyến điện dành riêng cho mục đích cấp cứu, an toàn, tìm kiếm, cứu hộ, cứu n ạn, quốc phòng, an ninh 1 (Điều"
   },
   {
     "subject": "Người",
@@ -17042,7 +17487,67 @@
   {
     "subject": "Người",
     "predicate": "vi",
-    "object": "phạm quy định về trực ban, trực chiến , trực chỉ huy (Điều"
+    "object": "phạm quy định về trực ban, trực chiến , trực chỉ huy 1 (Điều"
+  },
+  {
+    "subject": "Người",
+    "predicate": "vi",
+    "object": "phạm quy định về bảo vệ 1 (Điều"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "trong huấn luyện 1 (Điều"
+  },
+  {
+    "subject": "Người",
+    "predicate": "vi",
+    "object": "phạm quy định về sử dụng vũ khí quân dụng, trang b ị kỹ thuật quân sự 1 (Điều"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "cố ý làm hư hỏng vũ khí quân dụng, trang bị kỹ thuật quân sự 1 (Điều"
+  },
+  {
+    "subject": "Người",
+    "predicate": "quấy",
+    "object": "nhiễu nhân dân 1 (Điều"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "không chăm sóc, cứu chữa thương binh 1 (Điều"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "huỷ hoại di vật của tử sỹ 1 (Điều"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phá hoại",
+    "object": "hòa bình, gây chiến tranh xâm lược 1 (Điều"
+  },
+  {
+    "subject": "Người",
+    "predicate": "c",
+    "object": "hống loài người 1 (Điều"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "chiến tranh 1 (Điều"
+  },
+  {
+    "subject": "Người",
+    "predicate": "phạm",
+    "object": "tù chung thân (Điều"
+  },
+  {
+    "subject": "Người",
+    "predicate": "làm",
+    "object": "lính đánh thuê Người nào làm lính đánh thuê nhằm chống một quốc gia h oặc một vùng lãnh thổ độc lập, có chủ quyền, thì bị phạt tù từ 05 năm đến 15 năm (Điều"
   },
   {
     "subject": "Người",
