@@ -830,6 +830,87 @@ def gemini_extract_triples(text: str, api_key: str, model: str = "gemini-2.5-fla
 
 
 # --------------------------
+# Simple post-normalization (as requested)
+# --------------------------
+OFFENSE_OBJECT_RE = re.compile(r"^\s*tội\s+(.+?)(?:\s*\(Đi\S*\s*\d+[^\)]*\))?\s*$", re.IGNORECASE)
+
+def normalize_triples_simple(triples: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    """Normalize triples per user's preference:
+    - Force subject to "Người" temporarily.
+    - Convert (predicate='phạm', object='tội <verb> <rest> (Điều ...)') into
+      predicate='<verb>' and object='<rest>'.
+      Special handling: if offense starts with 'bắt cóc', keep predicate 'bắt cóc'.
+    """
+    out: List[Dict[str, str]] = []
+    # Common two-word verb phrases to keep as predicate
+    MULTIWORD_VERB_PREFIXES = {
+        # đã có
+        "tài trợ", "cưỡng đoạt", "lừa đảo", "mua bán", "vận chuyển",
+        "chiếm đoạt", "hủy hoại", "phá hoại", "xâm phạm", "xâm hại",
+        "giao cấu", "tàng trữ", "sản xuất", "tổ chức", "môi giới",
+        "cưỡng ép", "đe dọa", "hành hạ",
+        # bổ sung theo yêu cầu
+        "phản bội", "khủng bố", "phá rối", "tuyên truyền",
+        # mở rộng thêm các cụm phổ biến trong BLHS
+        "trộm cắp", "cướp giật", "hiếp dâm", "cưỡng dâm", "gây rối"
+    }
+
+    def normalize_object_phrase(obj: str) -> str:
+        """Domain-specific object cleanup.
+        - Collapse variants of 'chất ma túy' to 'ma túy'; drop 'trái phép' when tied to ma túy.
+        - Normalize whitespace and punctuation.
+        """
+        o = obj or ""
+        if not o:
+            return o
+        o = cleanup_vi_tokens(o)
+        # Focused normalization for ma túy
+        o_low = o.lower()
+        if "ma túy" in o_low or "ma tuý" in o_low or "ma tuy" in o_low:
+            # Remove qualifiers like 'chất', 'trái phép' specific to drugs
+            o = re.sub(r"\b(chất\s+)?ma\s+t[úu]y\b", "ma túy", o, flags=re.IGNORECASE)
+            o = re.sub(r"\btrái\s+phép\b\s*(?=ma\s+t[úu]y)", "", o, flags=re.IGNORECASE)
+            o = "ma túy"
+        # Trim generic leading/trailing punctuation
+        o = o.strip().strip(",.;:()[]{}")
+        return o
+    for t in triples:
+        s = "Người"
+        p = (t.get("predicate", "") or "").strip()
+        o = (t.get("object", "") or "").strip()
+        new_p = p
+        new_o = o
+        if p.lower() == "phạm":
+            m = OFFENSE_OBJECT_RE.match(o)
+            if m:
+                rest = cleanup_vi_tokens(m.group(1) or "")
+                low = rest.lower()
+                if low.startswith("bắt cóc"):
+                    new_p = "bắt cóc"
+                    new_o = rest[len("bắt cóc"):].strip().strip(',;:') or ""
+                else:
+                    parts = rest.split()
+                    if len(parts) >= 2:
+                        two = (parts[0] + " " + parts[1]).lower()
+                        if two in MULTIWORD_VERB_PREFIXES:
+                            new_p = parts[0] + " " + parts[1]
+                            new_o = " ".join(parts[2:]).strip()
+                        else:
+                            new_p = parts[0]
+                            new_o = " ".join(parts[1:]).strip()
+                    else:
+                        # fallback: keep original
+                        new_p = p
+                        new_o = rest or o
+        new_o = normalize_object_phrase(new_o)
+        # Drop empty predicate/object after normalization
+        if not new_p or not new_o:
+            continue
+        out.append({"subject": s, "predicate": new_p, "object": new_o})
+    return out
+
+
+# --------------------------
 # CLI
 # --------------------------
 def main():
@@ -921,6 +1002,9 @@ def main():
 
     if args.gemini:
         triples = refine_with_gemini(triples, api_key=api_key)
+
+    # Apply simple normalization per request (subject -> Người; 'phạm' + 'tội X Y' -> X + Y)
+    triples = normalize_triples_simple(triples)
 
     # Decide JSON format
     out_path = args.output
