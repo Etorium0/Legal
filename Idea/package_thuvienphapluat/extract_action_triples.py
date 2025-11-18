@@ -175,6 +175,64 @@ def save_to_json(triples: List[Dict[str, str]], out_path: str) -> None:
 
 
 # --------------------------
+# Domain-specific post filters
+# --------------------------
+MINOR_14_16_RE = re.compile(r"từ\s*(?:đủ\s*)?14\s*(?:–|-|đến|đến\s*dưới)\s*16\s*tuổi", re.IGNORECASE)
+
+
+def post_filter_triples(triples: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    """Apply lightweight business rules and dedupe to reduce noisy repeats.
+
+    Rules:
+    - Drop records where object mentions 'Điều' but has no number.
+    - Drop records with predicate 'phạm' when subject is the 14–16 age group.
+    - Normalize common OCR noise (e.g., 'ma t úy' -> 'ma túy') for dedupe keys.
+    """
+    def _norm_for_key(x: str) -> str:
+        if not x:
+            return ""
+        t = normalize_terms(x)
+        # Unify 'Điều n' variants and strip stray parentheses
+        t = re.sub(r"\(?\s*Đi\S*\s*(\d+)\s*\)?", r"Điều \1", t, flags=re.IGNORECASE)
+        # Remove isolated trailing footnote '1'
+        t = re.sub(r"\s+1$", "", t)
+        # Fix OCR splits
+        t = re.sub(r"ma\s*t\s*úy", "ma túy", t, flags=re.IGNORECASE)
+        return cleanup_vi_tokens(t).lower()
+
+    cleaned: List[Dict[str, str]] = []
+    for t in triples:
+        s = (t.get("subject", "") or "").strip()
+        p = (t.get("predicate", "") or "").strip()
+        o = (t.get("object", "") or "").strip()
+
+        # Rule 1: If object references Điều but lacks a number, skip
+        if ("Điều" in o or "điều" in o.lower()) and not re.search(r"Điều\s+\d+", o, re.IGNORECASE):
+            # Allow cases without parentheses only when a number is present
+            continue
+
+        # Rule 2: Suppress 'phạm' triples for 14–16 subject
+        if MINOR_14_16_RE.search(s) and p.strip().lower() == "phạm":
+            continue
+
+        cleaned.append({
+            "subject": cleanup_vi_tokens(s),
+            "predicate": cleanup_vi_tokens(p),
+            "object": cleanup_vi_tokens(o),
+        })
+
+    # Deduplicate with normalized keys
+    uniq: List[Dict[str, str]] = []
+    seen = set()
+    for t in cleaned:
+        k = (_norm_for_key(t["subject"]), _norm_for_key(t["predicate"]), _norm_for_key(t["object"]))
+        if k not in seen:
+            seen.add(k)
+            uniq.append(t)
+    return uniq
+
+
+# --------------------------
 # VNCoreNLP init
 # --------------------------
 def init_vncorenlp(model_dir: str | None = None, heap: str = "-Xmx2g"):
@@ -370,7 +428,6 @@ def extract_triples_with_vncorenlp(text: str, nlp) -> List[Dict[str, str]]:
             seen.add(key)
             uniq.append(t)
     return uniq
-
 
 # --------------------------
 # Regex fallback extractor (no VNCoreNLP required)
@@ -1092,8 +1149,8 @@ def main():
     if mode == "regex" and args.debug:
         print("[DEBUG] Using regex fallback.")
 
-    # Hybrid union: always or on demand combine with regex for recall
-    if mode == "vncorenlp" and (args.hybrid or True):
+    # Hybrid union: on demand combine with regex for recall
+    if mode == "vncorenlp" and args.hybrid:
         regex_triples = extract_triples_regex(raw, aggressive=args.aggressive)
         if args.debug:
             print(f"[DEBUG] VNCoreNLP triples: {len(triples)}; regex triples: {len(regex_triples)} -> merging")
@@ -1130,10 +1187,16 @@ def main():
     if args.gemini:
         triples = refine_with_gemini(triples, api_key=api_key)
 
+    # Post-filter once before predicate/object normalization to drop noisy entries
+    triples = post_filter_triples(triples)
+
     # Apply simple normalization per request (subject -> Người; 'phạm' + 'tội X Y' -> X + Y)
     triples = normalize_triples_simple(triples)
     # Final dedupe after normalization
     triples = dedupe_triples_loose(triples)
+
+    # Final pass to collapse duplicates after normalization
+    triples = post_filter_triples(triples)
 
     # Decide JSON format
     out_path = args.output
