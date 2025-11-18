@@ -393,7 +393,7 @@ PENALTY_TU_RE = re.compile(r"\b(?:bị\s+)?phạt\s+tù\s*([^.;:\n]*)", re.IGNOR
 PENALTY_FINE_RE = re.compile(r"\b(?:bị\s+)?phạt\s+tiền\s+([^.;:\n]+)", re.IGNORECASE)
 PENALTY_NON_CUSTODIAL_RE = re.compile(r"\b(?:bị\s+)?phạt\s+cải\s+tạo\s+không\s+giam\s+giữ\s+([^.;:\n]+)", re.IGNORECASE)
 PENALTY_WARNING_RE = re.compile(r"\b(?:bị\s+)?phạt\s+cảnh\s+cáo\b([^.;:\n]*)", re.IGNORECASE)
-PENALTY_LIFE_RE = re.compile(r"\b(?:bị\s+)?phạt\s+tù\s+chung\s+thân\b", re.IGNORECASE)
+PENALTY_LIFE_RE = re.compile(r"\b(?:bị\s+)?phạt\s+tù\s+chung\s+thân\b", re.IGNORECASE)
 PENALTY_DEATH_RE = re.compile(r"\b(?:bị\s+)?tử\s+hình\b", re.IGNORECASE)
 CAM_DAM_NHIEM_RE = re.compile(r"\bbị\s+cấm\s+đảm\s+nhiệm\s+[^.;:\n]+", re.IGNORECASE)
 TUOC_QUYEN_RE = re.compile(r"\bbị\s+tước\s+[^.;:\n]+", re.IGNORECASE)
@@ -848,13 +848,17 @@ def normalize_triples_simple(triples: List[Dict[str, str]]) -> List[Dict[str, st
         "tài trợ", "cưỡng đoạt", "lừa đảo", "mua bán", "vận chuyển",
         "chiếm đoạt", "hủy hoại", "phá hoại", "xâm phạm", "xâm hại",
         "giao cấu", "tàng trữ", "sản xuất", "tổ chức", "môi giới",
-        "cưỡng ép", "đe dọa", "hành hạ",
-        # bổ sung theo yêu cầu
+        "buôn bán", "cưỡng ép", "đe dọa", "hành hạ",
         "phản bội", "khủng bố", "phá rối", "tuyên truyền",
-        # mở rộng thêm các cụm phổ biến trong BLHS
         "trộm cắp", "cướp giật", "hiếp dâm", "cưỡng dâm", "gây rối",
-        # bổ sung theo yêu cầu mới
-        "sử dụng", "thao túng", "gian lận"
+        "sử dụng", "thao túng", "gian lận",
+        # BỔ SUNG MỚI - các động từ hai từ còn thiếu
+        "phát tán", "xâm nhập", "làm giả", "đánh bạc", "cản trở",
+        "bỏ trốn", "trốn tránh", "ép buộc", "đánh tháo", "rửa tiền",
+        "buôn lậu", "tàng trữ", "sản xuất", "chế tạo", "trao đổi",
+        "tài trợ", "giúp sức", "tiêu thụ", "tàng trữ", "vận hành",
+        "khai thác", "làm hư hỏng", "phá hủy", "làm sai lệch",
+        "cưỡng bức", "ép buộc", "lạm dụng", "vi phạm"
     }
 
     def normalize_object_phrase(obj: str) -> str:
@@ -880,13 +884,44 @@ def normalize_triples_simple(triples: List[Dict[str, str]]) -> List[Dict[str, st
         s = "Người"
         p = (t.get("predicate", "") or "").strip()
         o = (t.get("object", "") or "").strip()
+
+        # OCR cleanup for common split errors in predicate and object
+        p = re.sub(r"\bgián\s*/\s*điệp\b", "gián điệp", p, flags=re.IGNORECASE)
+        p = re.sub(r"\bbạo\s*/\s*loạn\b", "bạo loạn", p, flags=re.IGNORECASE)
+        p = re.sub(r"\bphá\s*/\s*(hủy|hoại)\b", r"phá \1", p, flags=re.IGNORECASE)
+        p = re.sub(r"\blàm\s*,\s*", "làm ", p, flags=re.IGNORECASE)
+        p = re.sub(r"\bh\s+iếp\s+dâm\b", "hiếp dâm", p, flags=re.IGNORECASE)
+        p = re.sub(r"\bcưỡn\b", "cưỡng dâm", p, flags=re.IGNORECASE)
+        p = re.sub(r"\bsản\s+xuât\b", "sản xuất", p, flags=re.IGNORECASE)
+        # BỔ SUNG: xử lý các trường hợp predicate bị tách
+        p = re.sub(r"\bph[aá]t\s+t[aá]n\b", "phát tán", p, flags=re.IGNORECASE)
+        p = re.sub(r"\bcả?n\s*(?:trở|tr[ởơ])\b", "cản trở", p, flags=re.IGNORECASE)
+        p = re.sub(r"\bx[aâ]m\s+nh[ậa]p\b", "xâm nhập", p, flags=re.IGNORECASE)
+        p = re.sub(r"\bl[àa]m\s+gi[aả]\b", "làm giả", p, flags=re.IGNORECASE)
+        
+        # Object cleanup - BỔ SUNG
+        o = re.sub(r"\bgián\s*/\s*điệp\b", "gián điệp", o, flags=re.IGNORECASE)
+        o = re.sub(r"\bbạo\s*/\s*loạn\b", "bạo loạn", o, flags=re.IGNORECASE)
+        o = re.sub(r"\bphá\s*/\s*(hủy|hoại)\b", r"phá \1", o, flags=re.IGNORECASE)
+        o = re.sub(r"\bcố\s+ý\b", "cố ý", o, flags=re.IGNORECASE)
+        o = re.sub(r"\bh\s+iếp\s+dâm\b", "hiếp dâm", o, flags=re.IGNORECASE)
+        o = re.sub(r"\bcưỡn\b", "cưỡng dâm", o, flags=re.IGNORECASE)
+        o = re.sub(r"\bsản\s+xuât\b", "sản xuất", o, flags=re.IGNORECASE)
+        # BỔ SUNG: loại bỏ số Điều khỏi object
+        o = re.sub(r"\s*\(Đi[eêề]u\s+\d+[^\)]*\)\s*$", "", o, flags=re.IGNORECASE)
+        o = re.sub(r"\s*Đi[eêề]u\s+\d+\s*$", "", o, flags=re.IGNORECASE)
+
         new_p = p
         new_o = o
+        
+        # BỔ SUNG: xử lý "phạm" với predicate phức tạp
         if p.lower() == "phạm":
             m = OFFENSE_OBJECT_RE.match(o)
             if m:
                 rest = cleanup_vi_tokens(m.group(1) or "")
                 low = rest.lower()
+                
+                # Xử lý "bắt cóc" đặc biệt
                 if low.startswith("bắt cóc"):
                     new_p = "bắt cóc"
                     new_o = rest[len("bắt cóc"):].strip().strip(',;:') or ""
@@ -898,17 +933,107 @@ def normalize_triples_simple(triples: List[Dict[str, str]]) -> List[Dict[str, st
                             new_p = parts[0] + " " + parts[1]
                             new_o = " ".join(parts[2:]).strip()
                         else:
-                            new_p = parts[0]
-                            new_o = " ".join(parts[1:]).strip()
+                            # BỔ SUNG: kiểm tra nếu từ đầu là động từ một chữ phổ biến
+                            first = parts[0].lower()
+                            if first in {"phá", "hủy", "làm", "gây", "vi", "xâm", "cướp", "trộm", "giết", "đánh"}:
+                                new_p = parts[0]
+                                new_o = " ".join(parts[1:]).strip()
+                            else:
+                                new_p = p
+                                new_o = rest or o
+                    elif len(parts) == 1:
+                        # Chỉ có một từ - giữ làm predicate
+                        new_p = parts[0]
+                        new_o = ""
                     else:
-                        # fallback: keep original
                         new_p = p
                         new_o = rest or o
+
+        # BỔ SUNG: xử lý "chịu trách nhiệm hình sự về" - rút gọn object
+        if "chịu trách nhiệm hình sự" in new_p.lower():
+            # Loại bỏ các cụm dài không cần thiết ở đầu object
+            new_o = re.sub(r"^(?:về\s+)?(?:đối\s+với\s+)?", "", new_o, flags=re.IGNORECASE).strip()
+            # Cắt ngắn nếu quá dài (chỉ lấy phần chính)
+            if len(new_o) > 100:
+                # Lấy phần trước dấu phẩy/chấm phẩy đầu tiên
+                match = re.match(r"^([^,;]+)", new_o)
+                if match:
+                    new_o = match.group(1).strip()
+
+        # Xử lý các trường hợp predicate đặc biệt khác
+        # BỔ SUNG: "thực hiện" với object bắt đầu bằng động từ
+        if new_p.lower() == "thực hiện" and new_o:
+            obj_parts = new_o.split(maxsplit=2)
+            if len(obj_parts) >= 2:
+                first_word = obj_parts[0].lower()
+                verb_starts = {
+                    "phá", "chiếm", "vi", "cố", "không", "sản", "tàng", "vận", "sử", "mua", "chế",
+                    "tổ", "chứa", "cưỡng", "lôi", "đào", "gây", "dùng", "có", "làm", "xuất",
+                    "nhập", "ở", "trốn", "lợi", "đủ", "thuộc", "được", "là", "đã", "trong",
+                    # BỔ SUNG
+                    "phát", "xâm", "hủy", "đánh", "ép", "bỏ", "rửa", "buôn", "tiêu", "khai"
+                }
+                if first_word in verb_starts:
+                    # Kiểm tra động từ hai từ
+                    two = (obj_parts[0] + " " + obj_parts[1]).lower()
+                    if two in MULTIWORD_VERB_PREFIXES:
+                        new_p = obj_parts[0] + " " + obj_parts[1]
+                        new_o = obj_parts[2] if len(obj_parts) > 2 else ""
+                    else:
+                        new_p = obj_parts[0]
+                        new_o = " ".join(obj_parts[1:]).strip()
+
+        # BỔ SUNG: xử lý predicate có dấu phẩy/gạch chéo
+        if "," in new_p or "/" in new_p:
+            parts = re.split(r"[,/]", new_p)
+            new_p = parts[0].strip()
+
+        # Chuẩn hóa object
         new_o = normalize_object_phrase(new_o)
-        # Drop empty predicate/object after normalization
-        if not new_p or not new_o:
+
+        # BỔ SUNG: loại bỏ "trái phép" ở đầu object
+        if new_o.lower().startswith("trái phép "):
+            new_o = new_o[10:].strip()
+        
+        # BỔ SUNG: cắt object quá dài (> 200 ký tự)
+        if len(new_o) > 200:
+            # Cắt ở câu đầu tiên hoặc điểm ngắt tự nhiên
+            match = re.match(r"^([^.;]{1,200})", new_o)
+            if match:
+                new_o = match.group(1).strip()
+            else:
+                continue  # Bỏ qua triple này nếu không thể cắt hợp lý
+
+        # BỔ SUNG: loại bỏ object trống hoặc chỉ chứa ký tự đặc biệt
+        if not new_p or not new_o or len(new_o.strip(",.;:()[]{}\"' ")) == 0:
             continue
+            
         out.append({"subject": s, "predicate": new_p, "object": new_o})
+    
+    return out
+def dedupe_triples_loose(triples: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    """Deduplicate triples after normalization with loose cleaning.
+    - Lowercase + whitespace normalize + cleanup_vi_tokens.
+    - Strip trailing footnote-like digits (e.g., '... 1').
+    - Remove trailing dangling Điều references in object parentheses if any remains.
+    """
+    def key_of(t: Dict[str, str]) -> tuple[str, str, str]:
+        def norm(x: str) -> str:
+            s = cleanup_vi_tokens(x or "")
+            s = re.sub(r"\s+\(Đi\S*\s*\d+[^\)]*\)\s*$", "", s, flags=re.IGNORECASE)
+            s = re.sub(r"\s+[1-9]$", "", s)  # strip trailing single digits like footnotes
+            s = re.sub(r"\s+", " ", s).strip().lower()
+            return s
+        return (norm(t.get("subject", "")), norm(t.get("predicate", "")), norm(t.get("object", "")))
+
+    seen: set[tuple[str, str, str]] = set()
+    out: List[Dict[str, str]] = []
+    for t in triples:
+        k = key_of(t)
+        if k in seen:
+            continue
+        seen.add(k)
+        out.append(t)
     return out
 
 
@@ -1007,6 +1132,8 @@ def main():
 
     # Apply simple normalization per request (subject -> Người; 'phạm' + 'tội X Y' -> X + Y)
     triples = normalize_triples_simple(triples)
+    # Final dedupe after normalization
+    triples = dedupe_triples_loose(triples)
 
     # Decide JSON format
     out_path = args.output
