@@ -901,7 +901,7 @@ def normalize_triples_simple(triples: List[Dict[str, str]]) -> List[Dict[str, st
     out: List[Dict[str, str]] = []
     # Common two-word verb phrases to keep as predicate
     MULTIWORD_VERB_PREFIXES = {
-        # đã có
+        # Nhóm 1: Các động từ phổ biến
         "tài trợ", "cưỡng đoạt", "lừa đảo", "mua bán", "vận chuyển",
         "chiếm đoạt", "hủy hoại", "phá hoại", "xâm phạm", "xâm hại",
         "giao cấu", "tàng trữ", "sản xuất", "tổ chức", "môi giới",
@@ -909,13 +909,19 @@ def normalize_triples_simple(triples: List[Dict[str, str]]) -> List[Dict[str, st
         "phản bội", "khủng bố", "phá rối", "tuyên truyền",
         "trộm cắp", "cướp giật", "hiếp dâm", "cưỡng dâm", "gây rối",
         "sử dụng", "thao túng", "gian lận",
-        # BỔ SUNG MỚI - các động từ hai từ còn thiếu
+        # Nhóm 2: Động từ hai từ bị tách
         "phát tán", "xâm nhập", "làm giả", "đánh bạc", "cản trở",
         "bỏ trốn", "trốn tránh", "ép buộc", "đánh tháo", "rửa tiền",
-        "buôn lậu", "tàng trữ", "sản xuất", "chế tạo", "trao đổi",
-        "tài trợ", "giúp sức", "tiêu thụ", "tàng trữ", "vận hành",
-        "khai thác", "làm hư hỏng", "phá hủy", "làm sai lệch",
-        "cưỡng bức", "ép buộc", "lạm dụng", "vi phạm"
+        "buôn lậu", "chế tạo", "trao đổi", "giúp sức", "tiêu thụ",
+        "vận hành", "khai thác", "làm hư hỏng", "phá hủy",
+        "làm sai lệch", "cưỡng bức", "lạm dụng", "vi phạm",
+        # Nhóm 3: Các động từ trong file JSON cần tách
+        "gián điệp", "bạo loạn", "che giấu", "tố giác", "bào chữa",
+        "xúi giục", "đánh cắp", "nhập khẩu", "xuất khẩu", "lưu hành",
+        "đầu cơ", "in ấn", "cố ý", "vô ý", "ngược đãi", "từ chối",
+        "mang thai", "quảng cáo", "lưu giữ", "bảo quản", "bảo vệ",
+        "đồng tình", "bao che", "tham gia", "thành lập", "hoạt động",
+        "làm sai", "gây thiệt", "gây tổn", "làm trái", "làm chết"
     }
 
     def normalize_object_phrase(obj: str) -> str:
@@ -955,6 +961,19 @@ def normalize_triples_simple(triples: List[Dict[str, str]]) -> List[Dict[str, st
         p = re.sub(r"\bcả?n\s*(?:trở|tr[ởơ])\b", "cản trở", p, flags=re.IGNORECASE)
         p = re.sub(r"\bx[aâ]m\s+nh[ậa]p\b", "xâm nhập", p, flags=re.IGNORECASE)
         p = re.sub(r"\bl[àa]m\s+gi[aả]\b", "làm giả", p, flags=re.IGNORECASE)
+        
+        # Xử lý predicate 1 chữ có thể là phần đầu của động từ hai từ
+        # Kiểm tra xem object có bắt đầu với từ tiếp theo không
+        if len(p.split()) == 1 and o:
+            obj_first = o.split(maxsplit=1)
+            if len(obj_first) >= 1:
+                potential_two_word = (p + " " + obj_first[0]).lower()
+                if potential_two_word in MULTIWORD_VERB_PREFIXES:
+                    # Gộp predicate + từ đầu object thành predicate mới
+                    new_p = p + " " + obj_first[0]
+                    new_o = obj_first[1] if len(obj_first) > 1 else ""
+                    p = new_p
+                    o = new_o
         
         # Object cleanup - BỔ SUNG
         o = re.sub(r"\bgián\s*/\s*điệp\b", "gián điệp", o, flags=re.IGNORECASE)
@@ -1006,16 +1025,57 @@ def normalize_triples_simple(triples: List[Dict[str, str]]) -> List[Dict[str, st
                         new_p = p
                         new_o = rest or o
 
-        # BỔ SUNG: xử lý "chịu trách nhiệm hình sự về" - rút gọn object
+        # BỔ SUNG: xử lý "chịu trách nhiệm hình sự về" - tách thành nhiều triples
         if "chịu trách nhiệm hình sự" in new_p.lower():
-            # Loại bỏ các cụm dài không cần thiết ở đầu object
+            # Loại bỏ "về" ở đầu object nếu có
             new_o = re.sub(r"^(?:về\s+)?(?:đối\s+với\s+)?", "", new_o, flags=re.IGNORECASE).strip()
-            # Cắt ngắn nếu quá dài (chỉ lấy phần chính)
-            if len(new_o) > 100:
-                # Lấy phần trước dấu phẩy/chấm phẩy đầu tiên
-                match = re.match(r"^([^,;]+)", new_o)
-                if match:
-                    new_o = match.group(1).strip()
+            
+            # Tách các tội danh (cấu trúc: "tội X, tội Y, tội Z" HOẶC "X, tội Y, tội Z")
+            # Xử lý trường hợp đầu không có "tội"
+            parts = re.split(r",\s*(?=tội\s+)", new_o, flags=re.IGNORECASE)
+            offenses = []
+            for part in parts:
+                # Loại bỏ "tội" ở đầu
+                cleaned = re.sub(r"^tội\s+", "", part.strip(), flags=re.IGNORECASE)
+                if cleaned:
+                    offenses.append(cleaned)
+            
+            # Nếu không có "tội" nào, thử tách bằng dấu phẩy
+            if not offenses or len(offenses) == 1:
+                # Có thể là dạng "X, Y, Z" không có prefix "tội"
+                if len(offenses) == 1 and "," in offenses[0]:
+                    offenses = [x.strip() for x in offenses[0].split(",") if x.strip()]
+            
+            if offenses:
+                # Tạo nhiều triples cho mỗi tội danh
+                for offense in offenses:
+                    offense = offense.strip()
+                    # Phân tích cấu trúc "động từ + object" trong mỗi tội danh
+                    offense_parts = offense.split(maxsplit=2)
+                    if len(offense_parts) >= 1:
+                        first_word = offense_parts[0].lower()
+                        
+                        # Kiểm tra động từ hai từ
+                        if len(offense_parts) >= 2:
+                            two_word = (offense_parts[0] + " " + offense_parts[1]).lower()
+                            if two_word in MULTIWORD_VERB_PREFIXES:
+                                # Động từ hai từ
+                                triple_p = offense_parts[0] + " " + offense_parts[1]
+                                triple_o = " ".join(offense_parts[2:]).strip() if len(offense_parts) > 2 else ""
+                                # Nếu không có object, dùng toàn bộ phần còn lại
+                                if not triple_o:
+                                    triple_o = offense_parts[1]
+                                out.append({"subject": s, "predicate": triple_p, "object": triple_o})
+                            else:
+                                # Động từ một từ
+                                triple_p = offense_parts[0]
+                                triple_o = " ".join(offense_parts[1:]).strip()
+                                if triple_o:
+                                    out.append({"subject": s, "predicate": triple_p, "object": triple_o})
+                        else:
+                            # Chỉ có một từ - có thể là object nguyên văn, bỏ qua
+                            pass
+                continue  # Đã xử lý xong, không thêm triple gốc
 
         # Xử lý các trường hợp predicate đặc biệt khác
         # BỔ SUNG: "thực hiện" với object bắt đầu bằng động từ
