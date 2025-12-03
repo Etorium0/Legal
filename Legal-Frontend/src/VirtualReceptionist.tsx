@@ -3,6 +3,7 @@ import AssistantAvatar from './components/AssistantAvatar';
 import QueryBox from './components/QueryBox';
 import ResponseCard from './components/ResponseCard';
 import GesturePlayer from './components/GesturePlayer';
+import Nav from './components/Nav';
 import { queryEndpoint, ttsEndpoint, sttEndpoint, gesturesEndpoint } from './api';
 
 type HistoryItem = { question: string; answer: string; references?: Array<{ title: string; url: string }> };
@@ -144,7 +145,9 @@ export const VirtualReceptionist: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <Nav />
+      <main className="px-6 pb-10">
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col items-center gap-6">
           <AssistantAvatar state={state} />
@@ -186,6 +189,7 @@ export const VirtualReceptionist: React.FC = () => {
           </div>
         </div>
       </div>
+      </main>
     </div>
   );
 };

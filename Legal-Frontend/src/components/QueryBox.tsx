@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Input from './ui/input';
+import Button from './ui/button';
 
 type Props = {
   onSubmit: (text: string) => void;
@@ -11,27 +13,30 @@ export const QueryBox: React.FC<Props> = ({ onSubmit, onStartVoice, disabled }) 
 
   return (
     <div className="w-full max-w-3xl mx-auto flex items-center gap-3">
-      <input
+      <Input
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && onSubmit(text)}
-        className="flex-1 border rounded-lg px-4 py-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         placeholder="Hỏi luật bằng văn bản hoặc bấm mic để nói..."
         disabled={disabled}
+        leadingIcon={<span>🔎</span>}
       />
-      <button
+      <Button
         onClick={() => onStartVoice()}
         aria-label="voice"
-        className="p-3 rounded-full bg-indigo-600 text-white shadow hover:bg-indigo-700"
+        variant="primary"
+        size="md"
+        title="Ghi âm"
       >
         🎙️
-      </button>
-      <button
+      </Button>
+      <Button
         onClick={() => { onSubmit(text); setText(''); }}
-        className="px-4 py-2 bg-emerald-500 text-white rounded-lg shadow hover:bg-emerald-600"
+        variant="secondary"
+        size="md"
       >
         Gửi
-      </button>
+      </Button>
     </div>
   );
 };
