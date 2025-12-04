@@ -2,7 +2,8 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import Button from './ui/button'
 
-export const Nav: React.FC = () => {
+export const Nav: React.FC = () => 
+{
   return (
     <header className="sticky top-0 z-20 w-full bg-white/80 backdrop-blur border-b">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">

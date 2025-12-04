@@ -6,7 +6,8 @@ type Props = {
   references?: Reference[];
 };
 
-export const ResponseCard: React.FC<Props> = ({ answer, references = [] }) => {
+export const ResponseCard: React.FC<Props> = ({ answer, references = [] }) => 
+{
   return (
     <div className="w-full max-w-3xl mx-auto bg-white rounded-lg shadow p-4 mt-4">
       <div className="text-gray-800 whitespace-pre-wrap">{answer}</div>

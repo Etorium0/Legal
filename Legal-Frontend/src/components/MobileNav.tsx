@@ -1,7 +1,8 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
-const TabLink: React.FC<{ to: string; label: string }> = ({ to, label }) => {
+const TabLink: React.FC<{ to: string; label: string }> = ({ to, label }) => 
+{
   const { pathname } = useLocation()
   const active = pathname === to
   return (
@@ -14,7 +15,8 @@ const TabLink: React.FC<{ to: string; label: string }> = ({ to, label }) => {
   )
 }
 
-const MobileNav: React.FC = () => {
+const MobileNav: React.FC = () => 
+{
   return (
     <nav className="fixed inset-x-0 bottom-0 z-20 border-t bg-white shadow-sm sm:hidden">
       <div className="flex">

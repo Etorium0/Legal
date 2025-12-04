@@ -5,7 +5,8 @@ interface ChatBubbleProps {
   message: string
 }
 
-const ChatBubble: React.FC<ChatBubbleProps> = ({ role, message }) => {
+const ChatBubble: React.FC<ChatBubbleProps> = ({ role, message }) => 
+{
   const isUser = role === 'user'
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>

@@ -7,7 +7,8 @@ type Props = {
   disabled?: boolean;
 };
 
-export const QueryBox: React.FC<Props> = ({ onSubmit, onStartVoice, disabled }) => {
+export const QueryBox: React.FC<Props> = ({ onSubmit, onStartVoice, disabled }) => 
+{
   const [text, setText] = useState('');
 
   return (
@@ -19,7 +20,8 @@ export const QueryBox: React.FC<Props> = ({ onSubmit, onStartVoice, disabled }) 
           className="flex-1 bg-transparent outline-none placeholder-white/60"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => {
+          onKeyDown={(e) => 
+{
             if (e.key === 'Enter' && !disabled) { onSubmit(text); setText(''); }
           }}
           placeholder="Đặt câu hỏi (tối đa 500 ký tự)"

@@ -4,7 +4,8 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 	leadingIcon?: React.ReactNode
 }
 
-export const Input: React.FC<InputProps> = ({ className = '', leadingIcon, ...props }) => {
+export const Input: React.FC<InputProps> = ({ className = '', leadingIcon, ...props }) => 
+{
 	return (
 		<div className={`relative ${leadingIcon ? 'pl-9' : ''}`}>
 			{leadingIcon && (

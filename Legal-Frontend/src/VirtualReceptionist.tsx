@@ -8,7 +8,8 @@ import { queryEndpoint, ttsEndpoint, sttEndpoint, gesturesEndpoint } from './api
 
 type HistoryItem = { question: string; answer: string; references?: Array<{ title: string; url: string }> };
 
-export const VirtualReceptionist: React.FC = () => {
+export const VirtualReceptionist: React.FC = () => 
+{
   const [state, setState] = useState<'idle' | 'listening' | 'processing' | 'speaking'>('idle');
   const [response, setResponse] = useState<{ answer: string; references?: any[] } | null>(null);
   const [lastSttText, setLastSttText] = useState<string | null>(null);
@@ -21,25 +22,32 @@ export const VirtualReceptionist: React.FC = () => {
   const [relatedOpen, setRelatedOpen] = useState<boolean>(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
+  useEffect(() => 
+{
     audioRef.current = new Audio();
     // detect capabilities
     const Win: any = window as any;
     setSupportsRecognition(Boolean(Win.SpeechRecognition || Win.webkitSpeechRecognition));
     // check microphone permission status if supported
-    if ((navigator as any).permissions && (navigator as any).permissions.query) {
-      try {
+    if ((navigator as any).permissions && (navigator as any).permissions.query) 
+{
+      try 
+{
         (navigator as any).permissions.query({ name: 'microphone' }).then((p: any) => setMicPermission(p.state)).catch(() => {});
-      } catch (e) {
+      }
+ catch (e) 
+{
         // ignore
       }
     }
   }, []);
 
-  async function handleSubmit(text: string) {
-    if (!text) return;
+  async function handleSubmit(text: string) 
+{
+    if (!text) {return;}
     setState('processing');
-    try {
+    try 
+{
       const res = await queryEndpoint(text);
       setResponse(res);
       setHistory((h) => [ { question: text, answer: res.answer, references: res.references || [] }, ...h ].slice(0,5));
@@ -47,28 +55,36 @@ export const VirtualReceptionist: React.FC = () => {
       addHistory({ question: text, answer: res.answer, timestamp: Date.now() });
       // optionally play TTS
       setState('speaking');
-      try {
+      try 
+{
         const { url: ttsUrl, blob: ttsBlob } = await ttsEndpoint(res.answer);
-        if (audioRef.current) {
+        if (audioRef.current) 
+{
           audioRef.current.src = ttsUrl;
           await audioRef.current.play();
         }
         // Trigger gesture generation if enabled
-        if (humanLike) {
+        if (humanLike) 
+{
           setGestureVideoUrl(null);
           gesturesEndpoint(ttsBlob)
             .then(({ url }) => setGestureVideoUrl(url))
-            .catch((ge) => {
+            .catch((ge) => 
+{
               console.warn('Gestures generation failed', ge);
               setLastNetworkError((ge as any)?.message || String(ge));
             });
         }
-      } catch (e) {
+      }
+ catch (e) 
+{
         // ignore tts failure but log
         console.warn('TTS failed', e);
       }
       setState('idle');
-    } catch (e) {
+    }
+ catch (e) 
+{
       const msg = (e as any)?.message || String(e);
       setLastNetworkError(msg);
       setState('idle');
@@ -76,44 +92,53 @@ export const VirtualReceptionist: React.FC = () => {
     }
   }
 
-  async function handleStartVoice() {
+  async function handleStartVoice() 
+{
     // Try Web Speech API first (SpeechRecognition / webkitSpeechRecognition)
     const Win: any = window as any;
     const SpeechRecognition = Win.SpeechRecognition || Win.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      try {
+    if (SpeechRecognition) 
+{
+      try 
+{
         const recognition = new SpeechRecognition();
         recognition.lang = 'vi-VN';
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
 
         recognition.onstart = () => setState('listening');
-        recognition.onerror = (ev: any) => {
+        recognition.onerror = (ev: any) => 
+{
           console.error('SpeechRecognition error', ev);
           setState('idle');
         };
-        recognition.onresult = (ev: any) => {
+        recognition.onresult = (ev: any) => 
+{
           const text = ev.results[0][0].transcript;
           console.log('SpeechRecognition result:', text);
           setLastSttText(text);
           setState('processing');
           handleSubmit(text).catch(() => {});
         };
-        recognition.onend = () => {
+        recognition.onend = () => 
+{
           // If user didn't speak, go back to idle
-          if (state === 'listening') setState('idle');
+          if (state === 'listening') {setState('idle');}
         };
 
         recognition.start();
         return;
-      } catch (e) {
+      }
+ catch (e) 
+{
         console.warn('SpeechRecognition failed', e);
         // fall through to MediaRecorder fallback
       }
     }
 
     // Fallback: use getUserMedia + MediaRecorder to capture audio and send to /api/stt
-    try {
+    try 
+{
       setState('listening');
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
@@ -122,16 +147,20 @@ export const VirtualReceptionist: React.FC = () => {
       mediaRecorder.start();
 
       // Stop after a short timeout or let user stop in a more complete UI
-      setTimeout(async () => {
+      setTimeout(async () => 
+{
         mediaRecorder.stop();
         const blob = new Blob(chunks, { type: 'audio/webm' });
         setState('processing');
-        try {
+        try 
+{
           const text = await sttEndpoint(blob);
           console.log('STT endpoint returned:', text);
           setLastSttText(text);
           await handleSubmit(text);
-        } catch (err: any) {
+        }
+ catch (err: any) 
+{
           console.error('STT upload failed', err);
           setLastNetworkError(err?.message || String(err));
           setResponse({ answer: 'Không thể chuyển giọng nói thành văn bản. Vui lòng thử lại.' });
@@ -139,7 +168,9 @@ export const VirtualReceptionist: React.FC = () => {
         }
         stream.getTracks().forEach((t) => t.stop());
       }, 4000);
-    } catch (err) {
+    }
+ catch (err) 
+{
       console.error('getUserMedia failed', err);
       setLastNetworkError((err as any)?.message || String(err));
       setResponse({ answer: 'Trình duyệt không cho phép truy cập micro hoặc thiết bị không có micro.' });

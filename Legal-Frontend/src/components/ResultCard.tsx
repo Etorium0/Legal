@@ -8,7 +8,8 @@ interface ResultCardProps {
   onOpen?: () => void
 }
 
-const ResultCard: React.FC<ResultCardProps> = ({ title, snippet, tags = [], onOpen }) => {
+const ResultCard: React.FC<ResultCardProps> = ({ title, snippet, tags = [], onOpen }) => 
+{
   return (
     <article className="rounded-lg border bg-white p-4 shadow-sm">
       <h3 className="text-lg font-semibold">{title}</h3>

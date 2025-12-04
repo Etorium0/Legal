@@ -1,3 +1,4 @@
+// Light/white Sidebar used by router pages; keep this version.
 import React, { useEffect, useState } from 'react'
 import { getHistory, clearHistory } from './HistoryStore'
 
@@ -16,11 +17,13 @@ const defaultItems: NavItem[] = [
   { label: 'Cài đặt', href: '/settings' },
 ]
 
-export const Sidebar: React.FC<{ items?: NavItem[]; className?: string; open?: boolean }> = ({ items = defaultItems, className = '', open = true }) => {
+export const Sidebar: React.FC<{ items?: NavItem[]; className?: string; open?: boolean }> = ({ items = defaultItems, className = '', open = true }) => 
+{
   const [history, setHistory] = useState(getHistory())
-  useEffect(() => {
+  useEffect(() => 
+{
     // refresh on open
-    if (open) setHistory(getHistory())
+    if (open) {setHistory(getHistory())}
   }, [open])
 
   return (

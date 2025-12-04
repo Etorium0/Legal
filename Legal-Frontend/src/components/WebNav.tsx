@@ -1,7 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-const WebNav: React.FC<{ onToggleSidebar?: () => void }> = ({ onToggleSidebar }) => {
+const WebNav: React.FC<{ onToggleSidebar?: () => void }> = ({ onToggleSidebar }) => 
+{
   return (
     <header className="sticky top-0 z-20 border-b border-white/10 bg-black">
       <div className="mx-auto max-w-7xl px-4 flex h-14 items-center justify-between text-white">

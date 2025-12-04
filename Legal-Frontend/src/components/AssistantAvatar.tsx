@@ -5,7 +5,8 @@ type Props = {
   state: 'idle' | 'listening' | 'processing' | 'speaking';
 };
 
-export const AssistantAvatar: React.FC<Props> = ({ state }) => {
+export const AssistantAvatar: React.FC<Props> = ({ state }) => 
+{
   const color = {
     idle: 'bg-indigo-500',
     listening: 'bg-emerald-500',

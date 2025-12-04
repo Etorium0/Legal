@@ -5,7 +5,8 @@ interface GesturePlayerProps {
   onClose?: () => void;
 }
 
-const GesturePlayer: React.FC<GesturePlayerProps> = ({ videoUrl, onClose }) => {
+const GesturePlayer: React.FC<GesturePlayerProps> = ({ videoUrl, onClose }) => 
+{
   return (
     <div className="w-full max-w-3xl mt-4 bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
       <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-b">

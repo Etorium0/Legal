@@ -4,7 +4,7 @@
 
 @layer base {
 	html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-	body { @apply bg-gray-50 text-gray-900; }
+	body { @apply bg-bg text-white; }
 }
 
 /* Dark theme overrides inspired by the sample */

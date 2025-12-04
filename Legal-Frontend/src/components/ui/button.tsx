@@ -21,7 +21,8 @@ const sizes: Record<string, string> = {
   icon: 'h-10 w-10',
 }
 
-export const Button: React.FC<ButtonProps> = ({ variant = 'primary', size = 'md', className = '', children, ...props }) => {
+export const Button: React.FC<ButtonProps> = ({ variant = 'primary', size = 'md', className = '', children, ...props }) => 
+{
   const classes = `${base} ${variants[variant]} ${sizes[size]} ${className}`
   return (
     <button className={classes} {...props}>

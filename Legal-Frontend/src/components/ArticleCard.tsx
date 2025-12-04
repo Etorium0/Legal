@@ -6,7 +6,8 @@ interface ArticleCardProps {
   imageUrl?: string
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ title, description, imageUrl }) => {
+const ArticleCard: React.FC<ArticleCardProps> = ({ title, description, imageUrl }) => 
+{
   return (
     <article className="overflow-hidden rounded-lg border bg-white shadow-sm">
       {imageUrl && <img src={imageUrl} alt="" className="h-40 w-full object-cover" />}

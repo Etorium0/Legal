@@ -5,6 +5,6 @@ import './styles.css'
 
 const container = document.getElementById('root')!
 const root = createRoot(container)
-// Apply global dark theme
-document.body.classList.add('theme-dark')
+// Apply global dark theme class for Tailwind
+document.documentElement.classList.add('dark')
 root.render(<App />)
