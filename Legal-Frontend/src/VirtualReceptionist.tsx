@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { addHistory } from './components/HistoryStore';
 import AssistantAvatar from './components/AssistantAvatar';
 import QueryBox from './components/QueryBox';
 import ResponseCard from './components/ResponseCard';
 import GesturePlayer from './components/GesturePlayer';
-import Nav from './components/Nav';
 import { queryEndpoint, ttsEndpoint, sttEndpoint, gesturesEndpoint } from './api';
 
 type HistoryItem = { question: string; answer: string; references?: Array<{ title: string; url: string }> };
@@ -18,6 +18,7 @@ export const VirtualReceptionist: React.FC = () => {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [humanLike, setHumanLike] = useState<boolean>(true);
   const [gestureVideoUrl, setGestureVideoUrl] = useState<string | null>(null);
+  const [relatedOpen, setRelatedOpen] = useState<boolean>(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -42,6 +43,8 @@ export const VirtualReceptionist: React.FC = () => {
       const res = await queryEndpoint(text);
       setResponse(res);
       setHistory((h) => [ { question: text, answer: res.answer, references: res.references || [] }, ...h ].slice(0,5));
+      // persist to shared history store
+      addHistory({ question: text, answer: res.answer, timestamp: Date.now() });
       // optionally play TTS
       setState('speaking');
       try {
@@ -145,51 +148,98 @@ export const VirtualReceptionist: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <Nav />
-      <main className="px-6 pb-10">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex flex-col items-center gap-6">
-          <AssistantAvatar state={state} />
-          <div className="w-full max-w-3xl -mb-3 flex items-center justify-between">
-            <label className="inline-flex items-center gap-2 text-sm text-gray-700">
-              <input type="checkbox" className="w-4 h-4" checked={humanLike} onChange={(e) => setHumanLike(e.target.checked)} />
-              Hiển thị cử chỉ giống con người (PantoMatrix)
-            </label>
-          </div>
-          <QueryBox onSubmit={handleSubmit} onStartVoice={handleStartVoice} disabled={state !== 'idle'} />
-          {response && <ResponseCard answer={response.answer} references={response.references} />}
-          {humanLike && gestureVideoUrl && (
-            <GesturePlayer videoUrl={gestureVideoUrl} onClose={() => setGestureVideoUrl(null)} />
-          )}
+    <div className="min-h-[calc(100vh-3.5rem)] bg-black">
+      <div className="mx-auto max-w-7xl px-4">
+        <div className={`grid grid-cols-1 gap-4 ${relatedOpen ? 'xl:grid-cols-[1fr_22rem]' : 'xl:grid-cols-1'}`}>
 
-          <div className="w-full max-w-3xl mt-6">
-            <div className="text-sm font-semibold text-gray-600">Lịch sử gần nhất</div>
-            <div className="mt-2 grid grid-cols-1 gap-3">
-              {history.map((h, i) => (
-                <div key={i} className="bg-white p-3 rounded-lg shadow-sm flex justify-between items-start">
-                  <div>
-                    <div className="text-xs text-gray-500">Q</div>
-                    <div className="text-sm text-gray-800">{h.question}</div>
-                    <div className="mt-2 text-xs text-gray-600">A: {h.answer.slice(0,120)}{h.answer.length>120?'...':''}</div>
+          {/* Chat area with patterned background */}
+          <main className="relative bg-neutral-950/80 backdrop-blur rounded-lg border border-white/10">
+            <div className="bg-lines rounded-lg p-6">
+              {/* Assistant status/avatar small */}
+              <div className="flex items-center justify-center py-6">
+                <AssistantAvatar state={state} />
+              </div>
+
+              {/* Messages */}
+              <div className="space-y-4">
+                  {/* Last response only; full history lives in Sidebar */}
+                  {response && (
+                    <div className="flex justify-start">
+                      <div className="max-w-[85%]">
+                        <ResponseCard answer={response.answer} references={response.references} />
+                      </div>
+                    </div>
+                  )}
+              </div>
+
+              {/* Input + controls at bottom styled */}
+              <div className="sticky bottom-4 mt-6 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="inline-flex items-center gap-2 text-xs text-white/80">
+                    <input type="checkbox" className="w-4 h-4" checked={humanLike} onChange={(e) => setHumanLike(e.target.checked)} />
+                    Hiển thị cử chỉ giống con người (PantoMatrix)
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setRelatedOpen((o) => !o)}
+                      className="rounded-md px-2 py-1 text-xs border border-white/10 bg-white/5 text-white/80 hover:bg-white/10"
+                    >
+                      {relatedOpen ? 'Ẩn panel phải' : 'Hiện panel phải'}
+                    </button>
+                    <div className="text-xs text-white/60">{state.toUpperCase()}</div>
                   </div>
-                  <div className="text-xs text-gray-400">{i+1}</div>
                 </div>
-              ))}
-            </div>
-          </div>
+                <div className="input-bar-dark">
+                  <QueryBox onSubmit={handleSubmit} onStartVoice={handleStartVoice} disabled={state !== 'idle'} />
+                </div>
+              </div>
 
-          {/* Debug panel - helpful while developing STT */}
-          <div className="w-full max-w-3xl mt-6 bg-white p-3 rounded-lg shadow-sm text-sm text-gray-700">
-            <div className="font-semibold text-gray-600 mb-2">Debug STT</div>
-            <div>SpeechRecognition supported: <span className="font-medium">{supportsRecognition ? 'Yes' : 'No'}</span></div>
-            <div>Microphone permission: <span className="font-medium">{micPermission ?? 'unknown'}</span></div>
-            <div>Last recognized text: <span className="font-medium">{lastSttText ?? '-'}</span></div>
-            <div>Last network/error: <span className="font-medium text-red-500">{lastNetworkError ?? '-'}</span></div>
-          </div>
+              {/* Gesture preview */}
+              {humanLike && gestureVideoUrl && (
+                <div className="mt-4">
+                  <GesturePlayer videoUrl={gestureVideoUrl} onClose={() => setGestureVideoUrl(null)} />
+                </div>
+              )}
+
+              {/* Debug panel (dark) */}
+              <div className="mt-6 rounded-lg bg-white/5 p-3 text-sm text-white/80 shadow-sm">
+                <div className="font-semibold text-white mb-2">Debug STT</div>
+                <div>SpeechRecognition supported: <span className="font-medium">{supportsRecognition ? 'Yes' : 'No'}</span></div>
+                <div>Microphone permission: <span className="font-medium">{micPermission ?? 'unknown'}</span></div>
+                <div>Last recognized text: <span className="font-medium">{lastSttText ?? '-'}</span></div>
+                <div>Last network/error: <span className="font-medium text-red-400">{lastNetworkError ?? '-'}</span></div>
+              </div>
+            </div>
+          </main>
+
+          {/* Right panel - related documents */}
+          <aside
+            className={`${relatedOpen ? 'xl:block' : 'xl:hidden'} hidden rounded-lg p-4 bg-neutral-950/80 backdrop-blur border border-white/10`}
+            aria-hidden={!relatedOpen}
+          >
+            <div className="flex items-center justify-between">
+              <div className="font-semibold text-white">Văn bản liên quan</div>
+              <button onClick={() => setRelatedOpen(false)} className="text-white/70">✖</button>
+            </div>
+            <div className="mt-3 text-sm text-white/80">
+              {response?.references?.length ? (
+                <ul className="space-y-2">
+                  {response!.references!.map((r: any, idx: number) => (
+                    <li key={idx} className="rounded-md border border-white/10 bg-white/5 p-2">
+                      <div className="text-sm font-medium text-white/90">{r.title || 'Tài liệu'}</div>
+                      {r.url && (
+                        <a href={r.url} target="_blank" rel="noreferrer" className="text-xs text-blue-300 hover:text-blue-200">Mở liên kết</a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <span>Chưa có dữ liệu hiển thị</span>
+              )}
+            </div>
+          </aside>
         </div>
       </div>
-      </main>
     </div>
   );
 };

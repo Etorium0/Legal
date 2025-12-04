@@ -7,6 +7,30 @@
 	body { @apply bg-gray-50 text-gray-900; }
 }
 
+/* Dark theme overrides inspired by the sample */
+.theme-dark {
+	--bg: 15 20% 10%;
+	--panel: 220 14% 17%;
+	--panel-2: 220 14% 12%;
+	--text: 0 0% 97%;
+	--muted: 0 0% 80%;
+}
+.theme-dark body { background-color: hsl(var(--bg)); color: hsl(var(--text)); }
+.theme-dark .panel { background-color: hsl(var(--panel)); color: hsl(var(--text)); }
+.theme-dark .panel-2 { background-color: hsl(var(--panel-2)); color: hsl(var(--text)); }
+.theme-dark .muted { color: hsl(var(--muted)); }
+
+/* Background pattern similar to lines */
+.bg-lines {
+	background-image: radial-gradient(circle at 20% 0%, rgba(255,255,255,0.08), transparent 40%),
+		radial-gradient(circle at 80% 0%, rgba(255,255,255,0.06), transparent 40%),
+		repeating-linear-gradient(135deg, rgba(255,255,255,0.06) 0 2px, transparent 2px 16px);
+	background-color: #0f172a; /* slate-900 */
+}
+
 @layer components {
 	.container { @apply mx-auto max-w-6xl px-4; }
+	.input-bar { @apply rounded-full border bg-white/90 backdrop-blur px-4 py-2 shadow-sm flex items-center gap-2; }
+	.input-bar-dark { @apply rounded-full border border-white/10 bg-white/5 px-4 py-2 shadow-sm flex items-center gap-2 text-white; }
+	.btn-pill { @apply inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium; }
 }
