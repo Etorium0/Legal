@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"E:/open-virtual-assistant-main/portaudio/build/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

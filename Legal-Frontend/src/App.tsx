@@ -6,7 +6,7 @@ import KnowledgeGraphPage from './components/KnowledgeGraphPage'
 import SettingsPage from './components/SettingsPage'
 import LoginPage from './components/LoginPage'
 import DashboardPage from './components/DashboardPage'
-import AssistantPage from './components/AssistantPage'
+import AssistantPageEnhanced from './components/AssistantPageEnhanced'
 
 const App: React.FC = () => 
 {
@@ -14,7 +14,7 @@ const App: React.FC = () =>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/assistant" replace />} />
-        <Route path="/assistant" element={<AssistantPage />} />
+        <Route path="/assistant" element={<AssistantPageEnhanced />} />
         <Route path="/home" element={<LandingPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/documents" element={<DocumentBrowserPage />} />

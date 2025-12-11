@@ -72,8 +72,10 @@ export async function ttsEndpoint(text: string): Promise<{ url: string; blob: Bl
     const view = new DataView(buffer)
     
     // WAV header
-    const writeString = (offset: number, string: string) => {
-      for (let i = 0; i < string.length; i++) {
+    const writeString = (offset: number, string: string) => 
+{
+      for (let i = 0; i < string.length; i++) 
+{
         view.setUint8(offset + i, string.charCodeAt(i))
       }
     }
@@ -121,7 +123,8 @@ export async function gesturesEndpoint(audioBlob: Blob): Promise<{ url: string; 
     canvas.height = 512
     const ctx = canvas.getContext('2d')
     
-    if (!ctx) {
+    if (!ctx) 
+{
       throw new Error('Canvas context not available')
     }
     
@@ -157,12 +160,17 @@ export async function gesturesEndpoint(audioBlob: Blob): Promise<{ url: string; 
     ctx.fillText('(Placeholder - Cần backend)', 256, 370)
     
     // Convert canvas to blob
-    return new Promise((resolve, reject) => {
-      canvas.toBlob((blob) => {
-        if (blob) {
+    return new Promise((resolve, reject) => 
+{
+      canvas.toBlob((blob) => 
+{
+        if (blob) 
+{
           const url = URL.createObjectURL(blob)
           resolve({ url, type: 'image/png' })
-        } else {
+        }
+ else 
+{
           reject(new Error('Failed to create blob'))
         }
       }, 'image/png')

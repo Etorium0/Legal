@@ -6,7 +6,8 @@ import ChatMessageView, { ChatMessage } from './ChatMessage'
 import { addHistory } from './HistoryStore'
 import { queryEndpoint, ttsEndpoint, gesturesEndpoint } from '../api'
 
-const AssistantPage: React.FC = () => {
+const AssistantPage: React.FC = () => 
+{
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
@@ -21,14 +22,17 @@ const AssistantPage: React.FC = () => {
   const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  async function generateAvatarResponse(text: string) {
+  async function generateAvatarResponse(text: string) 
+{
     setIsGeneratingAvatar(true)
-    try {
+    try 
+{
       // Generate TTS audio
       const { url: audioUrl, blob: audioBlob } = await ttsEndpoint(text)
       
       // Play audio
-      if (!audioRef.current) {
+      if (!audioRef.current) 
+{
         audioRef.current = new Audio()
       }
       audioRef.current.src = audioUrl
@@ -37,15 +41,20 @@ const AssistantPage: React.FC = () => {
       // Generate gesture video
       const { url: videoUrl } = await gesturesEndpoint(audioBlob)
       setAvatarVideoUrl(videoUrl)
-    } catch (error) {
+    }
+ catch (error) 
+{
       console.error('Avatar generation failed:', error)
-    } finally {
+    }
+ finally 
+{
       setIsGeneratingAvatar(false)
     }
   }
 
-  async function handleSend(text: string) {
-    if (!text.trim() || loading) return
+  async function handleSend(text: string) 
+{
+    if (!text.trim() || loading) {return}
     
     const userMsg: ChatMessage = { 
       id: Date.now().toString(), 
@@ -57,7 +66,8 @@ const AssistantPage: React.FC = () => {
     addHistory({ question: text, answer: '', timestamp: Date.now() })
     setLoading(true)
 
-    try {
+    try 
+{
       const result = await queryEndpoint(text)
       const aiMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -69,10 +79,13 @@ const AssistantPage: React.FC = () => {
       addHistory({ question: text, answer: result.answer, timestamp: Date.now() })
       
       // Generate avatar speech and gestures if enabled
-      if (avatarEnabled && result.answer) {
+      if (avatarEnabled && result.answer) 
+{
         generateAvatarResponse(result.answer)
       }
-    } catch (error) {
+    }
+ catch (error) 
+{
       const errorMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -80,7 +93,9 @@ const AssistantPage: React.FC = () => {
         timestamp: new Date().toISOString(),
       }
       setMessages(prev => [...prev, errorMsg])
-    } finally {
+    }
+ finally 
+{
       setLoading(false)
     }
   }
@@ -105,10 +120,12 @@ const AssistantPage: React.FC = () => {
                       )}
                     </div>
                     <button
-                      onClick={() => {
+                      onClick={() => 
+{
                         setAvatarEnabled(false)
                         setAvatarVideoUrl(null)
-                        if (audioRef.current) {
+                        if (audioRef.current) 
+{
                           audioRef.current.pause()
                         }
                       }}

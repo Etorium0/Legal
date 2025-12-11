@@ -7,7 +7,8 @@ export type ChatMessage = {
   timestamp?: string
 }
 
-export const ChatMessageView: React.FC<{ message: ChatMessage }> = ({ message }) => {
+export const ChatMessageView: React.FC<{ message: ChatMessage }> = ({ message }) => 
+{
   const isUser = message.role === 'user'
   return (
     <div className={`w-full flex ${isUser ? 'justify-end' : 'justify-start'}`}>

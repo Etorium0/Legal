@@ -21,7 +21,6 @@ const GesturePlayer: React.FC<GesturePlayerProps> = ({ videoUrl, onClose }) =>
         )}
       </div>
       <div className="aspect-video bg-black">
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video src={videoUrl} className="w-full h-full" controls playsInline />
       </div>
       <div className="px-4 py-2 text-xs text-gray-500">Nguồn: Dịch vụ PantoMatrix (EMAGE/CaMN/DisCo)</div>

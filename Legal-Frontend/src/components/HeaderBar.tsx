@@ -1,6 +1,7 @@
 import React from 'react'
 
-export const HeaderBar: React.FC<{ onModelClick?: () => void }> = ({ onModelClick }) => {
+export const HeaderBar: React.FC<{ onModelClick?: () => void }> = ({ onModelClick }) => 
+{
   return (
     <header className="sticky top-0 z-20 border-b border-white/10 bg-[#0C0F14]/80 backdrop-blur">
       <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
