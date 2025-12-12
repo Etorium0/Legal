@@ -1,4 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
+import './services/audioService'; // ensure SpeechRecognition types are merged
+
+// Minimal SpeechRecognition instance shape for TS (browser-provided)
+type BrowserSpeechRecognition = {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  start: () => void;
+  stop: () => void;
+  onresult: ((ev: any) => void) | null;
+  onerror: ((ev: any) => void) | null;
+  onend: (() => void) | null;
+};
 import { addHistory } from './components/HistoryStore';
 import AssistantAvatar from './components/AssistantAvatar';
 import QueryBox from './components/QueryBox';
@@ -23,6 +36,103 @@ export const VirtualReceptionist: React.FC = () =>
   const [gestureVideoUrl, setGestureVideoUrl] = useState<string | null>(null);
   const [relatedOpen, setRelatedOpen] = useState<boolean>(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const wakeListening = useRef<boolean>(false);
+  const wakeRecognizerRef = useRef<BrowserSpeechRecognition | null>(null);
+  const wakeEnabled = useRef<boolean>(true);
+
+  const stripWakeWords = (text: string) => {
+    const lowers = text.toLowerCase().trim();
+    const WAKE_PREFIXES = [
+      'hey legal',
+      'hey, legal',
+      'trợ lý ơi',
+      'hey assistant',
+      'assistant',
+    ];
+    for (const prefix of WAKE_PREFIXES) {
+      if (lowers.startsWith(prefix)) {
+        return lowers.slice(prefix.length).trim() || lowers;
+      }
+    }
+    return text;
+  };
+
+  const stopWakeRecognizer = () => {
+    wakeEnabled.current = false;
+    if (wakeRecognizerRef.current) {
+      try { wakeRecognizerRef.current.stop(); } catch {}
+    }
+  };
+
+  const restartWakeRecognizer = () => {
+    wakeEnabled.current = true;
+    if (wakeRecognizerRef.current) {
+      try { wakeRecognizerRef.current.start(); } catch {}
+    }
+  };
+
+  // Passive wake-word listener: always-on, low-power; triggers main voice capture when hearing wake words.
+  useEffect(() => {
+    const Win: any = window as any;
+    const SR = (Win.SpeechRecognition || Win.webkitSpeechRecognition) as { new (): BrowserSpeechRecognition } | undefined;
+    if (!SR) return;
+
+    const startWake = () => {
+      if (wakeRecognizerRef.current) {
+        try { wakeRecognizerRef.current.stop(); } catch {}
+      }
+      const rec = new SR();
+      rec.lang = 'vi-VN';
+      rec.continuous = true;
+      rec.interimResults = true;
+
+      rec.onresult = (ev: any) => {
+        const transcript = Array.from(ev.results)
+          .map((r: any) => r[0].transcript)
+          .join(' ')
+          .toLowerCase();
+
+        const hits = ['hey legal', 'trợ lý ơi', 'hey assistant', 'assistant', 'legal ơi'];
+        if (!wakeEnabled.current) return;
+        if (!wakeListening.current && hits.some((h) => transcript.includes(h))) {
+          wakeListening.current = true;
+          playClickSound();
+          handleStartVoice();
+          setTimeout(() => { wakeListening.current = false; }, 1000);
+        }
+      };
+
+      rec.onerror = () => {
+        if (!wakeListening.current && wakeEnabled.current) {
+          setTimeout(() => {
+            try { rec.start(); } catch {}
+          }, 300);
+        }
+      };
+
+      rec.onend = () => {
+        if (!wakeListening.current && wakeEnabled.current) {
+          setTimeout(() => {
+            try { rec.start(); } catch {}
+          }, 250);
+        }
+      };
+
+      wakeRecognizerRef.current = rec;
+      try { rec.start(); } catch {}
+    };
+
+    // Start after a short delay to avoid permission race
+    const timer = setTimeout(startWake, 500);
+    return () => {
+      clearTimeout(timer);
+      wakeEnabled.current = false;
+      wakeListening.current = true; // prevent auto-restart
+      if (wakeRecognizerRef.current) {
+        try { wakeRecognizerRef.current.stop(); } catch {}
+      }
+    };
+  }, []);
 
   useEffect(() => 
 {
@@ -47,23 +157,24 @@ export const VirtualReceptionist: React.FC = () =>
 
   async function handleSubmit(text: string) 
 {
-    if (!text) {return;}
+    const cleaned = stripWakeWords(text);
+    if (!cleaned) {return;}
 
     // Client-side quick commands (open/play) inspired by Sophia
-    const commandResult = processVoiceCommand(text);
+    const commandResult = processVoiceCommand(cleaned);
     if (commandResult.handled) {
       setResponse({ answer: commandResult.message || '' });
-      setHistory((h) => [ { question: text, answer: commandResult.message || '', references: [] }, ...h ].slice(0,5));
-      addHistory({ question: text, answer: commandResult.message || '', timestamp: Date.now() });
+      setHistory((h) => [ { question: cleaned, answer: commandResult.message || '', references: [] }, ...h ].slice(0,5));
+      addHistory({ question: cleaned, answer: commandResult.message || '', timestamp: Date.now() });
       return;
     }
 
     setState('processing');
     try 
 {
-      const res = await queryEndpoint(text);
+      const res = await queryEndpoint(cleaned);
       setResponse(res);
-      setHistory((h) => [ { question: text, answer: res.answer, references: res.references || [] }, ...h ].slice(0,5));
+      setHistory((h) => [ { question: cleaned, answer: res.answer, references: res.references || [] }, ...h ].slice(0,5));
       // persist to shared history store
       addHistory({ question: text, answer: res.answer, timestamp: Date.now() });
       // optionally play TTS
@@ -112,6 +223,8 @@ export const VirtualReceptionist: React.FC = () =>
 
   async function handleStartVoice() 
 {
+    // suspend wake listener while main recording runs
+    stopWakeRecognizer();
     playClickSound();
     // Try Web Speech API first (SpeechRecognition / webkitSpeechRecognition)
     const Win: any = window as any;
@@ -140,9 +253,10 @@ export const VirtualReceptionist: React.FC = () =>
           handleSubmit(text).catch(() => {});
         };
         recognition.onend = () => 
-{
+      {
           // If user didn't speak, go back to idle
           if (state === 'listening') {setState('idle');}
+          restartWakeRecognizer();
         };
 
         recognition.start();
@@ -186,6 +300,7 @@ export const VirtualReceptionist: React.FC = () =>
           setState('idle');
         }
         stream.getTracks().forEach((t) => t.stop());
+        restartWakeRecognizer();
       }, 4000);
     }
  catch (err) 
@@ -194,6 +309,7 @@ export const VirtualReceptionist: React.FC = () =>
       setLastNetworkError((err as any)?.message || String(err));
       setResponse({ answer: 'Trình duyệt không cho phép truy cập micro hoặc thiết bị không có micro.' });
       setState('idle');
+      restartWakeRecognizer();
     }
   }
 
