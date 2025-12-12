@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import SimpleLayout from './SimpleLayout'
 
 const mockDocs = [
@@ -13,11 +13,26 @@ const mockDocs = [
 const DocumentBrowserPage: React.FC = () => 
 {
   const [searchTerm, setSearchTerm] = useState('')
-  
-  const filteredDocs = mockDocs.filter(doc => 
-    doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    doc.summary.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+
+  useEffect(() => {
+    try {
+      const voiceQuery = localStorage.getItem('voiceDocQuery') || '';
+      if (voiceQuery) {
+        setSearchTerm(voiceQuery);
+        localStorage.removeItem('voiceDocQuery');
+      }
+    } catch (e) {
+      // ignore storage errors
+    }
+  }, []);
+
+  const filteredDocs = useMemo(() => {
+    const key = searchTerm.toLowerCase();
+    return mockDocs.filter(doc =>
+      doc.title.toLowerCase().includes(key) ||
+      doc.summary.toLowerCase().includes(key)
+    );
+  }, [searchTerm]);
 
   return (
     <SimpleLayout>

@@ -60,6 +60,14 @@ export class AudioService
         this.recognition.lang = 'vi-VN';
       }
     }
+
+    // Preload voices to ensure Vietnamese voice availability
+    if (this.synthesis && this.synthesis.getVoices().length === 0) 
+{
+      this.synthesis.onvoiceschanged = () => {
+        // noop: trigger voice loading
+      };
+    }
   }
 
   public startListening(
@@ -156,7 +164,7 @@ export class AudioService
     // Attempt to find a Vietnamese voice
     const voices = this.synthesis.getVoices();
     // Try to find Google Vietnamese or Microsoft HoaiMy
-    const vnVoice = voices.find(v => v.lang.includes('vi') || v.name.includes('Vietnamese'));
+    const vnVoice = voices.find(v => v.lang.toLowerCase().includes('vi') || v.name.toLowerCase().includes('vietnam'));
     if (vnVoice) 
 {
       utterance.voice = vnVoice;

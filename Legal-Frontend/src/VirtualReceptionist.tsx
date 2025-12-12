@@ -5,6 +5,8 @@ import QueryBox from './components/QueryBox';
 import ResponseCard from './components/ResponseCard';
 import GesturePlayer from './components/GesturePlayer';
 import { queryEndpoint, ttsEndpoint, sttEndpoint, gesturesEndpoint } from './api';
+import { playStartSound, playClickSound, processVoiceCommand } from './services/commandService';
+import { audioService } from './services/audioService';
 
 type HistoryItem = { question: string; answer: string; references?: Array<{ title: string; url: string }> };
 
@@ -25,6 +27,7 @@ export const VirtualReceptionist: React.FC = () =>
   useEffect(() => 
 {
     audioRef.current = new Audio();
+    playStartSound();
     // detect capabilities
     const Win: any = window as any;
     setSupportsRecognition(Boolean(Win.SpeechRecognition || Win.webkitSpeechRecognition));
@@ -45,6 +48,16 @@ export const VirtualReceptionist: React.FC = () =>
   async function handleSubmit(text: string) 
 {
     if (!text) {return;}
+
+    // Client-side quick commands (open/play) inspired by Sophia
+    const commandResult = processVoiceCommand(text);
+    if (commandResult.handled) {
+      setResponse({ answer: commandResult.message || '' });
+      setHistory((h) => [ { question: text, answer: commandResult.message || '', references: [] }, ...h ].slice(0,5));
+      addHistory({ question: text, answer: commandResult.message || '', timestamp: Date.now() });
+      return;
+    }
+
     setState('processing');
     try 
 {
@@ -54,6 +67,11 @@ export const VirtualReceptionist: React.FC = () =>
       // persist to shared history store
       addHistory({ question: text, answer: res.answer, timestamp: Date.now() });
       // optionally play TTS
+      try {
+        audioService.speak(res.answer);
+      } catch (e) {
+        console.warn('WebSpeech TTS failed', e);
+      }
       setState('speaking');
       try 
 {
@@ -94,6 +112,7 @@ export const VirtualReceptionist: React.FC = () =>
 
   async function handleStartVoice() 
 {
+    playClickSound();
     // Try Web Speech API first (SpeechRecognition / webkitSpeechRecognition)
     const Win: any = window as any;
     const SpeechRecognition = Win.SpeechRecognition || Win.webkitSpeechRecognition;
