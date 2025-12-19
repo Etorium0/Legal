@@ -1,18 +1,29 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Button from './ui/button'
+import { useAuth } from './AuthContext'
 
 const LoginPage: React.FC = () => 
 {
   const navigate = useNavigate()
+  const { login, register } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
+  const [mode, setMode] = useState<'login' | 'register'>('login')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = (e: React.FormEvent) => 
 {
     e.preventDefault()
-    // Mock login - redirect to assistant
-    navigate('/assistant')
+    const action = mode === 'login' ? login : register
+    setLoading(true)
+    setError(null)
+    action(email, password, mode === 'register' ? name : undefined)
+      .then(() => navigate('/assistant'))
+      .catch((err: any) => setError(err?.message || 'Đăng nhập thất bại'))
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -52,9 +63,23 @@ const LoginPage: React.FC = () =>
                 required
               />
             </div>
+            {mode === 'register' && (
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">Họ tên</label>
+                <input 
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/5 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" 
+                  placeholder="Tên hiển thị"
+                />
+              </div>
+            )}
+
+            {error && <div className="text-sm text-red-300">{error}</div>}
             
-            <Button type="submit" className="w-full" variant="primary" size="lg">
-              Đăng nhập
+            <Button type="submit" className="w-full" variant="primary" size="lg" disabled={loading}>
+              {loading ? 'Đang xử lý...' : mode === 'login' ? 'Đăng nhập' : 'Đăng ký'}
             </Button>
           </form>
 
@@ -70,9 +95,13 @@ const LoginPage: React.FC = () =>
                 <span className="px-2 bg-white/5 text-white/40">hoặc</span>
               </div>
             </div>
-            <Link to="/assistant" className="block text-sm text-indigo-400 hover:text-indigo-300 font-medium">
-              Tiếp tục không cần đăng nhập →
-            </Link>
+            <button
+              type="button"
+              onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+              className="block text-sm text-indigo-400 hover:text-indigo-300 font-medium mx-auto"
+            >
+              {mode === 'login' ? 'Tạo tài khoản mới →' : 'Đã có tài khoản? Đăng nhập →'}
+            </button>
           </div>
         </div>
       </div>

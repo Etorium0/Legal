@@ -1,11 +1,13 @@
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { Message } from "../types";
+import { authService } from "./authService";
 
 // This service manages the connection to the Legal Backend.
 // It tries to connect to the Go Backend (localhost:8080).
 // If that fails, it falls back to a client-side Gemini simulation.
 
-const BACKEND_URL = 'http://localhost:8080/api/v1/query';
+const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = `${backendUrl}/api/v1/query`;
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || ''; 
 
 const responseSchema = {
@@ -48,11 +50,15 @@ export const queryLegalAssistant = async (query: string): Promise<Partial<Messag
   try 
 {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000); // Fast timeout for demo purposes
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+    const token = await authService.getValidAccessToken();
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
 
     const res = await fetch(BACKEND_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ text: query }),
       signal: controller.signal
     });
@@ -66,39 +72,42 @@ export const queryLegalAssistant = async (query: string): Promise<Partial<Messag
       // Transform backend response to match our Message type
       const answers = data.answers || [];
       if (answers.length > 0) 
-{
+      {
         const firstAnswer = answers[0];
+        const unitId = firstAnswer.unit_id || firstAnswer.UnitID || firstAnswer.unitId;
+        const docRef = firstAnswer.doc_ref || firstAnswer.DocRef || 'Tài liệu tham khảo';
+
         return {
-          text: firstAnswer.answer || firstAnswer.text || 'Không tìm thấy câu trả lời.',
-          sources: firstAnswer.sources?.map((s: any) => ({
-            document: s.document || s.title || 'Tài liệu tham khảo',
-            unit: s.unit || s.unit_title || '',
-            url: s.url || '#'
-          })) || [],
+          text: firstAnswer.snippet || firstAnswer.answer || firstAnswer.text || 'Không tìm thấy câu trả lời.',
+          sources: unitId
+            ? [{
+                document: docRef,
+                unit: unitId,
+                url: `${BACKEND_URL}/units/${unitId}`,
+              }]
+            : [],
           triples: firstAnswer.triples || [],
           role: 'assistant',
           timestamp: new Date(),
         };
       }
- else if (data.debug?.candidates && data.debug.candidates.length > 0) 
-{
-        // Backend found concepts but no complete answer
-        console.log("Backend found concepts but no triples:", data.debug.candidates);
+      else if (data.debug?.candidates && data.debug.candidates.length > 0) 
+      {
         const concepts = data.debug.candidates
           .filter((c: any) => c.type === 'subject' || c.type === 'object')
           .map((c: any) => c.name)
-          .filter((name: string, index: number, self: string[]) => self.indexOf(name) === index); // unique
-        
+          .filter((name: string, index: number, self: string[]) => self.indexOf(name) === index);
+
         return {
-          text: `Tôi tìm thấy thông tin liên quan đến: **${concepts.join(', ')}**.\n\nTuy nhiên, hiện tại cơ sở dữ liệu chưa có đủ thông tin chi tiết để trả lời câu hỏi của bạn. Vui lòng thử:\n\n1. Hỏi câu hỏi khác về giao thông đường bộ\n2. Liên hệ quản trị viên để bổ sung dữ liệu pháp luật\n3. Tham khảo trực tiếp tại thuvienphapluat.vn`,
+          text: `Tôi tìm thấy thông tin liên quan đến: ${concepts.join(', ')}.\nHiện cơ sở dữ liệu chưa đủ để trả lời chi tiết. Vui lòng thử câu hỏi khác hoặc bổ sung dữ liệu.`,
           sources: [],
           triples: [],
           role: 'assistant',
           timestamp: new Date(),
         };
       }
- else 
-{
+      else 
+      {
         console.log("Backend returned empty answers, database may be empty");
       }
     }

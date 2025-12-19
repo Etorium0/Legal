@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-// Point to backend API
-const api = axios.create({ baseURL: 'http://localhost:8080/api/v1' });
+// Point to backend API (configurable via Vite env)
+const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
+const api = axios.create({ baseURL: `${backendUrl}/api/v1` });
 
 export async function sttEndpoint(audioBlob: Blob) 
 {
@@ -23,33 +24,39 @@ export async function sttEndpoint(audioBlob: Blob)
 export async function queryEndpoint(text: string) 
 {
   try 
-{
+  {
     // Backend expects "text" field, not "question"
     const res = await api.post('/query', { text });
-    
-    // Backend returns { answers: [...] } structure
-    const answers = res.data.answers || [];
-    
-    // Transform to match frontend expectation
+
+    // Backend returns { answers: [...] }
+    const answers = res.data?.answers || [];
+
     if (answers.length > 0) 
-{
-      const firstAnswer = answers[0];
+    {
+      const first = answers[0];
+      const unitId = first.unit_id || first.UnitID || first.unitId;
+      const docRef = first.doc_ref || first.DocRef || 'Tài liệu tham khảo';
+
       return {
-        answer: firstAnswer.answer || 'Không tìm thấy câu trả lời.',
-        references: firstAnswer.sources?.map((s: any) => ({
-          title: s.title || s.unit_title || 'Tài liệu tham khảo',
-          url: s.url || '#'
-        })) || []
+        answer: first.snippet || first.answer || 'Không tìm thấy câu trả lời.',
+        references: unitId
+          ? [
+              {
+                title: docRef,
+                url: `${backendUrl}/api/v1/query/units/${unitId}`,
+              },
+            ]
+          : [],
       };
     }
-    
+
     return {
       answer: 'Xin lỗi, tôi không tìm thấy thông tin liên quan trong cơ sở dữ liệu.',
-      references: []
+      references: [],
     };
   }
- catch (err: any) 
-{
+  catch (err: any) 
+  {
     const msg = err?.response ? `Query error ${err.response.status}: ${JSON.stringify(err.response.data)}` : err.message || String(err);
     throw new Error(msg);
   }

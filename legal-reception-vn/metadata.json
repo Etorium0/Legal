@@ -1,7 +1,0 @@
-{
-  "name": "Legal Reception VN",
-  "description": "A virtual legal assistant for Vietnamese law featuring AI chat, voice interaction, and knowledge graph visualization.",
-  "requestFramePermissions": [
-    "microphone"
-  ]
-}
