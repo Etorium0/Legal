@@ -14,19 +14,25 @@ const DocumentBrowserPage: React.FC = () =>
 {
   const [searchTerm, setSearchTerm] = useState('')
 
-  useEffect(() => {
-    try {
+  useEffect(() => 
+{
+    try 
+{
       const voiceQuery = localStorage.getItem('voiceDocQuery') || '';
-      if (voiceQuery) {
+      if (voiceQuery) 
+{
         setSearchTerm(voiceQuery);
         localStorage.removeItem('voiceDocQuery');
       }
-    } catch (e) {
+    }
+ catch (e) 
+{
       // ignore storage errors
     }
   }, []);
 
-  const filteredDocs = useMemo(() => {
+  const filteredDocs = useMemo(() => 
+{
     const key = searchTerm.toLowerCase();
     return mockDocs.filter(doc =>
       doc.title.toLowerCase().includes(key) ||

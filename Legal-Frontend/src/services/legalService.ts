@@ -160,12 +160,15 @@ export const queryLegalAssistant = async (query: string): Promise<Partial<Messag
       role: 'assistant',
       timestamp: new Date(),
     };
-  } catch (error) {
+  }
+ catch (error) 
+{
     console.error("Gemini Fallback Error:", error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     
     // Check if it's a quota error
-    if (errorMessage.includes('quota') || errorMessage.includes('429')) {
+    if (errorMessage.includes('quota') || errorMessage.includes('429')) 
+{
       return {
         text: `Xin lỗi, hệ thống AI đang tạm thời quá tải (Gemini API hết quota miễn phí).\n\nHệ thống backend đang hoạt động nhưng cơ sở dữ liệu chưa có đủ thông tin để trả lời câu hỏi của bạn.\n\nBạn có thể:\n1. Thử lại sau ${errorMessage.includes('retry') ? '~1 phút' : 'vài phút'}\n2. Hỏi câu hỏi về Nghị định 100/2019 (xử phạt giao thông)\n3. Liên hệ quản trị viên để nâng cấp API hoặc bổ sung dữ liệu`,
         sources: [],

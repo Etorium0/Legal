@@ -4,19 +4,22 @@ export function useWakeWord({
   wakeWords = ["hey legal", "trợ lý ơi", "assistant", "hey assistant"],
   onWake,
   lang = "vi-VN",
-}) {
+}) 
+{
   const recRef = useRef<any>(null);
   const enabledRef = useRef(true);
   const isTriggeringRef = useRef(false);
   const restartingRef = useRef(false);
 
-  useEffect(() => {
+  useEffect(() => 
+{
     const Win: any = window;
     const SR = Win.SpeechRecognition || Win.webkitSpeechRecognition;
-    if (!SR) return;
+    if (!SR) {return;}
 
-    const start = () => {
-      if (restartingRef.current) return;
+    const start = () => 
+{
+      if (restartingRef.current) {return;}
 
       const rec = new SR();
       recRef.current = rec;
@@ -25,79 +28,98 @@ export function useWakeWord({
       rec.continuous = true;
       rec.interimResults = true;
 
-      rec.onresult = (ev: any) => {
-        if (!enabledRef.current) return;
-        if (isTriggeringRef.current) return; // tránh gọi lặp
+      rec.onresult = (ev: any) => 
+{
+        if (!enabledRef.current) {return;}
+        if (isTriggeringRef.current) {return;} // tránh gọi lặp
 
         const transcript = Array.from(ev.results)
           .map((r: any) => r[0].transcript)
           .join(" ")
           .toLowerCase();
 
-        if (!transcript.trim()) return;
+        if (!transcript.trim()) {return;}
 
         const detected = wakeWords.some((w) => transcript.includes(w));
-        if (!detected) return;
+        if (!detected) {return;}
 
         isTriggeringRef.current = true;
 
         onWake?.(); // gọi callback (bắt đầu STT chính)
 
         // Allow wake again sau 1.5s
-        setTimeout(() => {
+        setTimeout(() => 
+{
           isTriggeringRef.current = false;
         }, 1500);
       };
 
-      rec.onerror = () => {
-        if (!enabledRef.current) return;
+      rec.onerror = () => 
+{
+        if (!enabledRef.current) {return;}
         restart();
       };
 
-      rec.onend = () => {
-        if (!enabledRef.current) return;
+      rec.onend = () => 
+{
+        if (!enabledRef.current) {return;}
         restart();
       };
 
-      try {
+      try 
+{
         rec.start();
-      } catch {}
+      }
+ catch {}
     };
 
-    const restart = () => {
+    const restart = () => 
+{
       restartingRef.current = true;
-      setTimeout(() => {
+      setTimeout(() => 
+{
         restartingRef.current = false;
-        try {
+        try 
+{
           recRef.current?.start();
-        } catch {}
+        }
+ catch {}
       }, 600);
     };
 
     // start wake listener
     const delay = setTimeout(start, 800);
 
-    return () => {
+    return () => 
+{
       enabledRef.current = false;
-      try {
+      try 
+{
         recRef.current?.stop();
-      } catch {}
+      }
+ catch {}
       clearTimeout(delay);
     };
   }, []);
 
   return {
-    stop: () => {
+    stop: () => 
+{
       enabledRef.current = false;
-      try {
+      try 
+{
         recRef.current?.stop();
-      } catch {}
+      }
+ catch {}
     },
-    start: () => {
+    start: () => 
+{
       enabledRef.current = true;
-      try {
+      try 
+{
         recRef.current?.start();
-      } catch {}
+      }
+ catch {}
     },
   };
 }

@@ -45,6 +45,8 @@ export class AudioService
   private recognition: SpeechRecognition | null = null;
   private synthesis: SpeechSynthesis = window.speechSynthesis;
   public isListening: boolean = false;
+  private listeningTimeout: NodeJS.Timeout | null = null;
+  private phraseTimeout: NodeJS.Timeout | null = null;
 
   constructor() 
 {
@@ -55,8 +57,8 @@ export class AudioService
       this.recognition = new SpeechRecognition();
       if (this.recognition) 
 {
-        this.recognition.continuous = false; // We manage continuous manually to handle silence better
-        this.recognition.interimResults = true; // Changed to true for faster wake word detection
+        this.recognition.continuous = false; // BLOCKING mode như Sophia
+        this.recognition.interimResults = true;
         this.recognition.lang = 'vi-VN';
       }
     }
@@ -64,12 +66,18 @@ export class AudioService
     // Preload voices to ensure Vietnamese voice availability
     if (this.synthesis && this.synthesis.getVoices().length === 0) 
 {
-      this.synthesis.onvoiceschanged = () => {
+      this.synthesis.onvoiceschanged = () => 
+{
         // noop: trigger voice loading
       };
     }
   }
 
+  /**
+   * Start listening with automatic timeout (Sophia-style)
+   * - Auto-stops after 10s of silence (global timeout)
+   * - Auto-stops after 6s from first speech (phrase timeout)
+   */
   public startListening(
     onResult: (text: string, isFinal: boolean) => void,
     onError: (error: string) => void,
@@ -82,8 +90,13 @@ export class AudioService
       return;
     }
 
-    // If already listening, don't restart (or abort first)
+    // If already listening, don't restart
     if (this.isListening) {return;}
+
+    // Clear any existing timeouts
+    this.clearTimeouts();
+
+    let firstSpeechDetected = false;
 
     this.recognition.onresult = (event: SpeechRecognitionEvent) => 
 {
@@ -102,9 +115,22 @@ export class AudioService
         }
       }
 
+      // Start phrase timeout on first speech (like Sophia's phrase_time_limit)
+      if (!firstSpeechDetected && (finalTranscript || interimTranscript)) 
+{
+        firstSpeechDetected = true;
+        this.phraseTimeout = setTimeout(() => 
+{
+          console.log('[AudioService] Phrase timeout - auto stopping');
+          this.stopListening();
+        }, 6000); // 6 seconds after first speech
+      }
+
       if (finalTranscript) 
 {
         onResult(finalTranscript, true);
+        // Auto-stop after getting final result
+        this.stopListening();
       }
  else if (interimTranscript) 
 {
@@ -114,7 +140,8 @@ export class AudioService
 
     this.recognition.onerror = (event: any) => 
 {
-      // Ignore 'no-speech' errors as they are common in continuous mode
+      this.clearTimeouts();
+      // Ignore 'no-speech' errors
       if (event.error !== 'no-speech') 
 {
         console.error("Speech recognition error", event.error);
@@ -124,6 +151,7 @@ export class AudioService
 
     this.recognition.onend = () => 
 {
+      this.clearTimeouts();
       this.isListening = false;
       onEnd();
     };
@@ -132,16 +160,39 @@ export class AudioService
 {
       this.recognition.start();
       this.isListening = true;
+      
+      // Global timeout - 10s như Sophia
+      this.listeningTimeout = setTimeout(() => 
+{
+        console.log('[AudioService] Global timeout - auto stopping');
+        this.stopListening();
+      }, 10000); // 10 seconds total
     }
  catch (e) 
 {
       console.error(e);
+      this.clearTimeouts();
       this.isListening = false;
+    }
+  }
+
+  private clearTimeouts(): void 
+{
+    if (this.listeningTimeout) 
+{
+      clearTimeout(this.listeningTimeout);
+      this.listeningTimeout = null;
+    }
+    if (this.phraseTimeout) 
+{
+      clearTimeout(this.phraseTimeout);
+      this.phraseTimeout = null;
     }
   }
 
   public stopListening(): void 
 {
+    this.clearTimeouts();
     if (this.recognition && this.isListening) 
 {
       this.recognition.stop();
@@ -149,7 +200,7 @@ export class AudioService
     }
   }
 
-  public speak(text: string, onEnd?: () => void): void 
+public speak(text: string, onEnd?: () => void): void 
 {
     if (this.synthesis.speaking) 
 {

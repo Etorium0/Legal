@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Mic, MicOff, Volume2, VolumeX, Loader, Sparkles, Radio, Power } from 'lucide-react';
+import { Send, Mic, MicOff, Volume2, VolumeX, Sparkles, Power } from 'lucide-react';
 import SidebarDark from './SidebarDark';
 import HeaderBar from './HeaderBar';
 import AvatarView from './AvatarView';
@@ -16,7 +16,7 @@ const AssistantPage: React.FC = () =>
     {
       id: 'welcome',
       role: 'assistant',
-      text: 'Xin chào! Tôi là Trợ lý Pháp luật Ảo. Bạn có thể nói "Hey Legal" hoặc "Trợ lý ơi" để gọi tôi bất cứ lúc nào.',
+      text: 'Xin chào! Tôi là Trợ lý Pháp luật Ảo. Nhấn nút mic để bắt đầu nói chuyện với tôi.',
       timestamp: new Date()
     }
   ]);
@@ -25,7 +25,6 @@ const AssistantPage: React.FC = () =>
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [wakeWordMode, setWakeWordMode] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [avatarVideoUrl, setAvatarVideoUrl] = useState<string | null>(null);
   const [_currentTriples, setCurrentTriples] = useState<Triple[]>([]);
@@ -43,12 +42,12 @@ const AssistantPage: React.FC = () =>
     scrollToBottom();
   }, [messages]);
 
-  // Proactive Greeting & Wake Word Initialization
+  // Proactive Greeting on Start
   useEffect(() => 
 {
     if (hasStarted) 
 {
-      const greeting = "Xin chào, tôi là trợ lý pháp luật. Tôi có thể giúp gì cho bạn?";
+      const greeting = "Xin chào, tôi là trợ lý pháp luật. Nhấn mic để hỏi tôi bất cứ điều gì.";
       setIsSpeaking(true);
       
       setTimeout(() => 
@@ -56,58 +55,27 @@ const AssistantPage: React.FC = () =>
         audioService.speak(greeting, () => 
 {
           setIsSpeaking(false);
-          startListeningForCommand();
         });
       }, 1000);
     }
   }, [hasStarted]);
 
-  const startWakeWordListener = () => 
+  // SOPHIA-STYLE: Click to Talk
+  const handleMicClick = () => 
 {
     if (processingRef.current || isListening) {return;}
 
-    setWakeWordMode(true);
-    setIsListening(false);
-
-    audioService.startListening(
-      (transcript, _isFinal) => 
-{
-        const lower = transcript.toLowerCase();
-        if (lower.includes('legal') || lower.includes('trợ lý') || lower.includes('ơi') || lower.includes('hey')) 
-{
-          console.log("Wake word detected:", transcript);
-          audioService.stopListening();
-          setWakeWordMode(false);
-          startListeningForCommand();
-        }
-      },
-      (err) => 
-{
-        if (err !== 'aborted' && wakeWordMode) 
-{
-          setTimeout(() => 
-{
-            if (wakeWordMode) {startWakeWordListener();}
-          }, 1000);
-        }
-      },
-      () => 
-{
-        if (wakeWordMode) {startWakeWordListener();}
-      }
-    );
-  };
-
-  const startListeningForCommand = () => 
-{
-    setWakeWordMode(false);
+    console.log('[Assistant] Mic clicked - starting to listen');
     setIsListening(true);
     setInputText('');
 
     audioService.startListening(
       (transcript, isFinal) => 
 {
+        console.log('[Assistant] Transcript:', transcript, 'Final:', isFinal);
         setInputText(transcript);
+        
+        // Auto-send when final (người nói xong)
         if (isFinal && transcript.trim().length > 0) 
 {
           handleSendMessage(transcript);
@@ -115,17 +83,13 @@ const AssistantPage: React.FC = () =>
       },
       (err) => 
 {
-        console.error("Command Error:", err);
+        console.error('[Assistant] Listening error:', err);
         setIsListening(false);
-        setWakeWordMode(true);
       },
       () => 
 {
+        console.log('[Assistant] Listening ended');
         setIsListening(false);
-        if (!processingRef.current) 
-{
-          setWakeWordMode(true);
-        }
       }
     );
   };
@@ -138,7 +102,6 @@ const AssistantPage: React.FC = () =>
     processingRef.current = true;
     audioService.stopListening();
     setIsListening(false);
-    setWakeWordMode(false);
 
     const userMsg: Message = {
       id: Date.now().toString(),
@@ -171,44 +134,23 @@ const AssistantPage: React.FC = () =>
         setCurrentTriples(response.triples);
       }
 
-      // Handle TTS or PantoMatrix Video
+      // Handle TTS only (PantoMatrix video disabled)
       if (!isMuted && botMsg.text) 
 {
         setIsSpeaking(true);
-        setIsGeneratingVideo(true);
-        
-        const videoUrl = await pantoMatrixService.generateGestureVideo(botMsg.text);
-        setIsGeneratingVideo(false);
-
-        if (videoUrl) 
-{
-          setAvatarVideoUrl(videoUrl);
-        }
- else 
-{
-          audioService.speak(botMsg.text, () => 
-{
-            setIsSpeaking(false);
-            startWakeWordListener();
-          });
-        }
-      }
- else 
-{
-        startWakeWordListener();
+        audioService.speak(botMsg.text, () => setIsSpeaking(false));
       }
     }
  catch (error) 
 {
-      console.error("Query error:", error);
+      console.error('handleSendMessage error:', error);
       const errorMsg: Message = {
-        id: (Date.now() + 1).toString(),
+        id: (Date.now() + 2).toString(),
         role: 'assistant',
-        text: 'Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.',
-        timestamp: new Date(),
+        text: "Xin lỗi, đã xảy ra lỗi khi xử lý yêu cầu của bạn.",
+        timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMsg]);
-      startWakeWordListener();
     }
  finally 
 {
@@ -223,12 +165,10 @@ const AssistantPage: React.FC = () =>
 {
       audioService.stopListening();
       setIsListening(false);
-      startWakeWordListener();
     }
  else 
 {
-      audioService.stopListening();
-      startListeningForCommand();
+      handleMicClick();
     }
   };
 
@@ -236,23 +176,7 @@ const AssistantPage: React.FC = () =>
 {
     setAvatarVideoUrl(null);
     setIsSpeaking(false);
-    startWakeWordListener();
   };
-
-  useEffect(() => 
-{
-    if (hasStarted && !isListening && !isLoading && !isGeneratingVideo && !wakeWordMode && !isSpeaking) 
-{
-      const timer = setTimeout(() => 
-{
-        if (!audioService.isListening) 
-{
-          startWakeWordListener();
-        }
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isListening, isLoading, isGeneratingVideo, wakeWordMode, hasStarted, isSpeaking]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => 
 {
@@ -357,18 +281,6 @@ const AssistantPage: React.FC = () =>
                     <h3 className="text-sm font-semibold text-gray-200 tracking-wide uppercase">Lịch sử hội thoại</h3>
                   </div>
                   <div className="flex items-center gap-3">
-                    {wakeWordMode && (
-                      <span className="flex items-center text-[10px] text-green-400 border border-green-900 bg-green-900/20 px-2 py-1 rounded-full animate-pulse">
-                        <Radio className="w-3 h-3 mr-1" />
-                        Nghe thụ động
-                      </span>
-                    )}
-                    {isGeneratingVideo && (
-                      <span className="flex items-center text-xs text-blue-400 animate-pulse bg-blue-500/10 px-2 py-1 rounded">
-                        <Loader className="w-3 h-3 mr-1 animate-spin" />
-                        Rendering Avatar...
-                      </span>
-                    )}
                     <button 
                       onClick={() => 
 {
@@ -437,21 +349,25 @@ const AssistantPage: React.FC = () =>
                   <div ref={messagesEndRef} />
                 </div>
 
-                {/* Input Area */}
+                {/* Input Area - Sophia Style */}
                 <div className="p-4 bg-darker/90 backdrop-blur-xl border-t border-white/10">
                   <div className="flex items-center gap-3">
+                    {/* MIC BUTTON - Sophia Style Click to Talk */}
                     <button
                       onClick={toggleListening}
+                      disabled={isLoading || isGeneratingVideo || isSpeaking}
                       className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
                         isListening 
-                          ? 'bg-red-500 text-white scale-110 ring-4 ring-red-500/30' 
-                          : wakeWordMode
-                            ? 'bg-green-800/50 text-green-400 border border-green-500/50 animate-pulse'
-                            : 'bg-gradient-to-br from-gray-700 to-gray-800 text-white hover:from-blue-600 hover:to-blue-700 border border-white/10'
+                          ? 'bg-red-500 text-white scale-110 ring-4 ring-red-500/30 animate-pulse' 
+                          : 'bg-gradient-to-br from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 hover:scale-105 border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed'
                       }`}
-                      title={wakeWordMode ? "Đang đợi 'Hey Legal'" : "Nói để hỏi"}
+                      title={isListening ? "Đang nghe... (tự động dừng sau 10s)" : "Click để nói"}
                     >
-                      {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                      {isListening ? (
+                        <MicOff className="w-5 h-5 animate-pulse" />
+                      ) : (
+                        <Mic className="w-5 h-5" />
+                      )}
                     </button>
                     
                     <div className="flex-1 relative">
@@ -460,7 +376,7 @@ const AssistantPage: React.FC = () =>
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
                         onKeyDown={handleKeyPress}
-                        placeholder={wakeWordMode ? "Hãy nói 'Hey Legal' hoặc 'Trợ lý'..." : "Nhập câu hỏi..."}
+                        placeholder={isListening ? "Đang lắng nghe..." : "Nhập câu hỏi hoặc click mic..."}
                         className="w-full bg-black/20 text-white placeholder-gray-500 border border-gray-600 rounded-full pl-5 pr-12 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:bg-black/40 transition-all"
                         disabled={isLoading || isListening || isGeneratingVideo}
                       />
@@ -474,7 +390,11 @@ const AssistantPage: React.FC = () =>
                     </div>
                   </div>
                   <div className="text-center mt-2">
-                    <p className="text-[10px] text-gray-600">Wake word: "Legal", "Trợ lý", "Ơi", "Hey"</p>
+                    <p className="text-[10px] text-gray-600">
+                      {isListening 
+                        ? "🎤 Đang nghe bạn nói... (tự động dừng sau 10s hoặc 6s kể từ khi bắt đầu nói)"
+                        : "💡 Click mic để nói, hoặc gõ câu hỏi"}
+                    </p>
                   </div>
                 </div>
               </div>

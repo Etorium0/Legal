@@ -2,19 +2,23 @@ import React from "react";
 import { useWakeWord } from "./services/useWakeWord";
 import { useVoiceSTT } from "./services/useVoiceSTT";
 
-export default function VirtualReceptionist() {
+export default function VirtualReceptionist() 
+{
   const { start: startSTT } = useVoiceSTT({
-    onText: (text) => {
+    onText: (text) => 
+{
       console.log("User said:", text);
     },
-    onComplete: () => {
+    onComplete: () => 
+{
       console.log("Done speaking.");
     },
   });
 
   useWakeWord({
     wakeWords: ["hey legal", "trợ lý ơi", "assistant", "hey assistant"],
-    onWake: () => {
+    onWake: () => 
+{
       console.log("Wake word detected!");
       startSTT(); // bắt đầu STT chính
     },
