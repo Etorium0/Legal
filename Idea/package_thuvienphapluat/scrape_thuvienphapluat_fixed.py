@@ -86,79 +86,86 @@ def get_soup(session: requests.Session, url: str, retries: int = 3, timeout: int
     return None
 
 
-def parse_search_page(soup: BeautifulSoup, current_page: int = 1) -> Tuple[List[dict], Optional[str]]:
-    """
-    Return list of dicts with {title, url, date, snippet, category},
-    and the next page url (or None).
-    """
+def _parse_listing_items(items: Iterable[BeautifulSoup]) -> List[dict]:
+    """Parse generic listing cards into a normalized dict list."""
     results = []
-    
-    # FIXED: Use the correct selector for search results
-    items = soup.select("article.news-card.tvpl-find")
-    
-    if not items:
-        print("[DEBUG] No articles found with primary selector, trying fallbacks...")
-        # Fallback selectors
-        items = soup.select("article.news-card") or soup.select("div.search-result-item") or soup.select("li.search-result-item")
-
-    print(f"[DEBUG] Found {len(items)} article elements")
-
     for it in items:
-        # Title & URL - FIXED: look for the title-link
-        a = it.select_one("a.title-link, a[href*='ho-tro-phap-luat'], a[title]")
+        a = it.select_one("a.title-link, a[href*='ho-tro-phap-luat'], a[title], h3 a, h2 a")
         if not a:
             continue
-            
-        title = " ".join(a.get_text(strip=True).split())
-        url = urllib.parse.urljoin("https://thuvienphapluat.vn", a["href"])
 
-        # Date - FIXED: look for sub-time class
+        title = " ".join(a.get_text(strip=True).split())
+        url = urllib.parse.urljoin("https://thuvienphapluat.vn", a.get("href", ""))
+
         date = ""
-        date_el = it.select_one(".sub-time, .time, time")
+        date_el = it.select_one(".sub-time, .time, time, .date")
         if date_el:
             date = " ".join(date_el.get_text(strip=True).split())
 
-        # Snippet / short desc - FIXED: look for line-clamp-2 class
         snippet = ""
         snippet_el = it.select_one(".line-clamp-2, .desc, .description, p")
         if snippet_el:
             snippet = " ".join(snippet_el.get_text(strip=True).split())
 
-        # Category / field - FIXED: look for keyword section
         category = ""
-        keyword_section = it.select_one("#keywordfind, .keyword")
+        keyword_section = it.select_one("#keywordfind, .keyword, .tags")
         if keyword_section:
-            keyword_links = keyword_section.select("a span")
+            keyword_links = keyword_section.select("a span, a")
             if keyword_links:
-                category = ", ".join([kw.get_text(strip=True) for kw in keyword_links[:2]])  # Take first 2 keywords
-
-        print(f"[DEBUG] Parsed: {title[:50]}... | URL: {url[:50]}... | Date: {date}")
+                category = ", ".join([kw.get_text(strip=True) for kw in keyword_links[:2]])
 
         results.append({
             "title": title,
             "url": url,
             "date": date,
             "snippet": snippet,
-            "category": category
+            "category": category,
         })
+    return results
 
-    # Next page - FIXED: look for pagination
+
+def parse_search_page(soup: BeautifulSoup, current_page: int = 1) -> Tuple[List[dict], Optional[str]]:
+    """Return list of dicts with {title, url, date, snippet, category} and the next page url."""
+    items = soup.select("article.news-card.tvpl-find")
+    if not items:
+        print("[DEBUG] No articles found with primary selector, trying fallbacks...")
+        items = soup.select("article.news-card") or soup.select("div.search-result-item") or soup.select("li.search-result-item")
+
+    parsed = _parse_listing_items(items)
+    print(f"[DEBUG] Found {len(parsed)} article elements")
+
     next_url = None
-    # Look for pagination area and get the next page
     pagination_area = soup.select_one("ul.pagination, .pagination")
     if pagination_area:
-        # Find all page links and determine next page
         page_links = pagination_area.select("a[href*='page=']")
-        if page_links:
-            # Look for the next page (current_page + 1)
-            next_page_num = current_page + 1
-            for link in page_links:
-                href = link.get("href", "")
-                if f"page={next_page_num}" in href:
-                    next_url = href if href.startswith("http") else urllib.parse.urljoin("https://thuvienphapluat.vn", href)
-                    break
+        next_page_num = current_page + 1
+        for link in page_links:
+            href = link.get("href", "")
+            if f"page={next_page_num}" in href:
+                next_url = href if href.startswith("http") else urllib.parse.urljoin("https://thuvienphapluat.vn", href)
+                break
 
-    return results, next_url
+    return parsed, next_url
+
+
+def parse_category_page(soup: BeautifulSoup, current_page: int = 1) -> Tuple[List[dict], Optional[str]]:
+    """Parse "Hỏi đáp" category listing pages."""
+    items = soup.select("article, li.search-result-item, div.news-card, .qa-item")
+    parsed = _parse_listing_items(items)
+    print(f"[DEBUG] Category page parsed {len(parsed)} items")
+
+    next_url = None
+    pagination_area = soup.select_one("ul.pagination, .pagination")
+    if pagination_area:
+        page_links = pagination_area.select("a[href*='page=']")
+        next_page_num = current_page + 1
+        for link in page_links:
+            href = link.get("href", "")
+            if f"page={next_page_num}" in href:
+                next_url = href if href.startswith("http") else urllib.parse.urljoin("https://thuvienphapluat.vn", href)
+                break
+
+    return parsed, next_url
 
 
 def clean_text(txt: str) -> str:
@@ -297,6 +304,58 @@ def crawl(query: str, max_pages: int, use_js: bool, per_detail_sleep: Tuple[floa
     return results
 
 
+def crawl_category(category_url: str, max_pages: int, use_js: bool, per_detail_sleep: Tuple[float, float]) -> List[Row]:
+    """Crawl a Hỏi đáp category listing (e.g., giao-thong-van-tai)."""
+    session = requests.Session()
+    session.headers.update(DEFAULT_HEADERS)
+
+    results: List[Row] = []
+    page_url = category_url
+    pages_done = 0
+
+    while page_url and pages_done < max_pages:
+        print(f"[INFO] Fetching category page: {page_url}")
+        soup = get_soup(session, page_url)
+        if soup is None:
+            print(f"[WARN] Skip page due to fetch error: {page_url}", file=sys.stderr)
+            break
+
+        items, next_url = parse_category_page(soup, pages_done + 1)
+        print(f"[INFO] Found {len(items)} items on this category page.")
+
+        for idx, it in enumerate(items, 1):
+            title = it.get("title", "")
+            url = it.get("url", "")
+            date = it.get("date", "")
+            snippet = it.get("snippet", "")
+            category_list = it.get("category", "")
+
+            if not url:
+                continue
+
+            field, content = fetch_detail(session, url, retries=3, use_js=use_js)
+            field_final = field or category_list
+            print(f"  - [{idx}/{len(items)}] {title[:60]}... (field: {field_final})")
+
+            row = Row(
+                tieu_de=title,
+                url=url,
+                ngay_dang=date,
+                mo_ta_ngan=snippet,
+                linh_vuc=field_final,
+                noi_dung_chi_tiet=content
+            )
+            results.append(row)
+
+            sleep_polite(per_detail_sleep[0], per_detail_sleep[1])
+
+        page_url = next_url
+        pages_done += 1
+        sleep_polite(1.5, 3.0)
+
+    return results
+
+
 def export_excel(rows: List[Row], out_path: str):
     if not rows:
         print("[WARN] No rows to export.")
@@ -321,8 +380,9 @@ def export_excel(rows: List[Row], out_path: str):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Scrape thuvienphapluat.vn search results and article details.")
-    ap.add_argument("--query", "-q", required=True, help="Search query (e.g., 'tử hình')")
+    ap = argparse.ArgumentParser(description="Scrape thuvienphapluat.vn search results, Hỏi đáp category, and article details.")
+    ap.add_argument("--query", "-q", help="Search query (e.g., 'tử hình')")
+    ap.add_argument("--category-url", "-u", help="Direct category URL (e.g., 'https://thuvienphapluat.vn/hoi-dap-phap-luat/giao-thong-van-tai')")
     ap.add_argument("--max-pages", type=int, default=1, help="Max number of result pages to crawl")
     ap.add_argument("--out", default="ket_qua_tim_kiem.xlsx", help="Output Excel filename (.xlsx). CSV fallback if pandas missing.")
     ap.add_argument("--use-js", action="store_true", help="Use Playwright headless browser for article pages (helps if site blocks bots).")
@@ -330,11 +390,18 @@ def main():
     ap.add_argument("--max-sleep", type=float, default=1.4, help="Max delay between article requests (seconds).")
     args = ap.parse_args()
 
+    if not args.query and not args.category_url:
+        ap.error("Please provide either --query or --category-url")
+
     if args.use_js and not PLAYWRIGHT_AVAILABLE:
         print("[WARN] --use-js specified but Playwright not installed. Install with:\n"
               "  pip install playwright && playwright install chromium", file=sys.stderr)
 
-    rows = crawl(args.query, args.max_pages, args.use_js, (args.min_sleep, args.max_sleep))
+    if args.category_url:
+        rows = crawl_category(args.category_url, args.max_pages, args.use_js, (args.min_sleep, args.max_sleep))
+    else:
+        rows = crawl(args.query, args.max_pages, args.use_js, (args.min_sleep, args.max_sleep))
+
     export_excel(rows, args.out)
 
 
