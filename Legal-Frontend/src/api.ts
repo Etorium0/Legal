@@ -1,8 +1,10 @@
 import axios from 'axios';
 
-// Point to backend API (configurable via Vite env)
-const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
-const api = axios.create({ baseURL: `${backendUrl}/api/v1` });
+const win = window as any;
+const runtimeBackend = typeof win !== 'undefined' ? win.__BACKEND_URL__ : undefined;
+const backendUrl = runtimeBackend || import.meta.env.VITE_BACKEND_URL;
+const apiBase = backendUrl ? `${backendUrl}/api/v1` : '/api/v1';
+const api = axios.create({ baseURL: apiBase });
 
 export async function sttEndpoint(audioBlob: Blob) 
 {
@@ -43,7 +45,7 @@ export async function queryEndpoint(text: string)
           ? [
               {
                 title: docRef,
-                url: `${backendUrl}/api/v1/query/units/${unitId}`,
+                url: `${apiBase}/query/units/${unitId}`,
               },
             ]
           : [],

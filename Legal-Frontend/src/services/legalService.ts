@@ -6,8 +6,9 @@ import { authService } from "./authService";
 // It tries to connect to the Go Backend (localhost:8080).
 // If that fails, it falls back to a client-side Gemini simulation.
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
-const BACKEND_URL = `${backendUrl}/api/v1/query`;
+const runtimeBackend = (typeof window !== 'undefined' && (window as any).__BACKEND_URL__) as string | undefined;
+const backendUrl = runtimeBackend || import.meta.env.VITE_BACKEND_URL;
+const BACKEND_URL = backendUrl ? `${backendUrl}/api/v1/query` : `/api/v1/query`;
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || ''; 
 
 const responseSchema = {

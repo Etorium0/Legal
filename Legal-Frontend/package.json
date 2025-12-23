@@ -36,24 +36,5 @@
     "eslint-plugin-react": "^7.37.1",
     "typescript": "^5.2.2",
     "vite": "^5.1.0"
-  },
-  "eslintConfig": {
-    "extends": [
-      "plugin:react/recommended",
-      "plugin:@typescript-eslint/recommended"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "ecmaVersion": 2020,
-      "sourceType": "module",
-      "ecmaFeatures": { "jsx": true }
-    },
-    "settings": { "react": { "version": "detect" } },
-    "env": { "browser": true, "es2021": true },
-    "rules": {
-      "brace-style": ["error", "allman", { "allowSingleLine": true }],
-      "curly": ["error", "all"],
-      "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }]
-    }
   }
 }

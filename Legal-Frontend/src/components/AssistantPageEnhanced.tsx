@@ -39,9 +39,38 @@ const AssistantPage: React.FC = () =>
   };
 
   useEffect(() => 
-{
+  {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => 
+  {
+    function handler(ev: MessageEvent)
+    {
+      try
+      {
+        const msg = typeof ev.data === 'string' ? JSON.parse(ev.data) : ev.data;
+        if (!msg || !msg.type) { return; }
+        if (msg.type === 'wake')
+        {
+          setWakeWordMode(false);
+          setIsListening(true);
+        }
+        else if (msg.type === 'asr_partial')
+        {
+          setInputText(msg.text || '');
+        }
+        else if (msg.type === 'asr_final')
+        {
+          setInputText('');
+          handleSendMessage(msg.text || '');
+        }
+      }
+      catch (_e) {}
+    }
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, []);
 
   // Proactive Greeting & Wake Word Initialization
   useEffect(() => 

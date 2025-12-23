@@ -1,5 +1,7 @@
-const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080'
-const AUTH_BASE = `${backendUrl}/api/v1/auth`
+const win: any = typeof window !== 'undefined' ? window : {}
+const runtimeBackend = win.__BACKEND_URL__
+const backendUrl = runtimeBackend || import.meta.env.VITE_BACKEND_URL
+const AUTH_BASE = backendUrl ? `${backendUrl}/api/v1/auth` : `/api/v1/auth`
 
 const STORAGE_KEY = 'legal_auth_tokens'
 

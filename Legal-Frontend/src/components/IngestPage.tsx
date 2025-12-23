@@ -3,7 +3,8 @@ import SimpleLayout from './SimpleLayout'
 import { authService } from '../services/authService'
 
 const IngestPage: React.FC = () => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080'
+  const backendUrl = (typeof window !== 'undefined' && (window as any).__BACKEND_URL__) || import.meta.env.VITE_BACKEND_URL
+  const apiBase = backendUrl ? `${backendUrl}/api/v1` : '/api/v1'
   const [payload, setPayload] = useState(`{
   "document": {"title": "", "type": ""},
   "units": []
@@ -20,7 +21,7 @@ const IngestPage: React.FC = () => {
       const token = await authService.getValidAccessToken()
       const headers: Record<string, string> = { 'Content-Type': 'application/json' }
       if (token) headers['Authorization'] = `Bearer ${token}`
-      const res = await fetch(`${backendUrl}/api/v1/query/ingest`, {
+      const res = await fetch(`${apiBase}/query/ingest`, {
         method: 'POST',
         headers,
         body: payload,

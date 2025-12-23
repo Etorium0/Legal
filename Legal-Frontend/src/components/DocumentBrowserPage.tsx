@@ -69,7 +69,9 @@ const DocumentBrowserPage: React.FC = () =>
   const [statusFilter, setStatusFilter] = useState('')
   const [levelsFilter, setLevelsFilter] = useState<string[]>([])
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080'
+  const runtimeBackend = (typeof window !== 'undefined' && (window as any).__BACKEND_URL__) as string | undefined
+  const backendUrl = runtimeBackend || import.meta.env.VITE_BACKEND_URL
+  const apiBase = backendUrl ? `${backendUrl}/api/v1` : '/api/v1'
 
   useEffect(() => {
     try {
@@ -99,7 +101,7 @@ const DocumentBrowserPage: React.FC = () =>
         const token = await authService.getValidAccessToken();
         const headers: Record<string, string> = {};
         if (token) headers['Authorization'] = `Bearer ${token}`;
-        const res = await fetch(`${backendUrl}/api/v1/query/documents?${params.toString()}`, { headers });
+        const res = await fetch(`${apiBase}/query/documents?${params.toString()}`, { headers });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setDocs(data.items || []);
@@ -111,7 +113,7 @@ const DocumentBrowserPage: React.FC = () =>
       }
     };
     fetchDocs();
-  }, [backendUrl, searchTerm]);
+  }, [apiBase, searchTerm]);
 
   useEffect(() => {
     if (!selectedDoc) {
@@ -127,7 +129,7 @@ const DocumentBrowserPage: React.FC = () =>
         const token = await authService.getValidAccessToken();
         const headers: Record<string, string> = {};
         if (token) headers['Authorization'] = `Bearer ${token}`;
-        const res = await fetch(`${backendUrl}/api/v1/query/documents/${selectedDoc.id}/units?limit=200`, { headers });
+        const res = await fetch(`${apiBase}/query/documents/${selectedDoc.id}/units?limit=200`, { headers });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setUnits(data.items || []);
@@ -145,7 +147,7 @@ const DocumentBrowserPage: React.FC = () =>
         const token = await authService.getValidAccessToken();
         const headers: Record<string, string> = {};
         if (token) headers['Authorization'] = `Bearer ${token}`;
-        const res = await fetch(`${backendUrl}/api/v1/query/documents/${selectedDoc.id}/tree`, { headers });
+        const res = await fetch(`${apiBase}/query/documents/${selectedDoc.id}/tree`, { headers });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setTree(data.items || []);
@@ -158,7 +160,7 @@ const DocumentBrowserPage: React.FC = () =>
     };
     fetchUnits();
     fetchTree();
-  }, [backendUrl, selectedDoc]);
+  }, [apiBase, selectedDoc]);
 
   useEffect(() => {
     if (!selectedUnit) {
@@ -173,7 +175,7 @@ const DocumentBrowserPage: React.FC = () =>
         const token = await authService.getValidAccessToken();
         const headers: Record<string, string> = {};
         if (token) headers['Authorization'] = `Bearer ${token}`;
-        const res = await fetch(`${backendUrl}/api/v1/query/units/${selectedUnit.id}/citations`, { headers });
+        const res = await fetch(`${apiBase}/query/units/${selectedUnit.id}/citations`, { headers });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setCitationsOut(data.outbound || []);
@@ -187,7 +189,7 @@ const DocumentBrowserPage: React.FC = () =>
       }
     };
     fetchCitations();
-  }, [backendUrl, selectedUnit]);
+  }, [apiBase, selectedUnit]);
 
   const filteredDocs = useMemo(() => docs, [docs]);
 
@@ -204,7 +206,7 @@ const DocumentBrowserPage: React.FC = () =>
       const token = await authService.getValidAccessToken();
       const headers: Record<string, string> = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
-      const res = await fetch(`${backendUrl}/api/v1/query/recommend?${params.toString()}`, { headers });
+      const res = await fetch(`${apiBase}/query/recommend?${params.toString()}`, { headers });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setRecoItems(data.items || []);
