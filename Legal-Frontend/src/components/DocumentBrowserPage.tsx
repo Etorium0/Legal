@@ -75,7 +75,9 @@ const DocumentBrowserPage: React.FC = () =>
   const [statusFilter, setStatusFilter] = useState('')
   const [levelsFilter, setLevelsFilter] = useState<string[]>([])
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080'
+  const runtimeBackend = (typeof window !== 'undefined' && (window as any).__BACKEND_URL__) as string | undefined
+  const backendUrl = runtimeBackend || import.meta.env.VITE_BACKEND_URL
+  const apiBase = backendUrl ? `${backendUrl}/api/v1` : '/api/v1'
 
   useEffect(() => 
   {
@@ -130,12 +132,12 @@ const DocumentBrowserPage: React.FC = () =>
         params.set('limit', '30');
         const token = await authService.getValidAccessToken();
         const headers: Record<string, string> = {};
-        if (token) 
+        if (token)
         {
           headers['Authorization'] = `Bearer ${token}`;
         }
-        const res = await fetch(`${backendUrl}/api/v1/query/documents?${params.toString()}`, { headers });
-        if (!res.ok) 
+        const res = await fetch(`${apiBase}/query/documents?${params.toString()}`, { headers });
+        if (!res.ok)
         {
           throw new Error(`HTTP ${res.status}`);
         }
@@ -153,7 +155,7 @@ const DocumentBrowserPage: React.FC = () =>
       }
     };
     fetchDocs();
-  }, [backendUrl, searchTerm]);
+  }, [apiBase, searchTerm]);
 
   useEffect(() => 
   {
@@ -173,12 +175,12 @@ const DocumentBrowserPage: React.FC = () =>
       {
         const token = await authService.getValidAccessToken();
         const headers: Record<string, string> = {};
-        if (token) 
+        if (token)
         {
           headers['Authorization'] = `Bearer ${token}`;
         }
-        const res = await fetch(`${backendUrl}/api/v1/query/documents/${selectedDoc.id}/units?limit=200`, { headers });
-        if (!res.ok) 
+        const res = await fetch(`${apiBase}/query/documents/${selectedDoc.id}/units?limit=200`, { headers });
+        if (!res.ok)
         {
           throw new Error(`HTTP ${res.status}`);
         }
@@ -203,12 +205,12 @@ const DocumentBrowserPage: React.FC = () =>
       {
         const token = await authService.getValidAccessToken();
         const headers: Record<string, string> = {};
-        if (token) 
+        if (token)
         {
           headers['Authorization'] = `Bearer ${token}`;
         }
-        const res = await fetch(`${backendUrl}/api/v1/query/documents/${selectedDoc.id}/tree`, { headers });
-        if (!res.ok) 
+        const res = await fetch(`${apiBase}/query/documents/${selectedDoc.id}/tree`, { headers });
+        if (!res.ok)
         {
           throw new Error(`HTTP ${res.status}`);
         }
@@ -227,7 +229,7 @@ const DocumentBrowserPage: React.FC = () =>
     };
     fetchUnits();
     fetchTree();
-  }, [backendUrl, selectedDoc]);
+  }, [apiBase, selectedDoc]);
 
   useEffect(() => 
   {
@@ -303,12 +305,12 @@ const DocumentBrowserPage: React.FC = () =>
       {
         const token = await authService.getValidAccessToken();
         const headers: Record<string, string> = {};
-        if (token) 
+        if (token)
         {
           headers['Authorization'] = `Bearer ${token}`;
         }
-        const res = await fetch(`${backendUrl}/api/v1/query/units/${selectedUnit.id}/citations`, { headers });
-        if (!res.ok) 
+        const res = await fetch(`${apiBase}/query/units/${selectedUnit.id}/citations`, { headers });
+        if (!res.ok)
         {
           throw new Error(`HTTP ${res.status}`);
         }
@@ -340,7 +342,7 @@ const DocumentBrowserPage: React.FC = () =>
         {
           headers['Authorization'] = `Bearer ${token}`;
         }
-        const res = await fetch(`${backendUrl}/api/v1/query/units/${selectedUnit.id}`, { headers });
+        const res = await fetch(`${apiBase}/query/units/${selectedUnit.id}`, { headers });
         if (!res.ok) 
         {
           throw new Error(`HTTP ${res.status}`);
@@ -366,7 +368,7 @@ const DocumentBrowserPage: React.FC = () =>
       }
     };
     fetchUnitDetail();
-  }, [backendUrl, selectedUnit]);
+  }, [apiBase, selectedUnit]);
 
   const filteredDocs = useMemo(() => docs, [docs]);
 
@@ -399,12 +401,12 @@ const DocumentBrowserPage: React.FC = () =>
       }
       const token = await authService.getValidAccessToken();
       const headers: Record<string, string> = {};
-      if (token) 
+      if (token)
       {
         headers['Authorization'] = `Bearer ${token}`;
       }
-      const res = await fetch(`${backendUrl}/api/v1/query/recommend?${params.toString()}`, { headers });
-      if (!res.ok) 
+      const res = await fetch(`${apiBase}/query/recommend?${params.toString()}`, { headers });
+      if (!res.ok)
       {
         throw new Error(`HTTP ${res.status}`);
       }

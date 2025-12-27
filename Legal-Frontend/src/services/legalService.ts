@@ -5,8 +5,9 @@ import { authService } from "./authService";
 // It tries to connect to the Go Backend (localhost:8080).
 // Nếu backend không khả dụng, trả về thông báo thân thiện, không dùng Gemini fallback.
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL || '';
-const BACKEND_URL = `${backendUrl}/api/v1/query`;
+const runtimeBackend = (typeof window !== 'undefined' && (window as any).__BACKEND_URL__) as string | undefined;
+const backendUrl = runtimeBackend || import.meta.env.VITE_BACKEND_URL;
+const BACKEND_URL = backendUrl ? `${backendUrl}/api/v1/query` : `/api/v1/query`;
 
  
 

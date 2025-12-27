@@ -1,5 +1,6 @@
 import React from 'react'
 import SimpleLayout from './SimpleLayout'
+import MapCard from './MapCard'
 
 const DashboardPage: React.FC = () => 
 {
@@ -23,6 +24,10 @@ const DashboardPage: React.FC = () =>
               <p className="mt-2 text-sm text-white/70">{item.description}</p>
             </div>
           ))}
+        </div>
+
+        <div className="mt-10">
+          <MapCard height={320} />
         </div>
       </div>
     </SimpleLayout>
