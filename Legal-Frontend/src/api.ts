@@ -35,15 +35,26 @@ export async function queryEndpoint(text: string)
     {
       const first = answers[0];
       const unitId = first.unit_id || first.UnitID || first.unitId;
-      const docRef = first.doc_ref || first.DocRef || 'Tài liệu tham khảo';
+      let docRef = first.title || first.Title || first.doc_ref || first.DocRef || 'Tài liệu tham khảo';
+      const sourceUrl = first.source_url || first.SourceURL || (unitId ? `${backendUrl}/api/v1/query/units/${unitId}` : null);
+
+      // Format docRef if it looks like "vbpl 123" and we don't have a proper title
+      if (!first.title && !first.Title) 
+      {
+          const m = docRef.match(/^vbpl\s*(\d+)/i);
+          if (m) 
+          {
+            docRef = `Văn bản pháp luật #${m[1]}`;
+          }
+      }
 
       return {
         answer: first.snippet || first.answer || 'Không tìm thấy câu trả lời.',
-        references: unitId
+        references: sourceUrl
           ? [
               {
                 title: docRef,
-                url: `${backendUrl}/api/v1/query/units/${unitId}`,
+                url: sourceUrl,
               },
             ]
           : [],
@@ -112,7 +123,7 @@ export async function ttsEndpoint(text: string): Promise<{ url: string; blob: Bl
   }
 }
 
-export async function gesturesEndpoint(audioBlob: Blob): Promise<{ url: string; type: string }>
+export async function gesturesEndpoint(_audioBlob: Blob): Promise<{ url: string; type: string }>
 {
   // Mock gesture video generation using PantoMatrix approach
   // In production, this would call backend that runs PantoMatrix/EMAGE model

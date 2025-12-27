@@ -50,12 +50,18 @@ const DocumentBrowserPage: React.FC = () =>
   const [tree, setTree] = useState<UnitItem[]>([])
   const [treeLoading, setTreeLoading] = useState(false)
   const [treeError, setTreeError] = useState<string | null>(null)
+  const [treeSearch, setTreeSearch] = useState('')
+  const [filteredTree, setFilteredTree] = useState<UnitItem[]>([])
 
   const [selectedUnit, setSelectedUnit] = useState<UnitItem | null>(null)
   const [citationsOut, setCitationsOut] = useState<CitationItem[]>([])
   const [citationsIn, setCitationsIn] = useState<CitationItem[]>([])
   const [citationsLoading, setCitationsLoading] = useState(false)
   const [citationsError, setCitationsError] = useState<string | null>(null)
+
+  const [unitDetailText, setUnitDetailText] = useState<string>('')
+  const [unitDetailLoading, setUnitDetailLoading] = useState(false)
+  const [unitDetailError, setUnitDetailError] = useState<string | null>(null)
 
   const [recoKeyword, setRecoKeyword] = useState('')
   const [recoItems, setRecoItems] = useState<any[]>([])
@@ -71,91 +77,151 @@ const DocumentBrowserPage: React.FC = () =>
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080'
 
-  useEffect(() => {
-    try {
+  useEffect(() => 
+  {
+    try 
+    {
       const voiceQuery = localStorage.getItem('voiceDocQuery') || '';
       if (voiceQuery) 
-{
+      {
         setSearchTerm(voiceQuery);
         localStorage.removeItem('voiceDocQuery');
       }
-    }
- catch (e) 
-{
+  }
+  catch 
+  {
       // ignore storage errors
-    }
+  }
   }, []);
 
-  useEffect(() => {
-    const fetchDocs = async () => {
+  useEffect(() => 
+  {
+    const fetchDocs = async () => 
+    {
       setLoading(true);
       setError(null);
-      try {
+      try 
+      {
         const params = new URLSearchParams();
-        if (searchTerm) { params.set('search', searchTerm); }
-        if (docTypeFilter) { params.append('type', docTypeFilter); }
-        if (authorityFilter) { params.set('authority', authorityFilter); }
-        if (statusFilter) { params.set('status', statusFilter); }
-        if (yearFrom) { params.set('year_from', yearFrom); }
-        if (yearTo) { params.set('year_to', yearTo); }
+        if (searchTerm) 
+        {
+          params.set('search', searchTerm);
+        }
+        if (docTypeFilter) 
+        {
+          params.append('type', docTypeFilter);
+        }
+        if (authorityFilter) 
+        {
+          params.set('authority', authorityFilter);
+        }
+        if (statusFilter) 
+        {
+          params.set('status', statusFilter);
+        }
+        if (yearFrom) 
+        {
+          params.set('year_from', yearFrom);
+        }
+        if (yearTo) 
+        {
+          params.set('year_to', yearTo);
+        }
         params.set('limit', '30');
         const token = await authService.getValidAccessToken();
         const headers: Record<string, string> = {};
-        if (token) headers['Authorization'] = `Bearer ${token}`;
+        if (token) 
+        {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
         const res = await fetch(`${backendUrl}/api/v1/query/documents?${params.toString()}`, { headers });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) 
+        {
+          throw new Error(`HTTP ${res.status}`);
+        }
         const data = await res.json();
         setDocs(data.items || []);
-      } catch (err: any) {
+      } 
+      catch (err: any) 
+      {
         setError(err?.message || 'Không tải được danh sách văn bản');
         setDocs([]);
-      } finally {
+      } 
+      finally 
+      {
         setLoading(false);
       }
     };
     fetchDocs();
   }, [backendUrl, searchTerm]);
 
-  useEffect(() => {
-    if (!selectedDoc) {
+  useEffect(() => 
+  {
+    if (!selectedDoc) 
+    {
       setUnits([]);
       setTree([]);
+      setFilteredTree([]);
       setSelectedUnit(null);
       return;
     }
-    const fetchUnits = async () => {
+    const fetchUnits = async () => 
+    {
       setUnitsLoading(true);
       setUnitsError(null);
-      try {
+      try 
+      {
         const token = await authService.getValidAccessToken();
         const headers: Record<string, string> = {};
-        if (token) headers['Authorization'] = `Bearer ${token}`;
+        if (token) 
+        {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
         const res = await fetch(`${backendUrl}/api/v1/query/documents/${selectedDoc.id}/units?limit=200`, { headers });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) 
+        {
+          throw new Error(`HTTP ${res.status}`);
+        }
         const data = await res.json();
         setUnits(data.items || []);
-      } catch (err: any) {
+      } 
+      catch (err: any) 
+      {
         setUnitsError(err?.message || 'Không tải được các điều/khoản');
         setUnits([]);
-      } finally {
+      } 
+      finally 
+      {
         setUnitsLoading(false);
       }
     };
-    const fetchTree = async () => {
+    const fetchTree = async () => 
+    {
       setTreeLoading(true);
       setTreeError(null);
-      try {
+      try 
+      {
         const token = await authService.getValidAccessToken();
         const headers: Record<string, string> = {};
-        if (token) headers['Authorization'] = `Bearer ${token}`;
+        if (token) 
+        {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
         const res = await fetch(`${backendUrl}/api/v1/query/documents/${selectedDoc.id}/tree`, { headers });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) 
+        {
+          throw new Error(`HTTP ${res.status}`);
+        }
         const data = await res.json();
         setTree(data.items || []);
-      } catch (err: any) {
+      } 
+      catch (err: any) 
+      {
         setTreeError(err?.message || 'Không tải được cây pháp điển');
         setTree([]);
-      } finally {
+      } 
+      finally 
+      {
         setTreeLoading(false);
       }
     };
@@ -163,58 +229,195 @@ const DocumentBrowserPage: React.FC = () =>
     fetchTree();
   }, [backendUrl, selectedDoc]);
 
-  useEffect(() => {
-    if (!selectedUnit) {
-      setCitationsOut([]);
-      setCitationsIn([]);
+  useEffect(() => 
+  {
+    const term = treeSearch.trim().toLowerCase();
+    if (!term) 
+    {
+      setFilteredTree(tree);
       return;
     }
-    const fetchCitations = async () => {
+    const matchNode = (n: UnitItem): boolean =>
+    {
+      const codeText = (n.code || '').toLowerCase();
+      const bodyText = (n.text || '').toLowerCase();
+      return codeText.includes(term) || bodyText.includes(term);
+    };
+    const filterNodes = (nodes: UnitItem[]): UnitItem[] => 
+    {
+      return nodes
+        .map((n) => 
+        {
+          const children = Array.isArray(n.children) ? filterNodes(n.children) : [];
+          const selfMatch = matchNode(n);
+          if (selfMatch || children.length > 0) 
+          {
+            return { ...n, children };
+          }
+          return null as unknown as UnitItem;
+        })
+        .filter(Boolean) as UnitItem[];
+    };
+    setFilteredTree(filterNodes(tree));
+  }, [tree, treeSearch]);
+
+  const renderHighlighted = (text: string, term: string) => 
+  {
+    const t = term.trim();
+    if (!t) 
+    {
+      return text;
+    }
+    const idx = text.toLowerCase().indexOf(t.toLowerCase());
+    if (idx === -1) 
+    {
+      return text;
+    }
+    const before = text.slice(0, idx);
+    const match = text.slice(idx, idx + t.length);
+    const after = text.slice(idx + t.length);
+    return (
+      <>
+        {before}
+        <span className="bg-yellow-500/30 text-yellow-200 px-0.5 rounded">{match}</span>
+        {after}
+      </>
+    );
+  };
+
+  useEffect(() => 
+  {
+    if (!selectedUnit) 
+    {
+      setCitationsOut([]);
+      setCitationsIn([]);
+      setUnitDetailText('');
+      setUnitDetailError(null);
+      return;
+    }
+    const fetchCitations = async () => 
+    {
       setCitationsLoading(true);
       setCitationsError(null);
-      try {
+      try 
+      {
         const token = await authService.getValidAccessToken();
         const headers: Record<string, string> = {};
-        if (token) headers['Authorization'] = `Bearer ${token}`;
+        if (token) 
+        {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
         const res = await fetch(`${backendUrl}/api/v1/query/units/${selectedUnit.id}/citations`, { headers });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) 
+        {
+          throw new Error(`HTTP ${res.status}`);
+        }
         const data = await res.json();
         setCitationsOut(data.outbound || []);
         setCitationsIn(data.inbound || []);
-      } catch (err: any) {
+      } 
+      catch (err: any) 
+      {
         setCitationsError(err?.message || 'Không tải được trích dẫn');
         setCitationsOut([]);
         setCitationsIn([]);
-      } finally {
+      } 
+      finally 
+      {
         setCitationsLoading(false);
       }
     };
     fetchCitations();
+    const fetchUnitDetail = async () => 
+    {
+      setUnitDetailLoading(true);
+      setUnitDetailError(null);
+      try 
+      {
+        const token = await authService.getValidAccessToken();
+        const headers: Record<string, string> = {};
+        if (token) 
+        {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        const res = await fetch(`${backendUrl}/api/v1/query/units/${selectedUnit.id}`, { headers });
+        if (!res.ok) 
+        {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        const text = data?.unit?.text || '';
+        const cleaned = String(text)
+          .replace(/\uFFFD/g, '')
+          .replace(/\r?\n/g, '\n')
+          .replace(/\s+\n/g, '\n')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
+        setUnitDetailText(cleaned);
+      } 
+      catch (err: any) 
+      {
+        setUnitDetailError(err?.message || 'Không tải được nội dung đơn vị');
+        setUnitDetailText('');
+      } 
+      finally 
+      {
+        setUnitDetailLoading(false);
+      }
+    };
+    fetchUnitDetail();
   }, [backendUrl, selectedUnit]);
 
   const filteredDocs = useMemo(() => docs, [docs]);
 
-  const fetchRecommend = async () => {
-    if (!recoKeyword.trim()) return;
+  const fetchRecommend = async () => 
+  {
+    if (!recoKeyword.trim()) 
+    {
+      return;
+    }
     setRecoLoading(true);
     setRecoError(null);
-    try {
+    try 
+    {
       const params = new URLSearchParams({ keyword: recoKeyword, limit: '10' });
-      if (docTypeFilter) params.append('doc_type', docTypeFilter);
-      if (levelsFilter.length > 0) levelsFilter.forEach(l => params.append('level', l));
-      if (yearFrom) params.set('year_from', yearFrom);
-      if (yearTo) params.set('year_to', yearTo);
+      if (docTypeFilter) 
+      {
+        params.append('doc_type', docTypeFilter);
+      }
+      if (levelsFilter.length > 0) 
+      {
+        levelsFilter.forEach(l => params.append('level', l));
+      }
+      if (yearFrom) 
+      {
+        params.set('year_from', yearFrom);
+      }
+      if (yearTo) 
+      {
+        params.set('year_to', yearTo);
+      }
       const token = await authService.getValidAccessToken();
       const headers: Record<string, string> = {};
-      if (token) headers['Authorization'] = `Bearer ${token}`;
+      if (token) 
+      {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
       const res = await fetch(`${backendUrl}/api/v1/query/recommend?${params.toString()}`, { headers });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) 
+      {
+        throw new Error(`HTTP ${res.status}`);
+      }
       const data = await res.json();
       setRecoItems(data.items || []);
-    } catch (err: any) {
+    } 
+    catch (err: any) 
+    {
       setRecoError(err?.message || 'Không tìm được gợi ý');
       setRecoItems([]);
-    } finally {
+    } 
+    finally 
+    {
       setRecoLoading(false);
     }
   };
@@ -285,9 +488,16 @@ const DocumentBrowserPage: React.FC = () =>
                   <input
                     type="checkbox"
                     checked={levelsFilter.includes(l)}
-                    onChange={(e) => {
-                      if (e.target.checked) setLevelsFilter(prev => [...prev, l])
-                      else setLevelsFilter(prev => prev.filter(x => x !== l))
+                    onChange={(e) => 
+                    {
+                      if (e.target.checked) 
+                      {
+                        setLevelsFilter(prev => [...prev, l]);
+                      }
+                      else
+                      {
+                        setLevelsFilter(prev => prev.filter(x => x !== l));
+                      }
                     }}
                   />
                   <span className="capitalize">{l}</span>
@@ -404,7 +614,15 @@ const DocumentBrowserPage: React.FC = () =>
                       >
                         <div className="flex items-center justify-between text-white/80 text-sm mb-2">
                           <span>{u.level || 'unit'}</span>
-                          {u.code && <span className={`px-2 py-1 rounded text-xs ${selectedUnit?.id === u.id ? 'bg-indigo-500/40 text-white' : 'bg-indigo-500/20 text-indigo-200'}`}>{u.code}</span>}
+                          <div className="flex items-center gap-2">
+                            {u.code && <span className={`px-2 py-1 rounded text-xs ${selectedUnit?.id === u.id ? 'bg-indigo-500/40 text-white' : 'bg-indigo-500/20 text-indigo-200'}`}>{u.code}</span>}
+                            <a
+                              href={`/unit/${u.id}`}
+                              className="text-xs px-2 py-1 rounded bg-white/10 border border-white/20 text-white/80 hover:bg-white/20"
+                            >
+                              Mở Viewer
+                            </a>
+                          </div>
                         </div>
                         <div className="text-white/90 text-sm whitespace-pre-wrap leading-relaxed line-clamp-6">{u.text}</div>
                       </button>
@@ -419,20 +637,63 @@ const DocumentBrowserPage: React.FC = () =>
 
               <div className="space-y-3 max-h-[480px] overflow-y-auto pr-2">
                 <div className="text-white/70 text-sm mb-1">Cây pháp điển</div>
+                <div className="flex items-center gap-2 mb-2">
+                  <input
+                    type="text"
+                    placeholder="Tìm trong cây..."
+                    value={treeSearch}
+                    onChange={(e) => setTreeSearch(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
                 {treeLoading && <div className="text-white/70">Đang tải cây...</div>}
                 {treeError && <div className="text-red-300">{treeError}</div>}
-                {!treeLoading && !treeError && tree.length === 0 && (
+                {!treeLoading && !treeError && (treeSearch ? filteredTree.length === 0 : tree.length === 0) && (
                   <div className="text-white/60">Chưa có cấu trúc cây cho văn bản này.</div>
                 )}
-                {!treeLoading && !treeError && tree.length > 0 && (
+                {!treeLoading && !treeError && (treeSearch ? filteredTree.length > 0 : tree.length > 0) && (
                   <div className="space-y-2">
-                    {tree.map((node) => (
-                      <TreeNode key={node.id} node={node} depth={0} onSelect={setSelectedUnit} selectedId={selectedUnit?.id} />
+                    {(treeSearch ? filteredTree : tree).map((node) => (
+                      <TreeNode
+                        key={node.id}
+                        node={node}
+                        depth={0}
+                        onSelect={setSelectedUnit}
+                        selectedId={selectedUnit?.id}
+                        term={treeSearch}
+                        renderHighlighted={renderHighlighted}
+                      />
                     ))}
                   </div>
                 )}
               </div>
             </div>
+
+            {selectedUnit && (
+              <div className="mt-6 bg-white/5 border border-white/10 rounded-xl p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white text-sm font-semibold">{selectedUnit.code || selectedUnit.level}</span>
+                    <span className="text-xs text-white/50">{selectedUnit.level}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={`/unit/${selectedUnit.id}`}
+                      className="text-xs px-3 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-500"
+                    >
+                      Mở ở VBQPPL Viewer
+                    </a>
+                  </div>
+                </div>
+                {unitDetailLoading && <div className="text-white/70">Đang tải nội dung...</div>}
+                {unitDetailError && <div className="text-red-300 text-sm">{unitDetailError}</div>}
+                {!unitDetailLoading && !unitDetailError && unitDetailText && (
+                  <div className="rounded-lg border border-white/10 bg-white/5 p-4 text-white whitespace-pre-wrap leading-relaxed">
+                    {unitDetailText}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Citations */}
             {selectedUnit && (
@@ -501,18 +762,39 @@ const DocumentBrowserPage: React.FC = () =>
   )
 }
 
-const TreeNode: React.FC<{ node: UnitItem; depth: number; onSelect: (u: UnitItem) => void; selectedId?: string }> = ({ node, depth, onSelect, selectedId }) => {
+const TreeNode: React.FC<{
+  node: UnitItem;
+  depth: number;
+  onSelect: (u: UnitItem) => void;
+  selectedId?: string;
+  term?: string;
+  renderHighlighted?: (text: string, term: string) => React.ReactNode;
+}> = ({ node, depth, onSelect, selectedId, term = '', renderHighlighted }) => 
+{
+  const [collapsed, setCollapsed] = useState(false);
   return (
-    <div className={`rounded-lg border p-3 cursor-pointer transition-colors ${selectedId === node.id ? 'border-indigo-400 bg-indigo-500/10' : 'border-white/5 bg-white/5 hover:bg-white/10'}`} style={{ marginLeft: depth * 12 }} onClick={() => onSelect(node)}>
+    <div className={`rounded-lg border p-3 transition-colors ${selectedId === node.id ? 'border-indigo-400 bg-indigo-500/10' : 'border-white/5 bg-white/5 hover:bg-white/10'}`} style={{ marginLeft: depth * 12 }}>
       <div className="flex items-center justify-between text-white/80 text-sm mb-1">
-        <span className="font-semibold">{node.code || node.level}</span>
-        <span className="text-xs text-white/50">{node.level}</span>
+        <div className="flex items-center gap-2">
+          <button className="text-xs px-2 py-1 rounded bg-white/10 border border-white/20 hover:bg-white/20" onClick={() => setCollapsed(!collapsed)}>
+            {collapsed ? '▸' : '▾'}
+          </button>
+          <button className="font-semibold text-left" onClick={() => onSelect(node)}>
+            {renderHighlighted ? renderHighlighted(node.code || node.level, term) : (node.code || node.level)}
+          </button>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-white/50">{node.level}</span>
+          <a href={`/unit/${node.id}`} className="text-xs px-2 py-1 rounded bg-white/10 border border-white/20 text-white/80 hover:bg-white/20">Mở Viewer</a>
+        </div>
       </div>
-      <div className="text-white/90 text-sm whitespace-pre-wrap leading-relaxed line-clamp-4">{node.text}</div>
-      {node.children && node.children.length > 0 && (
+      <div className="text-white/90 text-sm whitespace-pre-wrap leading-relaxed line-clamp-4">
+        {renderHighlighted ? renderHighlighted(node.text, term) : node.text}
+      </div>
+      {(!collapsed) && node.children && node.children.length > 0 && (
         <div className="mt-2 space-y-2">
           {node.children.map((child) => (
-            <TreeNode key={child.id} node={child} depth={depth + 1} onSelect={onSelect} selectedId={selectedId} />
+            <TreeNode key={child.id} node={child} depth={depth + 1} onSelect={onSelect} selectedId={selectedId} term={term} renderHighlighted={renderHighlighted} />
           ))}
         </div>
       )}

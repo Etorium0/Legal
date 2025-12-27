@@ -74,6 +74,7 @@ const AssistantPage: React.FC = () =>
         role: 'assistant',
         content: result.answer,
         timestamp: new Date().toISOString(),
+        references: result.references,
       }
       setMessages(prev => [...prev, aiMsg])
       addHistory({ question: text, answer: result.answer, timestamp: Date.now() })

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: 'http://localhost:8080/api' });
+const api = axios.create({ baseURL: 'http://10.45.163.236:8080/api' });
 
 export async function queryEndpoint(text: string) {
   const res = await api.post('/query', { question: text });

@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import SimpleLayout from './SimpleLayout'
 import { authService } from '../services/authService'
 
-const IngestPage: React.FC = () => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080'
+const IngestPage: React.FC = () => 
+{
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || ''
   const [payload, setPayload] = useState(`{
   "document": {"title": "", "type": ""},
   "units": []
@@ -12,28 +13,35 @@ const IngestPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<any>(null)
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => 
+{
     setLoading(true)
     setError(null)
     setResult(null)
-    try {
+    try 
+{
       const token = await authService.getValidAccessToken()
       const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-      if (token) headers['Authorization'] = `Bearer ${token}`
+      if (token) {headers['Authorization'] = `Bearer ${token}`}
       const res = await fetch(`${backendUrl}/api/v1/query/ingest`, {
         method: 'POST',
         headers,
         body: payload,
       })
-      if (!res.ok) {
+      if (!res.ok) 
+{
         const text = await res.text()
         throw new Error(text || `HTTP ${res.status}`)
       }
       const data = await res.json()
       setResult(data)
-    } catch (e: any) {
+    }
+ catch (e: any) 
+{
       setError(e?.message || 'Ingest thất bại')
-    } finally {
+    }
+ finally 
+{
       setLoading(false)
     }
   }

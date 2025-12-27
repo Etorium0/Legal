@@ -9,6 +9,8 @@ const SimpleLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     { path: '/assistant', label: 'Trợ lý AI', icon: '🤖' },
     { path: '/home', label: 'Trang chủ', icon: '🏠' },
     { path: '/dashboard', label: 'Dashboard', icon: '📊' },
+    { path: '/phapdien', label: 'Pháp điển', icon: '📚' },
+    { path: '/vbpl', label: 'VBPL', icon: '📜' },
     { path: '/documents', label: 'Tài liệu', icon: '📄' },
     { path: '/graph', label: 'Biểu đồ', icon: '🔗' },
     { path: '/settings', label: 'Cài đặt', icon: '⚙️' },

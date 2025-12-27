@@ -47,6 +47,7 @@ export class AudioService
   public isListening: boolean = false;
   private listeningTimeout: NodeJS.Timeout | null = null;
   private phraseTimeout: NodeJS.Timeout | null = null;
+  private voicesLoaded: boolean = false;
 
   constructor() 
 {
@@ -68,9 +69,32 @@ export class AudioService
 {
       this.synthesis.onvoiceschanged = () => 
 {
-        // noop: trigger voice loading
+        this.voicesLoaded = true;
       };
     }
+  }
+
+  private async ensureVoicesLoaded(): Promise<void>
+  {
+    const haveVoices = this.synthesis.getVoices().length > 0;
+    if (haveVoices)
+    {
+      this.voicesLoaded = true;
+      return;
+    }
+    await new Promise<void>((resolve) =>
+    {
+      const timeout = setTimeout(() =>
+      {
+        resolve();
+      }, 1500);
+      this.synthesis.onvoiceschanged = () =>
+      {
+        clearTimeout(timeout);
+        this.voicesLoaded = true;
+        resolve();
+      };
+    });
   }
 
   /**
@@ -200,13 +224,21 @@ export class AudioService
     }
   }
 
-public speak(text: string, onEnd?: () => void): void 
+public async speak(text: string, onEnd?: () => void): Promise<void> 
 {
     if (this.synthesis.speaking) 
 {
       this.synthesis.cancel();
     }
 
+    const safeText = (text || '').trim();
+    if (safeText.length === 0)
+    {
+      if (onEnd) {onEnd();}
+      return;
+    }
+
+    await this.ensureVoicesLoaded();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'vi-VN';
     utterance.rate = 1.0;
@@ -220,6 +252,14 @@ public speak(text: string, onEnd?: () => void): void
 {
       utterance.voice = vnVoice;
     }
+    else
+    {
+      const fallback = voices.find(v => v.lang.toLowerCase().startsWith('en') || v.lang.toLowerCase().startsWith('en-'));
+      if (fallback)
+      {
+        utterance.voice = fallback;
+      }
+    }
 
     utterance.onend = () => 
 {
@@ -232,7 +272,14 @@ public speak(text: string, onEnd?: () => void): void
         if (onEnd) {onEnd();}
     };
 
-    this.synthesis.speak(utterance);
+    try
+    {
+      this.synthesis.speak(utterance);
+    }
+    catch
+    {
+      if (onEnd) {onEnd();}
+    }
   }
 
   public stopSpeaking(): void 

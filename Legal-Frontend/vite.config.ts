@@ -7,6 +7,7 @@ const API_TARGET = process.env.API_TARGET || 'http://localhost:8080'
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: true,
     proxy: {
       '/api': {
         target: API_TARGET,

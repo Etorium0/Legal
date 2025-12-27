@@ -1,4 +1,4 @@
-const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080'
+const backendUrl = import.meta.env.VITE_BACKEND_URL || ''
 const AUTH_BASE = `${backendUrl}/api/v1/auth`
 
 const STORAGE_KEY = 'legal_auth_tokens'
@@ -18,16 +18,21 @@ type AuthResponse = {
 
 type Credentials = { email: string; password: string; name?: string }
 
-const loadTokens = (): TokenBundle | null => {
-  try {
+const loadTokens = (): TokenBundle | null =>
+{
+  try
+  {
     const raw = localStorage.getItem(STORAGE_KEY)
     return raw ? JSON.parse(raw) as TokenBundle : null
-  } catch (_e) {
+  }
+  catch
+  {
     return null
   }
 }
 
-const saveTokens = (res: AuthResponse) => {
+const saveTokens = (res: AuthResponse) =>
+{
   const expires_at = Date.now() + res.expires_in * 1000 - 5000
   const bundle: TokenBundle = {
     access_token: res.access_token,
@@ -39,18 +44,22 @@ const saveTokens = (res: AuthResponse) => {
   return bundle
 }
 
-const clearTokens = () => {
+const clearTokens = () =>
+{
   localStorage.removeItem(STORAGE_KEY)
 }
 
-export const authService = {
-  async register({ email, password, name }: Credentials) {
+export const authService =
+{
+  async register({ email, password, name }: Credentials)
+  {
     const res = await fetch(`${AUTH_BASE}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, name }),
     })
-    if (!res.ok) {
+    if (!res.ok)
+    {
       const text = await res.text()
       throw new Error(text || 'Đăng ký thất bại')
     }
@@ -58,13 +67,15 @@ export const authService = {
     return saveTokens(data)
   },
 
-  async login({ email, password }: Credentials) {
+  async login({ email, password }: Credentials)
+  {
     const res = await fetch(`${AUTH_BASE}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     })
-    if (!res.ok) {
+    if (!res.ok)
+    {
       const text = await res.text()
       throw new Error(text || 'Đăng nhập thất bại')
     }
@@ -72,9 +83,11 @@ export const authService = {
     return saveTokens(data)
   },
 
-  async refresh() {
+  async refresh()
+  {
     const tokens = loadTokens()
-    if (!tokens?.refresh_token) {
+    if (!tokens?.refresh_token)
+    {
       throw new Error('Thiếu refresh token')
     }
     const res = await fetch(`${AUTH_BASE}/refresh`, {
@@ -82,7 +95,8 @@ export const authService = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh_token: tokens.refresh_token }),
     })
-    if (!res.ok) {
+    if (!res.ok)
+    {
       clearTokens()
       const text = await res.text()
       throw new Error(text || 'Làm mới phiên thất bại')
@@ -91,34 +105,49 @@ export const authService = {
     return saveTokens(data)
   },
 
-  logout() {
+  logout()
+  {
     clearTokens()
   },
 
-  getStoredTokens() {
+  getStoredTokens()
+  {
     return loadTokens()
   },
 
-  async getValidAccessToken(): Promise<string | null> {
+  async getValidAccessToken(): Promise<string | null>
+  {
     const tokens = loadTokens()
-    if (!tokens) return null
-    if (tokens.expires_at > Date.now()) {
+    if (!tokens)
+    {
+      return null
+    }
+    if (tokens.expires_at > Date.now())
+    {
       return tokens.access_token
     }
-    try {
+    try
+    {
       const refreshed = await this.refresh()
       return refreshed.access_token
-    } catch (_e) {
+    }
+    catch
+    {
       clearTokens()
       return null
     }
   },
 
-  async authFetch(input: RequestInfo | URL, init: RequestInit = {}) {
+  async authFetch(input: RequestInfo | URL, init: RequestInit = {})
+  {
     const token = await this.getValidAccessToken()
     const headers = new Headers(init.headers || {})
-    if (token) headers.set('Authorization', `Bearer ${token}`)
-    if (!headers.has('Content-Type') && init.body) {
+    if (token)
+    {
+      headers.set('Authorization', `Bearer ${token}`)
+    }
+    if (!headers.has('Content-Type') && init.body)
+    {
       headers.set('Content-Type', 'application/json')
     }
     return fetch(input, { ...init, headers })

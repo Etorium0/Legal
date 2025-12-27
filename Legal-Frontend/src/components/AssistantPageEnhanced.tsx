@@ -313,18 +313,19 @@ const AssistantPage: React.FC = () =>
                       </div>
                       
                       {msg.role === 'assistant' && msg.sources && msg.sources.length > 0 && (
-                        <div className="mt-2 ml-1 p-3 rounded-xl bg-black/20 border border-white/5 max-w-[85%]">
-                          <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider block mb-2">Nguồn tham khảo</span>
-                          <div className="flex flex-wrap gap-2">
+                        <div className="mt-3 ml-1 max-w-[85%]">
+                          <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider block mb-2">Trích dẫn</span>
+                          <div className="grid gap-2 sm:grid-cols-2">
                             {msg.sources.map((src, idx) => (
-                              <a 
-                                key={idx} 
-                                href={src.url} 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="text-xs bg-white/5 hover:bg-white/10 px-2 py-1 rounded text-gray-300 transition-colors truncate border border-white/5"
+                              <a
+                                key={idx}
+                                href={src.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors p-3"
                               >
-                                {src.document} - {src.unit}
+                                <div className="text-xs font-semibold text-gray-200 truncate">{src.document}</div>
+                                <div className="text-[11px] text-gray-400 truncate mt-1">{src.unit}</div>
                               </a>
                             ))}
                           </div>
