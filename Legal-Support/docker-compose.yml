@@ -1,0 +1,143 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.0-pg15
+    environment:
+      POSTGRES_DB: legaldb
+      POSTGRES_USER: legaluser
+      POSTGRES_PASSWORD: legalpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U legaluser -d legaldb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    environment:
+      HTTP_PORT: 8080
+      DATABASE_URL: postgres://legaluser:legalpass@postgres:5432/legaldb?sslmode=disable
+      EMBEDDING_ENABLED: "true"
+      EMBEDDING_MODEL: embedding-001
+      EMBEDDING_API_KEY: ${EMBEDDING_API_KEY}
+      EMBEDDING_PROVIDER: gemini
+      QA_MODEL: gemini-1.5-flash
+      RERANK_API_KEYS: ${RERANK_API_KEYS}
+      RERANK_MODEL: ${RERANK_MODEL}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  law-mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456789
+      MYSQL_DATABASE: law
+      MYSQL_PASSWORD: 123456789
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p123456789"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    environment:
+      PMA_HOST: law-mysql
+      UPLOAD_LIMIT: 300M
+    ports:
+      - "8085:80"
+    depends_on:
+      law-mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  recommendation:
+    build:
+      context: .
+      dockerfile: Dockerfile.recommendation
+    environment:
+      HTTP_PORT: 8080
+      DATABASE_URL: postgres://legaluser:legalpass@postgres:5432/legaldb?sslmode=disable
+    ports:
+      - "8082:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  auth:
+    build:
+      context: .
+      dockerfile: Dockerfile.auth
+    environment:
+      HTTP_PORT: 8080
+      DATABASE_URL: postgres://legaluser:legalpass@postgres:5432/legaldb?sslmode=disable
+      JWT_SECRET: dev-secret-change-me
+    ports:
+      - "8083:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  law:
+    build:
+      context: .
+      dockerfile: Dockerfile.law
+    environment:
+      HTTP_PORT: 8080
+      DATABASE_URL: postgres://legaluser:legalpass@postgres:5432/legaldb?sslmode=disable
+    ports:
+      - "8084:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    environment:
+      API_URL: http://api:8080
+      RECOMMEND_URL: http://recommendation:8080
+      AUTH_URL: http://auth:8080
+      LAW_URL: http://law:8080
+      GATEWAY_PORT: 8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      api:
+        condition: service_started
+      recommendation:
+        condition: service_started
+    restart: unless-stopped
+
+#  pantomatrix:
+#    build: ../PantoMatrix-Service
+#    ports:
+#      - "8086:8081"
+#    volumes:
+#      - pantomatrix_outputs:/app/outputs
+#      - pantomatrix_uploads:/app/uploads
+#    restart: unless-stopped
+#    environment:
+#      - PORT=8081
+
+volumes:
+  postgres_data:
+  pantomatrix_outputs:
+  pantomatrix_uploads:

@@ -1,0 +1,17 @@
+-- Auth schema
+ALTER TABLE IF EXISTS users
+ADD COLUMN IF NOT EXISTS name TEXT,
+ADD COLUMN IF NOT EXISTS password_hash TEXT,
+ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user',
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+  token TEXT PRIMARY KEY,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  expires_at TIMESTAMP NOT NULL,
+  revoked BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id);
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_expires ON refresh_tokens(expires_at);
