@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import SimpleLayout from './SimpleLayout'
 import { authService } from '../services/authService'
+import PhapDienView from './phapdien/PhapDienView'
 
 type DocItem = {
   id: string
@@ -38,6 +39,7 @@ type CitationItem = {
 
 const DocumentBrowserPage: React.FC = () => 
 {
+  const [activeTab, setActiveTab] = useState<'vbpl' | 'phapdien'>('vbpl')
   const [searchTerm, setSearchTerm] = useState('')
   const [docs, setDocs] = useState<DocItem[]>([])
   const [loading, setLoading] = useState(false)
@@ -427,12 +429,31 @@ const DocumentBrowserPage: React.FC = () =>
   return (
     <SimpleLayout>
       <div>
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-3xl font-bold text-white">Trình duyệt tài liệu</h2>
-            <p className="mt-2 text-white/70">Tìm kiếm và xem chi tiết văn bản pháp luật.</p>
-          </div>
+        <div className="flex gap-2 mb-6 border-b border-white/10 pb-4">
+            <button 
+               className={`px-4 py-2 rounded-lg font-medium transition-colors ${activeTab === 'vbpl' ? 'bg-indigo-600 text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
+               onClick={() => setActiveTab('vbpl')}
+            >
+               Văn bản quy phạm pháp luật
+            </button>
+            <button 
+               className={`px-4 py-2 rounded-lg font-medium transition-colors ${activeTab === 'phapdien' ? 'bg-indigo-600 text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
+               onClick={() => setActiveTab('phapdien')}
+            >
+               Bộ Pháp Điển
+            </button>
         </div>
+
+        {activeTab === 'phapdien' && <PhapDienView />}
+
+        {activeTab === 'vbpl' && (
+          <div>
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold text-white">Trình duyệt tài liệu</h2>
+                <p className="mt-2 text-white/70">Tìm kiếm và xem chi tiết văn bản pháp luật.</p>
+              </div>
+            </div>
 
         {/* Search Bar */}
         <div className="mb-6 space-y-3">
@@ -553,7 +574,7 @@ const DocumentBrowserPage: React.FC = () =>
 
         {/* Documents Grid */}
         {!loading && !error && (
-          <>
+          <div>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {filteredDocs.map(doc => (
                 <div
@@ -581,7 +602,7 @@ const DocumentBrowserPage: React.FC = () =>
                 <p className="text-white/60">Không tìm thấy tài liệu nào</p>
               </div>
             )}
-          </>
+          </div>
         )}
 
         {/* Units of selected document */}
@@ -757,6 +778,8 @@ const DocumentBrowserPage: React.FC = () =>
                 </div>
               </div>
             )}
+          </div>
+        )}
           </div>
         )}
       </div>

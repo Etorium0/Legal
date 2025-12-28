@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 const API_TARGET = process.env.API_TARGET || 'http://localhost:8080'
 
 export default defineConfig({
+  base: './',
   plugins: [react()],
   server: {
     host: true,

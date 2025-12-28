@@ -22,7 +22,7 @@ const PhapDienPage: React.FC = () =>
     return (
         <SimpleLayout>
             <div className="h-[calc(100vh-64px)] flex flex-col">
-                <div className="bg-gradient-to-r from-blue-900 to-blue-700 p-6 text-white shadow-md">
+                <div className="bg-gradient-to-r from-blue-900 to-indigo-900 p-6 text-white shadow-md">
                     <Title level={2} style={{ color: 'white', margin: 0 }}>
                         Bộ Pháp Điển Việt Nam
                     </Title>
@@ -31,11 +31,11 @@ const PhapDienPage: React.FC = () =>
                     </p>
                 </div>
                 
-                <div className="flex flex-1 overflow-hidden p-4 gap-4 bg-gray-100">
-                    <div className="w-1/3 min-w-[300px] h-full">
+                <div className="flex flex-1 overflow-hidden p-4 gap-4 bg-slate-900/50">
+                    <div className="w-1/3 min-w-[300px] h-full bg-slate-800/50 rounded-lg border border-white/10 overflow-hidden">
                         <TreeView onSelectChuong={handleSelectChuong} />
                     </div>
-                    <div className="flex-1 h-full">
+                    <div className="flex-1 h-full bg-slate-800/50 rounded-lg border border-white/10 overflow-hidden p-4">
                         <ChuongReader chuong={selectedChuong} dieus={selectedDieus} />
                     </div>
                 </div>

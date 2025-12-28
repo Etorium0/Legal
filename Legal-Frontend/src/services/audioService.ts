@@ -43,39 +43,55 @@ declare global {
 export class AudioService 
 {
   private recognition: SpeechRecognition | null = null;
-  private synthesis: SpeechSynthesis = window.speechSynthesis;
+  private synthesis: SpeechSynthesis | undefined = window.speechSynthesis;
   public isListening: boolean = false;
   private listeningTimeout: NodeJS.Timeout | null = null;
   private phraseTimeout: NodeJS.Timeout | null = null;
   private voicesLoaded: boolean = false;
 
   constructor() 
-{
+  {
     // Initialize STT
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) 
+    {
+      try 
 {
-      this.recognition = new SpeechRecognition();
-      if (this.recognition) 
+        this.recognition = new SpeechRecognition();
+        if (this.recognition) 
+        {
+          this.recognition.continuous = false; // BLOCKING mode như Sophia
+          this.recognition.interimResults = true;
+          this.recognition.lang = 'vi-VN';
+        }
+      }
+ catch (e) 
 {
-        this.recognition.continuous = false; // BLOCKING mode như Sophia
-        this.recognition.interimResults = true;
-        this.recognition.lang = 'vi-VN';
+        console.warn("SpeechRecognition init failed:", e);
       }
     }
 
     // Preload voices to ensure Vietnamese voice availability
-    if (this.synthesis && this.synthesis.getVoices().length === 0) 
+    if (this.synthesis && typeof this.synthesis.getVoices === 'function') 
 {
-      this.synthesis.onvoiceschanged = () => 
+      if (this.synthesis.getVoices().length === 0) 
+      {
+        this.synthesis.onvoiceschanged = () => 
+        {
+          this.voicesLoaded = true;
+        };
+      }
+    }
+ else 
 {
-        this.voicesLoaded = true;
-      };
+      console.warn("SpeechSynthesis not supported");
     }
   }
 
   private async ensureVoicesLoaded(): Promise<void>
   {
+    if (!this.synthesis || typeof this.synthesis.getVoices !== 'function') {return;}
+
     const haveVoices = this.synthesis.getVoices().length > 0;
     if (haveVoices)
     {
@@ -88,12 +104,19 @@ export class AudioService
       {
         resolve();
       }, 1500);
-      this.synthesis.onvoiceschanged = () =>
-      {
-        clearTimeout(timeout);
-        this.voicesLoaded = true;
+      if (this.synthesis) 
+{
+        this.synthesis.onvoiceschanged = () =>
+        {
+          clearTimeout(timeout);
+          this.voicesLoaded = true;
+          resolve();
+        };
+      }
+ else 
+{
         resolve();
-      };
+      }
     });
   }
 
@@ -225,9 +248,16 @@ export class AudioService
   }
 
 public async speak(text: string, onEnd?: () => void): Promise<void> 
+  {
+    if (!this.synthesis) 
 {
+      console.warn("SpeechSynthesis not supported");
+      if (onEnd) {onEnd();}
+      return;
+    }
+
     if (this.synthesis.speaking) 
-{
+    {
       this.synthesis.cancel();
     }
 
@@ -249,7 +279,7 @@ public async speak(text: string, onEnd?: () => void): Promise<void>
     // Try to find Google Vietnamese or Microsoft HoaiMy
     const vnVoice = voices.find(v => v.lang.toLowerCase().includes('vi') || v.name.toLowerCase().includes('vietnam'));
     if (vnVoice) 
-{
+    {
       utterance.voice = vnVoice;
     }
     else
@@ -262,12 +292,12 @@ public async speak(text: string, onEnd?: () => void): Promise<void>
     }
 
     utterance.onend = () => 
-{
+    {
       if (onEnd) {onEnd();}
     };
 
     utterance.onerror = (e) => 
-{
+    {
         console.error("TTS Error", e);
         if (onEnd) {onEnd();}
     };
@@ -283,9 +313,9 @@ public async speak(text: string, onEnd?: () => void): Promise<void>
   }
 
   public stopSpeaking(): void 
-{
-    if (this.synthesis.speaking) 
-{
+  {
+    if (this.synthesis && this.synthesis.speaking) 
+    {
       this.synthesis.cancel();
     }
   }

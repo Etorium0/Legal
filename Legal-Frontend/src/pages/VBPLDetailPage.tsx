@@ -120,7 +120,7 @@ const VBPLDetailPage: React.FC = () =>
         return (
             <SimpleLayout>
                 <div className="flex justify-center items-center h-screen">
-                    <Spin size="large" tip="Đang tải văn bản..." />
+                    <Spin size="large" tip="Đang tải văn bản..." className="text-white" />
                 </div>
             </SimpleLayout>
         );
@@ -130,9 +130,9 @@ const VBPLDetailPage: React.FC = () =>
     {
         return (
             <SimpleLayout>
-                <div className="text-center py-20">
-                    <Title level={3}>Không tìm thấy văn bản</Title>
-                    <Button onClick={() => navigate('/vbpl')}>Quay lại danh sách</Button>
+                <div className="text-center py-20 text-white">
+                    <Title level={3} className="text-white">Không tìm thấy văn bản</Title>
+                    <Button onClick={() => navigate('/vbpl')} ghost>Quay lại danh sách</Button>
                 </div>
             </SimpleLayout>
         );
@@ -141,39 +141,42 @@ const VBPLDetailPage: React.FC = () =>
     return (
         <SimpleLayout>
             <div className="max-w-5xl mx-auto px-4 py-8">
-                <Breadcrumb className="mb-6">
+                <Breadcrumb className="mb-6 text-gray-300">
                     <Breadcrumb.Item>
-                        <a onClick={() => navigate('/')}>Trang chủ</a>
+                        <a onClick={() => navigate('/')} className="text-gray-400 hover:text-white">Trang chủ</a>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
-                        <a onClick={() => navigate('/vbpl')}>Văn bản pháp luật</a>
+                        <a onClick={() => navigate('/vbpl')} className="text-gray-400 hover:text-white">Văn bản pháp luật</a>
                     </Breadcrumb.Item>
-                    <Breadcrumb.Item>{document.number || document.title}</Breadcrumb.Item>
+                    <Breadcrumb.Item className="text-gray-200">{document.number || document.title}</Breadcrumb.Item>
                 </Breadcrumb>
 
-                <div className="bg-white rounded-lg shadow-lg p-8 min-h-screen">
+                <div className="bg-slate-800/80 backdrop-blur-md rounded-lg shadow-lg p-8 min-h-screen border border-white/10">
                     {/* Header */}
-                    <div className="text-center mb-8 border-b pb-8">
-                        <Title level={2} className="text-blue-900 mb-4">{document.title}</Title>
+                    <div className="text-center mb-8 border-b border-white/10 pb-8">
+                        <Title level={2} className="text-indigo-300 mb-4" style={{color: '#a5b4fc'}}>{document.title}</Title>
                         
                         <div className="flex justify-center gap-4 flex-wrap mb-4">
-                            {document.number && <Tag color="blue" className="text-lg py-1 px-3">Số: {document.number}</Tag>}
-                            {document.type && <Tag color="green" className="text-lg py-1 px-3">{document.type}</Tag>}
-                            {document.authority && <Tag color="orange" className="text-lg py-1 px-3">{document.authority}</Tag>}
-                            {document.year && <Tag color="default" className="text-lg py-1 px-3">Năm: {document.year}</Tag>}
+                            {document.number && <Tag color="blue" className="text-lg py-1 px-3 border-none bg-blue-500/20 text-blue-200">Số: {document.number}</Tag>}
+                            {document.type && <Tag color="green" className="text-lg py-1 px-3 border-none bg-green-500/20 text-green-200">{document.type}</Tag>}
+                            {document.authority && <Tag color="orange" className="text-lg py-1 px-3 border-none bg-orange-500/20 text-orange-200">{document.authority}</Tag>}
+                            {document.year && <Tag color="default" className="text-lg py-1 px-3 border-none bg-gray-600 text-gray-200">Năm: {document.year}</Tag>}
                         </div>
                     </div>
 
                     {/* Content */}
-                    <div className="prose max-w-none text-justify font-serif leading-relaxed text-gray-800">
+                    <div className="prose max-w-none text-justify font-serif leading-relaxed text-gray-200 prose-headings:text-indigo-300 prose-strong:text-white prose-a:text-blue-400">
                         {units.length > 0 ? (
                             units.map(unit => renderUnit(unit))
                         ) : (
-                            <Empty description="Nội dung văn bản chưa được cập nhật" />
+                            <Empty description={<span className="text-gray-400">Nội dung văn bản chưa được cập nhật</span>} />
                         )}
                     </div>
                 </div>
             </div>
+            <style>{`
+                .ant-breadcrumb-separator { color: rgba(255,255,255,0.4) !important; }
+            `}</style>
         </SimpleLayout>
     );
 };

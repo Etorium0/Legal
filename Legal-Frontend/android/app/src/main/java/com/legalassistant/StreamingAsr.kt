@@ -8,6 +8,9 @@ import android.os.Looper
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
 
 class StreamingAsr(private val context: Context) {
     private var speechRecognizer: SpeechRecognizer? = null
@@ -15,6 +18,11 @@ class StreamingAsr(private val context: Context) {
 
     fun start(onPartial: (String) -> Unit, onFinal: (String) -> Unit) {
         Handler(Looper.getMainLooper()).post {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                onFinal("Permission denied")
+                return@post
+            }
+
             if (isListening) return@post
 
             speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
@@ -34,7 +42,13 @@ class StreamingAsr(private val context: Context) {
                         else -> "Error $error"
                     }
                     // Treat error as end of session
-                    onFinal("") 
+                    if (error == 7 || error == 6) {
+                        // For no match/timeout, just stop silently or send empty
+                        onFinal("")
+                    } else {
+                        // For other errors, maybe notify?
+                        onFinal("")
+                    }
                     stopInternal()
                 }
 

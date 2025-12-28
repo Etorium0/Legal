@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 // Point to backend API (configurable via Vite env)
-const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
+const runtimeBackend = (typeof window !== 'undefined' && (window as any).__BACKEND_URL__) as string | undefined;
+const backendUrl = runtimeBackend || import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 const api = axios.create({ baseURL: `${backendUrl}/api/v1` });
 
 export async function sttEndpoint(audioBlob: Blob) 

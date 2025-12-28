@@ -27,6 +27,10 @@ const UnitDetailPage: React.FC = () =>
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<UnitDetail | null>(null)
 
+  const runtimeBackend = (typeof window !== 'undefined' && (window as any).__BACKEND_URL__) as string | undefined;
+  const backendUrl = runtimeBackend || import.meta.env.VITE_BACKEND_URL;
+  const BASE_URL = backendUrl ? `${backendUrl}/api/v1` : `/api/v1`;
+
   useEffect(() =>
   {
     const fetchData = async () =>
@@ -46,7 +50,7 @@ const UnitDetailPage: React.FC = () =>
         {
           headers['Authorization'] = `Bearer ${token}`
         }
-        const res = await fetch(`/api/v1/query/units/${id}`, { headers })
+        const res = await fetch(`${BASE_URL}/units/${id}`, { headers })
         if (!res.ok)
         {
           const text = await res.text().catch(() => '')

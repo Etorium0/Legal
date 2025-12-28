@@ -9,8 +9,6 @@ const SimpleLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     { path: '/assistant', label: 'Trợ lý AI', icon: '🤖' },
     { path: '/home', label: 'Trang chủ', icon: '🏠' },
     { path: '/dashboard', label: 'Dashboard', icon: '📊' },
-    { path: '/phapdien', label: 'Pháp điển', icon: '📚' },
-    { path: '/vbpl', label: 'VBPL', icon: '📜' },
     { path: '/documents', label: 'Tài liệu', icon: '📄' },
     { path: '/graph', label: 'Biểu đồ', icon: '🔗' },
     { path: '/settings', label: 'Cài đặt', icon: '⚙️' },
@@ -52,29 +50,9 @@ const SimpleLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 md:pb-8">
         {children}
       </main>
-
-      {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-lg border-t border-white/10 z-50">
-        <div className="flex items-center justify-around">
-          {navItems.slice(0, 5).map(item => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex flex-col items-center gap-1 py-3 px-2 transition-colors ${
-                location.pathname === item.path
-                  ? 'text-indigo-400'
-                  : 'text-white/60'
-              }`}
-            >
-              <span className="text-xl">{item.icon}</span>
-              <span className="text-xs">{item.label}</span>
-            </Link>
-          ))}
-        </div>
-      </nav>
     </div>
   )
 }

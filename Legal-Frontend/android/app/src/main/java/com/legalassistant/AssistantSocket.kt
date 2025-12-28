@@ -5,6 +5,7 @@ import okhttp3.Request
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
+import com.legalassistant.BuildConfig
 
 class AssistantSocket {
     private var ws: WebSocket? = null
