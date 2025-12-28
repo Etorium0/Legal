@@ -7,6 +7,14 @@ android {
     namespace "com.legalassistant"
     compileSdk 34
 
+    buildFeatures {
+        buildConfig true
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.5.1'
+    }
+
     defaultConfig {
         applicationId "com.legalassistant"
         minSdk 26
@@ -14,8 +22,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField "String", "WEB_APP_URL", "\"http://10.0.2.2:5173/\""
-        buildConfigField "String", "WEB_SOCKET_URL", "\"ws://10.0.2.2:5173/ws\""
+        buildConfigField "String", "WEB_APP_URL", "\"http://localhost:5173/\""
+        buildConfigField "String", "WEB_SOCKET_URL", "\"ws://10.0.2.2:8080/ws\""
         buildConfigField "String", "BACKEND_URL", "\"http://10.0.2.2:8080\""
     }
 
@@ -44,9 +52,18 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
     implementation "androidx.lifecycle:lifecycle-service:2.6.2"
 
-    // Hotword/ASR libs: thêm thực tế khi tích hợp (porcupine/vosk/whisper JNI)
-    // implementation "ai.picovoice:porcupine-android:3.0.0"
-    // implementation "org.vosk:vosk-android:0.3.45"
+    // Jetpack Compose
+    def composeBom = platform('androidx.compose:compose-bom:2023.08.00')
+    implementation composeBom
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-graphics'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.activity:activity-compose:1.8.2'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+
+    // Hotword/ASR libs
+    implementation ("com.alphacephei:vosk-android:0.3.47")
 }
 
 task copyWebDist(type: Copy) {

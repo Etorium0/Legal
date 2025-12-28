@@ -1,5 +1,13 @@
-const backendUrl = import.meta.env.VITE_BACKEND_URL || ''
-const AUTH_BASE = `${backendUrl}/api/v1/auth`
+const getBackendUrl = () => 
+{
+  if (typeof window !== 'undefined' && (window as any).__BACKEND_URL__) 
+{
+    return (window as any).__BACKEND_URL__
+  }
+  return import.meta.env.VITE_BACKEND_URL || ''
+}
+
+const getAuthBase = () => `${getBackendUrl()}/api/v1/auth`
 
 const STORAGE_KEY = 'legal_auth_tokens'
 
@@ -53,7 +61,7 @@ export const authService =
 {
   async register({ email, password, name }: Credentials)
   {
-    const res = await fetch(`${AUTH_BASE}/register`, {
+    const res = await fetch(`${getAuthBase()}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, name }),
@@ -69,7 +77,7 @@ export const authService =
 
   async login({ email, password }: Credentials)
   {
-    const res = await fetch(`${AUTH_BASE}/login`, {
+    const res = await fetch(`${getAuthBase()}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -90,7 +98,7 @@ export const authService =
     {
       throw new Error('Thiếu refresh token')
     }
-    const res = await fetch(`${AUTH_BASE}/refresh`, {
+    const res = await fetch(`${getAuthBase()}/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh_token: tokens.refresh_token }),

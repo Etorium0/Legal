@@ -17,9 +17,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true)
 
   useEffect(() => 
-{
-    setTokens(authService.getStoredTokens())
-    setLoading(false)
+  {
+    const loadTokens = async () => 
+    {
+      try 
+      {
+        setTokens(authService.getStoredTokens())
+      } 
+      catch (error) 
+      {
+        console.error('Failed to load tokens:', error)
+      } 
+      finally 
+      {
+        setLoading(false)
+      }
+    }
+    loadTokens()
   }, [])
 
   const login = async (email: string, password: string) => 

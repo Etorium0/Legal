@@ -31,8 +31,8 @@ const TreeView: React.FC<TreeViewProps> = ({ onSelectChuong }) =>
         try 
 {
             // Fetch all Phap Dien documents (De Muc)
-            // Assuming type 'code' represents Phap Dien documents
-            const res = await lawService.getDocuments({ type: 'code', limit: 1000 });
+            // Assuming type 'phapdien' represents Phap Dien documents
+            const res = await lawService.getDocuments({ type: 'phapdien', limit: 1000 });
             const docs: Document[] = res.items || [];
 
             // Group by Authority (Chu De)

@@ -7,15 +7,14 @@ import { authService } from "./authService";
 
 const runtimeBackend = (typeof window !== 'undefined' && (window as any).__BACKEND_URL__) as string | undefined;
 const backendUrl = runtimeBackend || import.meta.env.VITE_BACKEND_URL;
-const BACKEND_URL = backendUrl ? `${backendUrl}/api/v1/query` : `/api/v1/query`;
-
- 
+const BASE_URL = backendUrl ? `${backendUrl}/api/v1` : `/api/v1`;
+const QUERY_URL = `${BASE_URL}/query/rag`; // Use RAG endpoint for better accuracy
 
 export const queryLegalAssistant = async (query: string): Promise<Partial<Message>> => 
 {
   // 1. Attempt Real Backend Query
   try 
-{
+  {
     const token = await authService.getValidAccessToken();
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (token)
@@ -23,93 +22,49 @@ export const queryLegalAssistant = async (query: string): Promise<Partial<Messag
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const res = await fetch(BACKEND_URL, {
+    const res = await fetch(QUERY_URL, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ text: query }),
+      body: JSON.stringify({ question: query, top_k: 5, answer: true }),
     });
 
     if (res.ok) 
-{
+    {
       const data = await res.json();
-      console.log("Received response from Go Backend:", data);
+      console.log("Received response from Go Backend (RAG):", data);
       
-      // Transform backend response to match our Message type
-      const answers = data.answers || [];
-      if (answers.length > 0) 
+      const answerText = data.answer || "Tôi đã tìm thấy một số thông tin nhưng không thể tổng hợp câu trả lời chi tiết.";
+      const items = data.items || [];
+      
+      const sources = items.map((item: any) => 
       {
-        const cleanText = (s: string) =>
+        // Fallback for missing title
+        let docTitle = item.document_title;
+        // Check if title is useless (like just an ID or empty)
+        if (!docTitle || docTitle.trim() === '' || /^\d+$/.test(docTitle)) 
         {
-          return (s || '')
-            .replace(/\uFFFD/g, '')
-            .replace(/\s+/g, ' ')
-            .normalize('NFC')
-            .trim();
-        };
-        const formatDocRef = (ref: string) =>
-        {
-          const m = (ref || '').match(/^vbpl\s*(\d+)/i);
-          if (m)
-          {
-            return `Văn bản pháp luật #${m[1]}`;
-          }
-          return ref || 'Nguồn tham khảo';
-        };
-        const firstAnswer = answers[0];
-        const unitId = firstAnswer.unit_id || firstAnswer.UnitID || firstAnswer.unitId;
-        const docRef = formatDocRef(firstAnswer.doc_ref || firstAnswer.DocRef || '');
-        let sourceLabel = docRef;
-        let unitCode = unitId;
-        try
-        {
-          const unitRes = await fetch(`${BACKEND_URL}/units/${unitId}`, { method: 'GET' });
-          if (unitRes.ok)
-          {
-            const unitData = await unitRes.json();
-            const level = unitData.level || unitData.UnitLevel || '';
-            const code = unitData.code || unitData.UnitCode || '';
-            sourceLabel = level ? `${level.toUpperCase()} ${code || ''}`.trim() : sourceLabel;
-            unitCode = code || unitId;
-          }
+           docTitle = item.code ? `Văn bản ${item.code}` : "Văn bản pháp luật";
         }
-        catch (_e)
-        {
-          // ignore enrichment errors
-        }
-
+        
+        // Ensure unit_id exists
+        const unitId = item.unit_id || item.id;
+        
         return {
-          text: cleanText(firstAnswer.snippet || firstAnswer.answer || firstAnswer.text || 'Không tìm thấy câu trả lời.'),
-          sources: unitId
-            ? [{
-                document: sourceLabel,
-                unit: unitCode,
-                url: `/unit/${unitId}`,
-              }]
-            : [],
-          triples: firstAnswer.triples || [],
-          role: 'assistant',
-          timestamp: new Date(),
+          document: docTitle,
+          unit: `${item.level ? item.level + ' ' : ''}${item.code || ''}`.trim(),
+          url: unitId ? `/unit/${unitId}` : '#',
         };
-      }
-      else if (data.debug?.candidates && data.debug.candidates.length > 0) 
-      {
-        const concepts = data.debug.candidates
-          .filter((c: any) => c.type === 'subject' || c.type === 'object')
-          .map((c: any) => c.name)
-          .filter((name: string, index: number, self: string[]) => self.indexOf(name) === index);
+      });
 
-        return {
-          text: `Tôi tìm thấy thông tin liên quan đến: ${concepts.join(', ')}.\nHiện cơ sở dữ liệu chưa đủ để trả lời chi tiết. Vui lòng thử câu hỏi khác hoặc bổ sung dữ liệu.`,
-          sources: [],
-          triples: [],
-          role: 'assistant',
-          timestamp: new Date(),
-        };
-      }
-      else 
-      {
-        console.log("Backend returned empty answers, database may be empty");
-      }
+      console.log("[LegalService] Processed sources:", sources);
+
+      return {
+        text: answerText,
+        sources: sources,
+        triples: [], // RAG doesn't return triples currently
+        role: 'assistant',
+        timestamp: new Date(),
+      };
     }
   }
  catch (error) 
