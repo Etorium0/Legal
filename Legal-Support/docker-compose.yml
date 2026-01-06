@@ -18,22 +18,51 @@ services:
       timeout: 5s
       retries: 5
 
+  # Vietnamese NLP Service for tokenization and query classification
+  nlp-service:
+    build:
+      context: ./nlp-service
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
   api:
     build: .
     environment:
       HTTP_PORT: 8080
       DATABASE_URL: postgres://legaluser:legalpass@postgres:5432/legaldb?sslmode=disable
       EMBEDDING_ENABLED: "true"
-      EMBEDDING_MODEL: embedding-001
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL}
       EMBEDDING_API_KEY: ${EMBEDDING_API_KEY}
       EMBEDDING_PROVIDER: gemini
       QA_MODEL: gemini-1.5-flash
       RERANK_API_KEYS: ${RERANK_API_KEYS}
       RERANK_MODEL: ${RERANK_MODEL}
+      NLP_SERVICE_URL: http://nlp-service:8090
+      # Enhanced QA Config
+      GOOGLE_SEARCH_API_KEY: ${GOOGLE_SEARCH_API_KEY:-}
+      GOOGLE_SEARCH_ENGINE_ID: ${GOOGLE_SEARCH_ENGINE_ID:-}
+      LOCAL_RERANKER_ENDPOINT: ${LOCAL_RERANKER_ENDPOINT:-}
+      CROSS_ENCODER_ENDPOINT: ${CROSS_ENCODER_ENDPOINT:-}
+      ENABLE_WEB_SEARCH_FALLBACK: ${ENABLE_WEB_SEARCH_FALLBACK:-false}
+      ENABLE_STREAMING: ${ENABLE_STREAMING:-true}
+      MAX_CHAT_HISTORY: ${MAX_CHAT_HISTORY:-20}
+      CHAT_HISTORY_TTL_MINUTES: ${CHAT_HISTORY_TTL_MINUTES:-120}
+      PROMPTS_FILE_PATH: /app/prompts.yaml
+    volumes:
+      - ./internal/graph/prompts.yaml:/app/prompts.yaml:ro
     ports:
       - "8080:8080"
     depends_on:
       postgres:
+        condition: service_healthy
+      nlp-service:
         condition: service_healthy
     restart: unless-stopped
 

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import SimpleLayout from './SimpleLayout'
 import { authService } from '../services/authService'
 import PhapDienView from './phapdien/PhapDienView'
+import { Link } from 'react-router-dom'
 
 type DocItem = {
   id: string
@@ -639,12 +640,12 @@ const DocumentBrowserPage: React.FC = () =>
                           <span>{u.level || 'unit'}</span>
                           <div className="flex items-center gap-2">
                             {u.code && <span className={`px-2 py-1 rounded text-xs ${selectedUnit?.id === u.id ? 'bg-indigo-500/40 text-white' : 'bg-indigo-500/20 text-indigo-200'}`}>{u.code}</span>}
-                            <a
-                              href={`/unit/${u.id}`}
-                              className="text-xs px-2 py-1 rounded bg-white/10 border border-white/20 text-white/80 hover:bg-white/20"
-                            >
-                              Mở Viewer
-                            </a>
+                            <Link
+                                  to={`/unit/${u.id}`}
+                                  className="text-xs px-2 py-1 rounded bg-white/10 border border-white/20 text-white/80 hover:bg-white/20"
+                                >
+                                  Mở Viewer
+                                </Link>
                           </div>
                         </div>
                         <div className="text-white/90 text-sm whitespace-pre-wrap leading-relaxed line-clamp-6">{u.text}</div>

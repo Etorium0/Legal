@@ -78,9 +78,25 @@ func (p *GeminiEmbeddingProvider) Embed(ctx context.Context, input string) ([]fl
 	if p == nil {
 		return nil, errors.New("embedding provider not configured")
 	}
-	url := "https://generativelanguage.googleapis.com/v1beta/models/" + p.model + ":embedText?key=" + p.apiKey
-	body := map[string]string{"text": input}
-	b, err := json.Marshal(body)
+	url := "https://generativelanguage.googleapis.com/v1beta/models/" + p.model + ":embedContent?key=" + p.apiKey
+
+	type Part struct {
+		Text string `json:"text"`
+	}
+	type Content struct {
+		Parts []Part `json:"parts"`
+	}
+	type Request struct {
+		Content Content `json:"content"`
+	}
+
+	reqBody := Request{
+		Content: Content{
+			Parts: []Part{{Text: input}},
+		},
+	}
+
+	b, err := json.Marshal(reqBody)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +111,9 @@ func (p *GeminiEmbeddingProvider) Embed(ctx context.Context, input string) ([]fl
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, errors.New("gemini embedding request failed")
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(resp.Body)
+		return nil, errors.New("gemini embedding request failed: " + buf.String())
 	}
 	var out struct {
 		Embedding struct {

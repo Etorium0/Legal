@@ -18,11 +18,11 @@ const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({ children }
     )
   }
   if (!tokens) 
-{
-    console.log('ProtectedRoute: No tokens, BUT BYPASSING for DEBUG');
-    // return <Navigate to="/login" replace />
+  {
+    // console.log('ProtectedRoute: No tokens, redirecting to login');
+    return <Navigate to="/login" replace />
   }
-  console.log('ProtectedRoute: Access granted (Bypassed)');
+  // console.log('ProtectedRoute: Access granted');
   return children
 }
 

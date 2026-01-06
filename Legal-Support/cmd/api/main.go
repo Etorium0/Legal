@@ -23,6 +23,13 @@ import (
 func main() {
 	_ = godotenv.Load()
 	cfg := config.Load()
+
+	// Load prompts from YAML file
+	pm := graph.GetPromptManager()
+	if err := pm.LoadFromFile(cfg.PromptsFilePath); err != nil {
+		log.Printf("Warning: Could not load prompts from %s: %v (using defaults)", cfg.PromptsFilePath, err)
+	}
+
 	pool, err := db.Connect(context.Background(), cfg.DatabaseURL)
 	if err != nil {
 		log.Fatalf("db connect: %v", err)
@@ -54,6 +61,9 @@ func main() {
 
 	queryHTTP := query.NewHTTP(pool, embedder, cfg.EmbeddingModel, qa, cfg)
 
+	// Create enhanced HTTP handler with streaming and chat history support
+	enhancedHTTP := query.NewEnhancedHTTP(queryHTTP, cfg)
+
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer)
 	r.Use(corsMiddleware())
@@ -66,11 +76,22 @@ func main() {
 		w.Write([]byte("ok"))
 	})
 
+	// Standard query routes
 	r.Mount("/api/v1/query", queryHTTP.Routes())
 
-	srv := &http.Server{Addr: ":" + cfg.HTTPPort, Handler: r, ReadTimeout: 60 * time.Second, WriteTimeout: 60 * time.Second}
+	// Enhanced routes with streaming and chat history
+	r.Mount("/api/v2/chat", enhancedHTTP.EnhancedRoutes())
+
+	srv := &http.Server{
+		Addr:         ":" + cfg.HTTPPort,
+		Handler:      r,
+		ReadTimeout:  60 * time.Second,
+		WriteTimeout: 120 * time.Second, // Increased for streaming
+	}
 	go func() {
 		log.Printf("HTTP listening on :%s", cfg.HTTPPort)
+		log.Printf("API v1: /api/v1/query")
+		log.Printf("API v2: /api/v2/chat (with streaming & chat history)")
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %v", err)
 		}

@@ -1,9 +1,11 @@
 const getBackendUrl = () => 
 {
   if (typeof window !== 'undefined' && (window as any).__BACKEND_URL__) 
-{
+  {
     return (window as any).__BACKEND_URL__
   }
+  // Hardcode for Android testing if needed, or use env
+  // return 'http://192.168.1.3:8080'
   return import.meta.env.VITE_BACKEND_URL || ''
 }
 

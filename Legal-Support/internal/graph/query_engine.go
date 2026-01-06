@@ -3,6 +3,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"math"
 	"sort"
 	"strings"
 	"time"
@@ -13,6 +14,7 @@ type QueryEngine struct {
 	repo       *Repository
 	qaProvider QAProvider
 	reranker   Reranker
+	nlpClient  *NLPClient
 }
 
 // NewQueryEngine creates a new query engine
@@ -21,7 +23,30 @@ func NewQueryEngine(repo *Repository, qa QAProvider, reranker Reranker) *QueryEn
 		repo:       repo,
 		qaProvider: qa,
 		reranker:   reranker,
+		nlpClient:  nil, // Will be set via SetNLPClient
 	}
+}
+
+// NewQueryEngineWithNLP creates a new query engine with NLP client
+func NewQueryEngineWithNLP(repo *Repository, qa QAProvider, reranker Reranker, nlpClient *NLPClient) *QueryEngine {
+	return &QueryEngine{
+		repo:       repo,
+		qaProvider: qa,
+		reranker:   reranker,
+		nlpClient:  nlpClient,
+	}
+}
+
+// SetNLPClient sets the NLP client for Vietnamese tokenization
+func (e *QueryEngine) SetNLPClient(client *NLPClient) {
+	e.nlpClient = client
+}
+
+// QueryClassification represents the classification of a query
+type QueryClassification struct {
+	Category   int     `json:"category"` // 0: greeting, 1: legal, 2: invalid
+	Confidence float64 `json:"confidence"`
+	Reason     string  `json:"reason"`
 }
 
 // ProcessQuery analyzes a natural language legal query and returns relevant answers
@@ -33,22 +58,88 @@ func (e *QueryEngine) ProcessQuery(ctx context.Context, queryText string, includ
 		Timings: make(map[string]int64),
 	}
 
-	// Step 0: Rewrite Query (Agentic Step)
+	// Step 0a: Classify Query (skip non-legal queries)
+	classifyStart := time.Now()
+	classification, err := e.classifyQuery(ctx, queryText)
+	if err != nil {
+		fmt.Printf("Query classification error: %v, proceeding anyway\n", err)
+	} else {
+		debug.Timings["query_classification"] = time.Since(classifyStart).Milliseconds()
+		fmt.Printf("Query Classification: category=%d, confidence=%.2f, reason=%s\n",
+			classification.Category, classification.Confidence, classification.Reason)
+
+		// Handle non-legal queries
+		if classification.Category == 0 {
+			// Greeting/system query - return helpful message
+			return &QueryResult{
+				Answers: []Answer{{
+					Snippet: "Xin chào! Tôi là trợ lý pháp luật Việt Nam. Tôi có thể giúp bạn tra cứu các quy định pháp luật, tìm hiểu về luật lao động, hôn nhân gia đình, doanh nghiệp, đất đai và nhiều lĩnh vực khác. Hãy đặt câu hỏi về pháp luật để tôi hỗ trợ bạn!",
+					Score:   1.0,
+					Title:   "Hệ thống tư vấn pháp luật",
+				}},
+				Debug: debug,
+			}, nil
+		} else if classification.Category == 2 && classification.Confidence > 0.8 {
+			// Invalid query - return error message
+			return &QueryResult{
+				Answers: []Answer{{
+					Snippet: "Xin lỗi, tôi không thể xử lý câu hỏi này. Vui lòng đặt câu hỏi liên quan đến pháp luật Việt Nam.",
+					Score:   0.0,
+					Title:   "Không thể xử lý",
+				}},
+				Debug: debug,
+			}, nil
+		}
+	}
+
+	// Step 0b: Extract entities from query for filtering
+	var extractedEntities *ExtractedEntities
+	if e.nlpClient != nil {
+		extractedEntities, err = e.nlpClient.ExtractEntities(ctx, queryText)
+		if err != nil {
+			fmt.Printf("Entity extraction error: %v\n", err)
+		} else {
+			fmt.Printf("Extracted entities: year=%v, docType=%v, keywords=%v\n",
+				extractedEntities.Year, extractedEntities.DocumentType, extractedEntities.Keywords)
+		}
+	}
+
+	// Step 0c: Rewrite Query (Agentic Step)
 	rewriteStart := time.Now()
 	queries, err := e.qaProvider.RewriteQuery(ctx, queryText)
 	if err != nil {
 		fmt.Printf("Error rewriting query: %v\n", err)
 		queries = []string{queryText}
 	}
+
+	// Also expand query using NLP service if available
+	if e.nlpClient != nil {
+		expanded, err := e.nlpClient.ExpandQuery(ctx, queryText, 3)
+		if err == nil {
+			for _, v := range expanded.Variations {
+				if v != queryText {
+					queries = append(queries, v)
+				}
+			}
+		}
+	}
+
 	debug.Timings["query_rewriting"] = time.Since(rewriteStart).Milliseconds()
 	fmt.Printf("Original Query: %s\nExpanded Queries: %v\n", queryText, queries)
 
-	// Step 1: Extract key terms from all query variations
+	// Step 1: Extract key terms from all query variations (with Vietnamese tokenization)
 	termMap := make(map[string]bool)
 	for _, q := range queries {
-		qTerms := e.extractQueryTerms(q)
+		qTerms := e.extractQueryTermsWithNLP(ctx, q)
 		for _, t := range qTerms {
 			termMap[t] = true
+		}
+	}
+
+	// Add extracted keywords
+	if extractedEntities != nil {
+		for _, kw := range extractedEntities.Keywords {
+			termMap[kw] = true
 		}
 	}
 
@@ -516,4 +607,169 @@ func max(a, b int) int {
 		return a
 	}
 	return b
+}
+
+// classifyQuery uses NLP service to classify the query
+func (e *QueryEngine) classifyQuery(ctx context.Context, queryText string) (*QueryClassification, error) {
+	if e.nlpClient != nil {
+		result, err := e.nlpClient.ClassifyQuery(ctx, queryText)
+		if err == nil {
+			return &QueryClassification{
+				Category:   result.Category,
+				Confidence: result.Confidence,
+				Reason:     result.Reason,
+			}, nil
+		}
+		fmt.Printf("NLP classification failed, falling back to rule-based: %v\n", err)
+	}
+
+	// Fallback to simple rule-based classification
+	return e.classifyQueryRuleBased(queryText), nil
+}
+
+// classifyQueryRuleBased uses simple rules when NLP service is unavailable
+func (e *QueryEngine) classifyQueryRuleBased(queryText string) *QueryClassification {
+	text := strings.ToLower(queryText)
+
+	// Greeting patterns
+	greetingPatterns := []string{
+		"xin chào", "chào bạn", "hello", "hi ", "bạn là ai",
+		"bạn có thể làm gì", "chức năng", "hướng dẫn",
+	}
+
+	for _, p := range greetingPatterns {
+		if strings.Contains(text, p) {
+			return &QueryClassification{
+				Category:   0,
+				Confidence: 0.8,
+				Reason:     "Greeting pattern detected",
+			}
+		}
+	}
+
+	// Legal keywords
+	legalKeywords := []string{
+		"luật", "nghị định", "thông tư", "điều", "khoản",
+		"quyền", "nghĩa vụ", "hợp đồng", "vi phạm", "xử phạt",
+		"quy định", "pháp luật", "bộ luật", "thủ tục",
+	}
+
+	legalCount := 0
+	for _, kw := range legalKeywords {
+		if strings.Contains(text, kw) {
+			legalCount++
+		}
+	}
+
+	if legalCount >= 1 {
+		return &QueryClassification{
+			Category:   1,
+			Confidence: 0.5 + float64(legalCount)*0.1,
+			Reason:     fmt.Sprintf("Found %d legal keywords", legalCount),
+		}
+	}
+
+	// Default: assume legal if long enough
+	if len(queryText) > 20 {
+		return &QueryClassification{
+			Category:   1,
+			Confidence: 0.5,
+			Reason:     "Default classification for long query",
+		}
+	}
+
+	return &QueryClassification{
+		Category:   2,
+		Confidence: 0.5,
+		Reason:     "Could not classify query",
+	}
+}
+
+// extractQueryTermsWithNLP extracts terms using Vietnamese tokenization
+func (e *QueryEngine) extractQueryTermsWithNLP(ctx context.Context, queryText string) []string {
+	// Try NLP service first
+	if e.nlpClient != nil {
+		result, err := e.nlpClient.Tokenize(ctx, queryText)
+		if err == nil {
+			// Use tokenized text for better Vietnamese word segmentation
+			return e.extractQueryTerms(result.Tokenized)
+		}
+		fmt.Printf("NLP tokenization failed, falling back to basic: %v\n", err)
+	}
+
+	// Fallback to basic extraction
+	return e.extractQueryTerms(queryText)
+}
+
+// cosineSimilarity calculates cosine similarity between two strings
+func cosineSimilarity(a, b string) float64 {
+	aWords := strings.Fields(strings.ToLower(a))
+	bWords := strings.Fields(strings.ToLower(b))
+
+	// Build word frequency maps
+	aFreq := make(map[string]int)
+	bFreq := make(map[string]int)
+
+	for _, w := range aWords {
+		aFreq[w]++
+	}
+	for _, w := range bWords {
+		bFreq[w]++
+	}
+
+	// Calculate dot product and magnitudes
+	var dotProduct, aMag, bMag float64
+
+	// Get all unique words
+	allWords := make(map[string]bool)
+	for w := range aFreq {
+		allWords[w] = true
+	}
+	for w := range bFreq {
+		allWords[w] = true
+	}
+
+	for w := range allWords {
+		aVal := float64(aFreq[w])
+		bVal := float64(bFreq[w])
+		dotProduct += aVal * bVal
+		aMag += aVal * aVal
+		bMag += bVal * bVal
+	}
+
+	if aMag == 0 || bMag == 0 {
+		return 0
+	}
+
+	return dotProduct / (math.Sqrt(aMag) * math.Sqrt(bMag))
+}
+
+// jaccardSimilarity calculates Jaccard similarity between two strings
+func jaccardSimilarity(a, b string) float64 {
+	aWords := make(map[string]bool)
+	bWords := make(map[string]bool)
+
+	for _, w := range strings.Fields(strings.ToLower(a)) {
+		aWords[w] = true
+	}
+	for _, w := range strings.Fields(strings.ToLower(b)) {
+		bWords[w] = true
+	}
+
+	// Calculate intersection
+	intersection := 0
+	for w := range aWords {
+		if bWords[w] {
+			intersection++
+		}
+	}
+
+	// Calculate union
+	union := len(aWords) + len(bWords) - intersection
+
+	if union == 0 {
+		return 0
+	}
+
+	return float64(intersection) / float64(union)
 }

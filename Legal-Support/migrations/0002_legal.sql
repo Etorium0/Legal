@@ -1,5 +1,6 @@
 -- Legal Knowledge Graph Schema
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
 -- Legal documents (laws, regulations, etc.)
 CREATE TABLE IF NOT EXISTS documents(

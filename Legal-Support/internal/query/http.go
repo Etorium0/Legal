@@ -22,12 +22,18 @@ type HTTP struct {
 	embedder       graph.EmbeddingProvider
 	embeddingModel string
 	qa             graph.QAProvider
+	nlpClient      *graph.NLPClient
 }
 
 func NewHTTP(db *pgxpool.Pool, embedder graph.EmbeddingProvider, embeddingModel string, qa graph.QAProvider, cfg config.Config) *HTTP {
 	repo := graph.NewRepository(db)
 	reranker := graph.NewCohereReranker(cfg.RerankAPIKeys, cfg.RerankModel)
-	engine := graph.NewQueryEngine(repo, qa, reranker)
+
+	// Initialize NLP client for Vietnamese tokenization
+	nlpClient := graph.NewNLPClient(cfg.NLPServiceURL)
+
+	// Create query engine with NLP support
+	engine := graph.NewQueryEngineWithNLP(repo, qa, reranker, nlpClient)
 	ingest := graph.NewIngestionService(repo, embedder, embeddingModel)
 
 	return &HTTP{
@@ -38,6 +44,7 @@ func NewHTTP(db *pgxpool.Pool, embedder graph.EmbeddingProvider, embeddingModel 
 		embedder:       embedder,
 		embeddingModel: embeddingModel,
 		qa:             qa,
+		nlpClient:      nlpClient,
 	}
 }
 

@@ -18,8 +18,12 @@ import (
 )
 
 type VBPLDoc struct {
-	ID      int64
-	Content string
+	ID        int64
+	Title     sql.NullString // ten
+	Type      sql.NullString // loai_vb
+	Number    sql.NullString // so_hieu
+	Authority sql.NullString // co_quan
+	Content   string         // noidung
 }
 
 type VBPLUnit struct {
@@ -90,24 +94,45 @@ func main() {
 			}
 		}
 
-		title := extractTitle(doc.Content)
-		if title == "" {
-			title = fmt.Sprintf("%s %d", titlePrefix, doc.ID)
+		title := ""
+		if doc.Title.Valid && doc.Title.String != "" {
+			title = doc.Title.String
+		} else {
+			// Fallback: extract from content
+			title = extractTitle(doc.Content)
+			if title == "" {
+				title = fmt.Sprintf("%s %d", titlePrefix, doc.ID)
+			}
 		}
 
-		extractedType := extractType(doc.Content)
 		finalType := docType
-		if extractedType != "" {
-			finalType = extractedType
+		if doc.Type.Valid && doc.Type.String != "" {
+			finalType = doc.Type.String
+		} else {
+			// Fallback: extract from content
+			extractedType := extractType(doc.Content)
+			if extractedType != "" {
+				finalType = extractedType
+			}
+		}
+
+		var number *string
+		if doc.Number.Valid && doc.Number.String != "" {
+			number = &doc.Number.String
+		}
+
+		var authority *string
+		if doc.Authority.Valid && doc.Authority.String != "" {
+			authority = &doc.Authority.String
 		}
 
 		req := graph.IngestRequest{
 			Document: graph.DocumentRequest{
 				Title:     title,
 				Type:      finalType,
-				Number:    nil,
+				Number:    number,
 				Year:      nil,
-				Authority: nil,
+				Authority: authority,
 			},
 			Units:          make([]graph.UnitRequest, 0, len(units)),
 			AutoEmbed:      boolPtr(cfg.EmbeddingEnabled),
@@ -149,7 +174,7 @@ func main() {
 }
 
 func loadDocs(ctx context.Context, mysql *sql.DB) ([]VBPLDoc, error) {
-	rows, err := mysql.QueryContext(ctx, "SELECT id, noidung FROM vbpl")
+	rows, err := mysql.QueryContext(ctx, "SELECT id, ten, loai_vb, so_hieu, co_quan, noidung FROM vbpl")
 	if err != nil {
 		return nil, err
 	}
@@ -158,7 +183,7 @@ func loadDocs(ctx context.Context, mysql *sql.DB) ([]VBPLDoc, error) {
 	var items []VBPLDoc
 	for rows.Next() {
 		var d VBPLDoc
-		if err := rows.Scan(&d.ID, &d.Content); err != nil {
+		if err := rows.Scan(&d.ID, &d.Title, &d.Type, &d.Number, &d.Authority, &d.Content); err != nil {
 			return nil, err
 		}
 		items = append(items, d)
@@ -167,6 +192,14 @@ func loadDocs(ctx context.Context, mysql *sql.DB) ([]VBPLDoc, error) {
 }
 
 func loadUnits(ctx context.Context, mysql *sql.DB, docID int64) ([]VBPLUnit, error) {
+	// Check if vb_chimuc table exists
+	var tableName string
+	err := mysql.QueryRowContext(ctx, "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'vb_chimuc'").Scan(&tableName)
+	if err != nil {
+		// Table doesn't exist, return empty (will fallback to full content)
+		return nil, nil
+	}
+
 	rows, err := mysql.QueryContext(ctx, "SELECT id, chi_muc_cha, noi_dung FROM vb_chimuc WHERE id_vb = ? ORDER BY id ASC", docID)
 	if err != nil {
 		return nil, err

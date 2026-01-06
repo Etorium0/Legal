@@ -561,6 +561,9 @@ func (r *Repository) SearchUnitsByEmbedding(ctx context.Context, embedding []flo
 	args = append(args, searchFilterArgs...)
 	args = append(args, limit, offset)
 
+	// Increased distance threshold from 0.6 to 0.85 for better recall
+	// Distance of 0.85 still indicates reasonable semantic similarity
+	// while allowing more potentially relevant results to be returned
 	query := `
 		SELECT u.id, u.document_id, u.level, u.code, u.text, u.parent_id, u.order_index, u.created_at,
 		       d.title as document_title,
@@ -569,7 +572,7 @@ func (r *Repository) SearchUnitsByEmbedding(ctx context.Context, embedding []flo
 		JOIN units u ON e.unit_id = u.id
 		JOIN documents d ON u.document_id = d.id
 		` + whereSearch + `
-		AND (e.embedding <-> $1) < 0.6
+		AND (e.embedding <-> $1) < 0.85
 		ORDER BY distance ASC, u.order_index ASC
 		LIMIT $%d OFFSET $%d`
 
