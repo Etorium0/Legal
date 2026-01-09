@@ -1,19 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Mic, MicOff, Volume2, VolumeX, Sparkles, Power, FileText, ExternalLink } from 'lucide-react';
+import { Send, Mic, MicOff, Volume2, VolumeX, Sparkles, Power, FileText, ExternalLink, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import SidebarDark from './SidebarDark';
 import HeaderBar from './HeaderBar';
 import AvatarView from './AvatarView';
+import NavigationMap from './NavigationMap';
 import { Message, Triple } from '../types';
 import { audioService } from '../services/audioService';
 import { queryLegalAssistant } from '../services/legalService';
 import { pantoMatrixService } from '../services/pantoMatrixService';
 import { addHistory } from './HistoryStore';
+import { authService } from '../services/authService';
+import { API_BASE_URL } from '../config';
+
+// Unit detail popup type
+type UnitDetail = {
+  document: { title?: string; type?: string };
+  unit: { id?: string; level?: string; code?: string; text?: string };
+};
 
 const AssistantPage: React.FC = () => 
 {
   const navigate = useNavigate();
   const [hasStarted, setHasStarted] = useState(true); // Auto-start for now to debug blank screen issue
+  
+  // Modal state for viewing law content
+  const [showUnitModal, setShowUnitModal] = useState(false);
+  const [unitDetail, setUnitDetail] = useState<UnitDetail | null>(null);
+  const [loadingUnit, setLoadingUnit] = useState(false);
   
   useEffect(() => 
   {
@@ -36,6 +50,7 @@ const AssistantPage: React.FC = () =>
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [avatarVideoUrl, setAvatarVideoUrl] = useState<string | null>(null);
   const [_currentTriples, setCurrentTriples] = useState<Triple[]>([]);
+  const [navigationDestination, setNavigationDestination] = useState<string | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const processingRef = useRef(false);
@@ -135,6 +150,54 @@ const AssistantPage: React.FC = () =>
     }
   }, [hasStarted]);
 
+  // Fetch unit detail for popup
+  const fetchUnitDetail = async (unitUrl: string) => 
+  {
+    // Extract unit ID from URL like "/unit/39e808c6-..."
+    const match = unitUrl.match(/\/unit\/([a-f0-9-]+)/i);
+    if (!match) 
+    {
+      console.warn("Invalid unit URL:", unitUrl);
+      return;
+    }
+    
+    const unitId = match[1];
+    setLoadingUnit(true);
+    setShowUnitModal(true);
+    setUnitDetail(null);
+    
+    try 
+    {
+      const token = await authService.getValidAccessToken();
+      const headers: Record<string, string> = {};
+      if (token) 
+      {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const res = await fetch(`${API_BASE_URL}/query/units/${unitId}`, { headers });
+      if (!res.ok) 
+      {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      
+      const data = await res.json();
+      setUnitDetail(data);
+    } 
+    catch (err) 
+    {
+      console.error("Failed to fetch unit:", err);
+      setUnitDetail({
+        document: { title: "Lỗi" },
+        unit: { text: "Không thể tải nội dung điều luật. Vui lòng thử lại." }
+      });
+    } 
+    finally 
+    {
+      setLoadingUnit(false);
+    }
+  };
+
   const handleMicClick = () => 
   {
     // Allow clicking to stop if listening
@@ -191,32 +254,31 @@ const AssistantPage: React.FC = () =>
       timestamp: new Date()
     };
 
-    // Map Intent Handling
-    const mapMatch = textToSend.match(/(?:tìm|chỉ)\s+đường\s+(?:đến|tới|tại)?\s*(.+)/i);
+    // Map Intent Handling - Open in-app navigation
+    const mapMatch = textToSend.match(/(?:tìm|chỉ|dẫn|đưa)\s+đường\s+(?:đến|tới|tại|đi)?\s*(.+)/i);
     if (mapMatch && mapMatch[1]) 
 {
       const location = mapMatch[1].trim();
-      const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
       
       const botMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        text: `Đang mở bản đồ để tìm đường đến "${location}"...`,
+        text: `Đang mở bản đồ chỉ đường đến "${location}"...`,
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, botMsg]);
+      setMessages(prev => [...prev, userMsg, botMsg]);
+      setInputText('');
       setIsLoading(false);
       processingRef.current = false;
       
-      // Open Map
-      if ((window as any).NativeBridge) 
+      // Speak the response
+      if (!isMuted) 
 {
-        (window as any).NativeBridge.postMessage(JSON.stringify({ type: 'command', name: 'openUrl', data: { url: mapUrl } }));
+        audioService.speak(`Đang chỉ đường đến ${location}`);
       }
- else 
-{
-        window.open(mapUrl, '_blank');
-      }
+      
+      // Open in-app navigation
+      setNavigationDestination(location);
       return;
     }
 
@@ -343,6 +405,14 @@ const AssistantPage: React.FC = () =>
   // Main Chat Interface
   return (
     <div className="dark min-h-screen flex flex-col pb-20 sm:pb-0">
+      {/* Navigation Map Overlay */}
+      {navigationDestination && (
+        <NavigationMap
+          destination={navigationDestination}
+          onClose={() => setNavigationDestination(null)}
+        />
+      )}
+      
       <div className="min-h-screen bg-[#0C0F14] text-white flex-1 flex flex-col">
         <div className="flex flex-1">
           <SidebarDark />
@@ -437,24 +507,16 @@ const AssistantPage: React.FC = () =>
                             <p className="text-xs text-gray-400 mb-2 font-medium">Nguồn tham khảo:</p>
                             <div className="flex flex-col space-y-2">
                               {msg.sources.map((source, idx) => (
-                                <div
+                                <button
                                   key={idx}
-                                  onClick={(e) => 
+                                  onClick={() => 
                                   {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    console.log("Source clicked:", source);
                                     if (source.url && source.url !== '#') 
                                     {
-                                        console.log("Navigating to:", source.url);
-                                        navigate(source.url);
-                                    } 
-                                    else 
-                                    {
-                                        console.warn("Invalid source URL");
+                                      fetchUnitDetail(source.url);
                                     }
                                   }}
-                                  className="group flex items-start gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-blue-500/30 transition-all cursor-pointer"
+                                  className="group flex items-start gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-blue-500/30 transition-all cursor-pointer text-left"
                                 >
                                   <div className="mt-1 p-1.5 rounded-md bg-blue-500/10 text-blue-400 group-hover:bg-blue-500/20 group-hover:scale-105 transition-all">
                                     <FileText className="w-4 h-4" />
@@ -469,8 +531,8 @@ const AssistantPage: React.FC = () =>
                                       </p>
                                     )}
                                   </div>
-                                  <ExternalLink className="w-4 h-4 text-gray-500 group-hover:text-blue-400 opacity-0 group-hover:opacity-100 transition-all" />
-                                </div>
+                                  <Sparkles className="w-4 h-4 text-gray-500 group-hover:text-blue-400 opacity-0 group-hover:opacity-100 transition-all" />
+                                </button>
                               ))}
                             </div>
                           </div>
@@ -537,6 +599,77 @@ const AssistantPage: React.FC = () =>
           </div>
         </div>
       </div>
+
+      {/* Unit Detail Modal */}
+      {showUnitModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="relative w-full max-w-2xl max-h-[80vh] bg-[#1a1d24] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+            {/* Header */}
+            <div className="sticky top-0 flex items-center justify-between p-4 bg-[#1a1d24] border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-blue-500/10">
+                  <FileText className="w-5 h-5 text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white">
+                    {unitDetail?.document?.title || 'Đang tải...'}
+                  </h3>
+                  {unitDetail?.unit?.level && (
+                    <p className="text-sm text-gray-400 capitalize">{unitDetail.unit.level}</p>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => setShowUnitModal(false)}
+                className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 overflow-y-auto max-h-[calc(80vh-80px)]">
+              {loadingUnit ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                  <p className="text-gray-400">Đang tải nội dung...</p>
+                </div>
+              ) : unitDetail?.unit?.text ? (
+                <div className="prose prose-invert prose-sm max-w-none">
+                  <div className="text-gray-200 whitespace-pre-wrap leading-relaxed">
+                    {unitDetail.unit.text}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-gray-400 text-center py-8">Không có nội dung</p>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="sticky bottom-0 flex justify-end gap-3 p-4 bg-[#1a1d24] border-t border-white/10">
+              <button
+                onClick={() => 
+                {
+                  if (unitDetail?.unit?.id) 
+                  {
+                    window.open(`#/unit/${unitDetail.unit.id}`, '_blank');
+                  }
+                }}
+                className="px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Mở trang đầy đủ
+              </button>
+              <button
+                onClick={() => setShowUnitModal(false)}
+                className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,43 +1,66 @@
 import { Message } from "../types";
 import { authService } from "./authService";
+import { API_BASE_URL } from "../config";
 
 // This service manages the connection to the Legal Backend.
 // It tries to connect to the Go Backend (localhost:8080).
 // Nếu backend không khả dụng, trả về thông báo thân thiện, không dùng Gemini fallback.
 
-const runtimeBackend = (typeof window !== 'undefined' && (window as any).__BACKEND_URL__) as string | undefined;
-const backendUrl = runtimeBackend || import.meta.env.VITE_BACKEND_URL;
-const BASE_URL = backendUrl ? `${backendUrl}/api/v1` : `/api/v1`;
+const BASE_URL = API_BASE_URL;
 const QUERY_URL = `${BASE_URL}/query/rag`; // Use RAG endpoint for better accuracy
 
-export const queryLegalAssistant = async (query: string): Promise<Partial<Message>> => 
-{
+export const queryLegalAssistant = async (query: string): Promise<Partial<Message>> => {
   // 1. Attempt Real Backend Query
-  try 
-  {
+  try {
     const token = await authService.getValidAccessToken();
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (token)
-    {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json; charset=utf-8' };
+    if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
     const res = await fetch(QUERY_URL, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ question: query, top_k: 5, answer: true }),
+      body: JSON.stringify({ question: query, top_k: 15, answer: true }),
     });
 
-    if (res.ok) 
-    {
+    if (res.ok) {
       const data = await res.json();
       console.log("Received response from Go Backend (RAG):", data);
-      
+
       const answerText = data.answer || "Tôi đã tìm thấy một số thông tin nhưng không thể tổng hợp câu trả lời chi tiết.";
       const items = data.items || [];
+
+      // Extract article numbers mentioned in the answer
+      const mentionedArticles = new Set<string>();
       
-      const sources = items.map((item: any) => 
-      {
+      // Match patterns like: Điều 123, Điều 16.1.LQ.51, Điều 51, khoản 1 Điều 123
+      const articlePatterns = [
+        /Điều\s+(\d+(?:\.\d+)?(?:\.LQ\.?\d*)?)/gi,
+        /điều\s+(\d+(?:\.\d+)?(?:\.LQ\.?\d*)?)/gi,
+        /(\d+\.\d+\.LQ\.\d+)/g,
+      ];
+      
+      for (const pattern of articlePatterns) {
+        const matches = answerText.matchAll(pattern);
+        for (const match of matches) 
+        {
+          // Extract just the main article number (e.g., "123" from "16.1.LQ.123" or "Điều 123")
+          const fullMatch = match[1];
+          mentionedArticles.add(fullMatch);
+          
+          // Also extract the last number part for simple matching
+          const lastNum = fullMatch.match(/(\d+)$/);
+          if (lastNum) 
+          {
+            mentionedArticles.add(lastNum[1]);
+          }
+        }
+      }
+      
+      console.log("[LegalService] Articles mentioned in answer:", Array.from(mentionedArticles));
+
+      const allSources = items.map((item: any) => {
         // Fallback for missing title
         let docTitle = item.document_title;
         // Check if title is useless (like just an ID or empty)
@@ -49,14 +72,68 @@ export const queryLegalAssistant = async (query: string): Promise<Partial<Messag
         // Ensure unit_id exists
         const unitId = item.unit_id || item.id;
         
+        // Extract article number from snippet for matching
+        let articleNum = '';
+        let simpleArticleNum = '';
+        const snippetMatch = item.snippet?.match(/Điều\s+(\d+(?:\.\d+)?(?:\.LQ\.?\d*)?)/i);
+        if (snippetMatch) 
+        {
+          articleNum = snippetMatch[1];
+          // Extract simple number (e.g., "123" from "16.1.LQ.123")
+          const simpleMatch = articleNum.match(/\.(\d+)$/) || articleNum.match(/^(\d+)$/);
+          if (simpleMatch) 
+          {
+            simpleArticleNum = simpleMatch[1];
+          }
+        }
+        
         return {
           document: docTitle,
           unit: `${item.level ? item.level + ' ' : ''}${item.code || ''}`.trim(),
           url: unitId ? `/unit/${unitId}` : '#',
+          articleNum,
+          simpleArticleNum,
+          snippet: item.snippet || '',
+          distance: item.distance || 1,
         };
       });
 
-      console.log("[LegalService] Processed sources:", sources);
+      // Filter sources: only show those actually mentioned in the answer
+      // OR top 3 most relevant if none are explicitly mentioned
+      let filteredSources = allSources.filter((s: any) => 
+      {
+        if (mentionedArticles.size === 0) return false;
+        
+        for (const mentioned of mentionedArticles) 
+        {
+          // Check various matching strategies
+          // 1. Exact match on articleNum
+          if (s.articleNum && s.articleNum === mentioned) return true;
+          // 2. Simple number match (e.g., "123" matches "16.1.LQ.123")
+          if (s.simpleArticleNum && s.simpleArticleNum === mentioned) return true;
+          // 3. articleNum ends with mentioned number
+          if (s.articleNum && s.articleNum.endsWith(`.${mentioned}`)) return true;
+          // 4. Snippet contains the article reference
+          if (s.snippet && s.snippet.includes(`Điều ${mentioned}`)) return true;
+          if (s.snippet && s.snippet.includes(`.${mentioned}.`)) return true;
+        }
+        return false;
+      });
+
+      // If no sources match mentions, take top 3 by relevance
+      if (filteredSources.length === 0) 
+      {
+        filteredSources = allSources.slice(0, 3);
+      }
+
+      // Clean up internal fields before returning
+      const sources = filteredSources.map(({ document, unit, url }: any) => ({
+        document,
+        unit,
+        url,
+      }));
+
+      console.log("[LegalService] Filtered sources:", sources);
 
       return {
         text: answerText,

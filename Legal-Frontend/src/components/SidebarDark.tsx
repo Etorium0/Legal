@@ -1,10 +1,11 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from './ui/utils'
+import { useAuth } from './AuthContext'
 
 type Item = { key: string; label: string; icon?: React.ReactNode; path: string }
 
-const items: Item[] = [
+const defaultItems: Item[] = [
   { key: 'assistant', label: 'Trợ lý', icon: <span>🤖</span>, path: '/assistant' },
   { key: 'home', label: 'Trang chủ', icon: <span>🏠</span>, path: '/home' },
   { key: 'dashboard', label: 'Dashboard', icon: <span>📊</span>, path: '/dashboard' },
@@ -16,6 +17,14 @@ const items: Item[] = [
 export const SidebarDark: React.FC = () => 
 {
   const location = useLocation()
+  const { user } = useAuth()
+
+  // Add admin link if user is admin
+  const items = [...defaultItems]
+  if (user?.role === 'admin' && !items.find(i => i.path === '/users')) 
+  {
+    items.push({ key: 'users', label: 'Quản lý người dùng', icon: <span>👥</span>, path: '/users' })
+  }
   
   return (
     <aside className="w-64 shrink-0 bg-sidebar text-white/80 border-r border-white/10 h-screen sticky top-0 hidden md:block">

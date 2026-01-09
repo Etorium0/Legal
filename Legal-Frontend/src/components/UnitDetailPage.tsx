@@ -50,7 +50,7 @@ const UnitDetailPage: React.FC = () =>
         {
           headers['Authorization'] = `Bearer ${token}`
         }
-        const res = await fetch(`${BASE_URL}/units/${id}`, { headers })
+        const res = await fetch(`${BASE_URL}/query/units/${id}`, { headers })
         if (!res.ok)
         {
           const text = await res.text().catch(() => '')

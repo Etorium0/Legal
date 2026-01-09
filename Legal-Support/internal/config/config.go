@@ -15,6 +15,8 @@ type Config struct {
 	EmbeddingProvider string
 	EmbeddingEnabled  bool
 	QAModel           string
+	QAProvider        string // "openai", "gemini", "groq"
+	GroqAPIKey        string
 	RerankAPIKeys     string
 	RerankModel       string
 	NLPServiceURL     string
@@ -40,6 +42,8 @@ func Load() Config {
 	embeddingProvider := getenv("EMBEDDING_PROVIDER", "openai")
 	embeddingEnabled := getenvBool("EMBEDDING_ENABLED", "true")
 	qaModel := getenv("QA_MODEL", "gpt-4o-mini")
+	qaProvider := getenv("QA_PROVIDER", "gemini") // default to gemini
+	groqAPIKey := getenv("GROQ_API_KEY", "")
 	rerankKeys := getenv("RERANK_API_KEYS", "")
 	rerankModel := getenv("RERANK_MODEL", "rerank-english-v3.0")
 	nlpServiceURL := getenv("NLP_SERVICE_URL", "http://nlp-service:8090")
@@ -64,6 +68,8 @@ func Load() Config {
 		EmbeddingProvider:       embeddingProvider,
 		EmbeddingEnabled:        embeddingEnabled,
 		QAModel:                 qaModel,
+		QAProvider:              qaProvider,
+		GroqAPIKey:              groqAPIKey,
 		RerankAPIKeys:           rerankKeys,
 		RerankModel:             rerankModel,
 		NLPServiceURL:           nlpServiceURL,

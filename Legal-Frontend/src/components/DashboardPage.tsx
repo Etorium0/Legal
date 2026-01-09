@@ -1,9 +1,12 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import SimpleLayout from './SimpleLayout'
 import MapCard from './MapCard'
 
 const DashboardPage: React.FC = () => 
 {
+  const navigate = useNavigate()
+
   return (
     <SimpleLayout>
       <div>
@@ -12,11 +15,15 @@ const DashboardPage: React.FC = () =>
 
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            { title: 'Văn bản mới', description: '12 văn bản được cập nhật tuần này', icon: '📄', color: 'from-blue-500 to-cyan-500' },
-            { title: 'Yêu cầu tra cứu', description: '34 yêu cầu trong 24h gần nhất', icon: '🔍', color: 'from-purple-500 to-pink-500' },
-            { title: 'Liên kết tri thức', description: '128 cạnh mới được thêm', icon: '🔗', color: 'from-green-500 to-emerald-500' },
+            { title: 'Văn bản mới', description: '12 văn bản được cập nhật tuần này', icon: '📄', color: 'from-blue-500 to-cyan-500', path: '/vbpl' },
+            { title: 'Yêu cầu tra cứu', description: '34 yêu cầu trong 24h gần nhất', icon: '🔍', color: 'from-purple-500 to-pink-500', path: '/assistant' },
+            { title: 'Liên kết tri thức', description: '128 cạnh mới được thêm', icon: '🔗', color: 'from-green-500 to-emerald-500', path: '/graph' },
           ].map((item, i) => (
-            <div key={i} className="rounded-xl border border-white/10 bg-gradient-to-br from-white/5 to-white/10 backdrop-blur p-6 hover:scale-105 transition-transform">
+            <div 
+              key={i} 
+              onClick={() => navigate(item.path)}
+              className="rounded-xl border border-white/10 bg-gradient-to-br from-white/5 to-white/10 backdrop-blur p-6 hover:scale-105 transition-transform cursor-pointer"
+            >
               <div className={`inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br ${item.color} text-2xl mb-4`}>
                 {item.icon}
               </div>

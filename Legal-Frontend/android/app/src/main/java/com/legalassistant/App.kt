@@ -5,6 +5,6 @@ import android.app.Application
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        HotwordService.launch(this)
+        // HotwordService is now started/stopped by MainActivity lifecycle
     }
 }

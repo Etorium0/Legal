@@ -41,7 +41,9 @@ services:
       EMBEDDING_MODEL: ${EMBEDDING_MODEL}
       EMBEDDING_API_KEY: ${EMBEDDING_API_KEY}
       EMBEDDING_PROVIDER: gemini
-      QA_MODEL: gemini-1.5-flash
+      QA_MODEL: ${QA_MODEL:-llama-3.3-70b-versatile}
+      QA_PROVIDER: ${QA_PROVIDER:-groq}
+      GROQ_API_KEY: ${GROQ_API_KEY}
       RERANK_API_KEYS: ${RERANK_API_KEYS}
       RERANK_MODEL: ${RERANK_MODEL}
       NLP_SERVICE_URL: http://nlp-service:8090

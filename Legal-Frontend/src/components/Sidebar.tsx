@@ -1,6 +1,7 @@
 // Light/white Sidebar used by router pages; keep this version.
 import React, { useEffect, useState } from 'react'
 import { getHistory, clearHistory } from './HistoryStore'
+import { useAuth } from './AuthContext'
 
 interface NavItem {
   label: string
@@ -20,8 +21,20 @@ const defaultItems: NavItem[] = [
 export const Sidebar: React.FC<{ items?: NavItem[]; className?: string; open?: boolean }> = ({ items = defaultItems, className = '', open = true }) => 
 {
   const [history, setHistory] = useState(getHistory())
+  const { user } = useAuth()
+
+  const displayItems = [...items]
+  if (user?.role === 'admin') 
+  {
+    // Check if already exists to avoid dupes if re-rendered
+    if (!displayItems.find(i => i.href === '/users')) 
+    {
+      displayItems.push({ label: 'Quản lý người dùng', href: '/users' })
+    }
+  }
+
   useEffect(() => 
-{
+  {
     // refresh on open
     if (open) {setHistory(getHistory())}
   }, [open])
@@ -30,7 +43,7 @@ export const Sidebar: React.FC<{ items?: NavItem[]; className?: string; open?: b
     <aside className={`h-full w-64 border-r bg-white transition-transform duration-200 ${open ? 'translate-x-0' : '-translate-x-full'} ${className}`}>
       <div className="px-4 py-3 text-lg font-semibold">Legal Assistant</div>
       <nav className="space-y-1 px-2">
-        {items.map((item, idx) => (
+        {displayItems.map((item, idx) => (
           <a
             key={idx}
             href={item.href || '#'}

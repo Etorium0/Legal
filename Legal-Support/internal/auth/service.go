@@ -15,6 +15,7 @@ import (
 // Claims wraps standard claims with token type for access vs refresh
 type Claims struct {
 	TokenType string `json:"type"`
+	Role      string `json:"role,omitempty"`
 	jwt.RegisteredClaims
 }
 
@@ -24,6 +25,9 @@ type Service interface {
 	Login(ctx context.Context, req LoginRequest) (*AuthResponse, error)
 	Refresh(ctx context.Context, token string) (*AuthResponse, error)
 	ValidateToken(token string) (*Claims, error)
+	ListUsers(ctx context.Context) ([]User, error)
+	UpdateUser(ctx context.Context, user User) error
+	DeleteUser(ctx context.Context, id uuid.UUID) error
 }
 
 // Repository defines persistence for users and refresh tokens
@@ -31,6 +35,9 @@ type Repository interface {
 	CreateUser(ctx context.Context, user *User) error
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (*User, error)
+	ListUsers(ctx context.Context) ([]User, error)
+	UpdateUser(ctx context.Context, user *User) error
+	DeleteUser(ctx context.Context, id uuid.UUID) error
 	StoreRefreshToken(ctx context.Context, rt RefreshToken) error
 	GetRefreshToken(ctx context.Context, token string) (*RefreshToken, error)
 	RevokeRefreshToken(ctx context.Context, token string) error
@@ -134,6 +141,7 @@ func (s *service) issueTokens(ctx context.Context, user User) (*AuthResponse, er
 	now := time.Now()
 	accessClaims := Claims{
 		TokenType: "access",
+		Role:      user.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   user.ID.String(),
 			ExpiresAt: jwt.NewNumericDate(now.Add(s.accessTTL)),
@@ -210,4 +218,26 @@ func (s *service) ValidateToken(token string) (*Claims, error) {
 		return nil, errors.New("invalid token type")
 	}
 	return claims, nil
+}
+
+func (s *service) ListUsers(ctx context.Context) ([]User, error) {
+	return s.repo.ListUsers(ctx)
+}
+
+func (s *service) UpdateUser(ctx context.Context, user User) error {
+	// Optional: add validation or check if user exists
+	if user.PasswordHash != "" {
+		// handle password update if needed, but for now assuming only non-sensitive fields or hashed password passed
+	}
+	// For simplicity, we just pass through to repo for now, but usually we'd fetch first to verify existence.
+	// But UpdateUser in repo relies on ID.
+	// The request handler should prepare the user object.
+	// Note: We might want to handle password hashing here if we support password reset by admin.
+	// For this task, let's assume password is NOT updated via this generic update, or handled separately.
+	// We'll trust the repo to update email/name/role.
+	return s.repo.UpdateUser(ctx, &user)
+}
+
+func (s *service) DeleteUser(ctx context.Context, id uuid.UUID) error {
+	return s.repo.DeleteUser(ctx, id)
 }

@@ -61,6 +61,44 @@ func (r *repository) GetUserByID(ctx context.Context, id uuid.UUID) (*User, erro
 	return user, nil
 }
 
+func (r *repository) ListUsers(ctx context.Context) ([]User, error) {
+	query := `
+		SELECT id, email, name, password_hash, role, created_at, updated_at
+		FROM users ORDER BY created_at DESC`
+
+	rows, err := r.db.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		var u User
+		if err := rows.Scan(&u.ID, &u.Email, &u.Name, &u.PasswordHash, &u.Role, &u.CreatedAt, &u.UpdatedAt); err != nil {
+			return nil, err
+		}
+		users = append(users, u)
+	}
+	return users, rows.Err()
+}
+
+func (r *repository) UpdateUser(ctx context.Context, user *User) error {
+	query := `
+		UPDATE users
+		SET email = $1, name = $2, role = $3, updated_at = $4
+		WHERE id = $5
+		RETURNING updated_at`
+
+	return r.db.QueryRow(ctx, query, user.Email, user.Name, user.Role, time.Now(), user.ID).Scan(&user.UpdatedAt)
+}
+
+func (r *repository) DeleteUser(ctx context.Context, id uuid.UUID) error {
+	query := `DELETE FROM users WHERE id = $1`
+	_, err := r.db.Exec(ctx, query, id)
+	return err
+}
+
 func (r *repository) StoreRefreshToken(ctx context.Context, rt RefreshToken) error {
 	query := `
         INSERT INTO refresh_tokens (token, user_id, expires_at, revoked, created_at)

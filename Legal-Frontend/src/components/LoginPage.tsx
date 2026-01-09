@@ -85,7 +85,7 @@ const LoginPage: React.FC = () =>
 
           <div className="mt-6 text-center space-y-3">
             <p className="text-sm text-white/60">
-              Quên mật khẩu? <a href="#" className="text-indigo-400 hover:text-indigo-300 font-medium">Khôi phục</a>
+              Quên mật khẩu? <Link to="/forgot-password" className="text-indigo-400 hover:text-indigo-300 font-medium">Khôi phục</Link>
             </p>
             <div className="relative">
               <div className="absolute inset-0 flex items-center">

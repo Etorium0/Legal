@@ -39,6 +39,11 @@ func main() {
 	authRepo := auth.NewRepository(pool)
 	authService := auth.NewService(authRepo, cfg.JWTSecret)
 
+	// Seed Admin account
+	if err := auth.SeedAdmin(context.Background(), authRepo); err != nil {
+		log.Printf("Failed to seed admin: %v", err)
+	}
+
 	var embedder graph.EmbeddingProvider
 	var qa graph.QAProvider
 	if cfg.EmbeddingEnabled {
@@ -51,11 +56,23 @@ func main() {
 			log.Printf("embedding disabled: missing EMBEDDING_API_KEY")
 		}
 	}
-	if cfg.EmbeddingAPIKey != "" {
-		if cfg.EmbeddingProvider == "gemini" {
-			qa = graph.NewGeminiQAProvider(cfg.EmbeddingAPIKey, cfg.QAModel)
-		} else {
+
+	// Initialize QA provider based on config
+	switch cfg.QAProvider {
+	case "groq":
+		if cfg.GroqAPIKey != "" {
+			qa = graph.NewGroqQAProvider(cfg.GroqAPIKey, cfg.QAModel)
+			log.Printf("QA provider: Groq (%s)", cfg.QAModel)
+		}
+	case "openai":
+		if cfg.EmbeddingAPIKey != "" {
 			qa = graph.NewOpenAIQAProvider(cfg.EmbeddingAPIKey, cfg.QAModel)
+			log.Printf("QA provider: OpenAI (%s)", cfg.QAModel)
+		}
+	default: // gemini
+		if cfg.EmbeddingAPIKey != "" {
+			qa = graph.NewGeminiQAProvider(cfg.EmbeddingAPIKey, cfg.QAModel)
+			log.Printf("QA provider: Gemini (%s)", cfg.QAModel)
 		}
 	}
 

@@ -1,16 +1,47 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export type ChatMessage = {
   id: string
   role: 'assistant' | 'user'
   content: string
   timestamp?: string
-  references?: { title: string; url: string }[]
+  references?: { title: string; url: string; unitId?: string; docId?: string }[]
 }
 
 export const ChatMessageView: React.FC<{ message: ChatMessage }> = ({ message }) => 
 {
+  const navigate = useNavigate()
   const isUser = message.role === 'user'
+
+  const handleReferenceClick = (ref: { title: string; url: string; unitId?: string; docId?: string }) => {
+    // Try to navigate within the app first
+    if (ref.unitId) {
+      navigate(`/unit/${ref.unitId}`)
+      return
+    }
+    if (ref.docId) {
+      navigate(`/vbpl/${ref.docId}`)
+      return
+    }
+    
+    // Try to extract document/unit ID from URL
+    const unitMatch = ref.url.match(/units\/(\d+)/i)
+    if (unitMatch) {
+      navigate(`/unit/${unitMatch[1]}`)
+      return
+    }
+    
+    const docMatch = ref.url.match(/documents\/(\d+)/i) || ref.url.match(/vbpl\/(\d+)/i)
+    if (docMatch) {
+      navigate(`/vbpl/${docMatch[1]}`)
+      return
+    }
+    
+    // Fallback: open in new tab if it's an external URL
+    window.open(ref.url, '_blank')
+  }
+
   return (
     <div className={`w-full flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div className={`max-w-[75%] md:max-w-[65%] flex items-start gap-3 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
@@ -28,16 +59,14 @@ export const ChatMessageView: React.FC<{ message: ChatMessage }> = ({ message })
               <span className="text-xs text-white/50 font-medium uppercase tracking-wider">Nguồn tham khảo:</span>
               <div className="flex flex-wrap gap-2">
                 {message.references.map((ref, idx) => (
-                  <a 
+                  <button 
                     key={idx}
-                    href={ref.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-1 rounded border border-indigo-500/30 hover:bg-indigo-500/30 transition-colors truncate max-w-[200px]"
-                    title={ref.title}
+                    onClick={() => handleReferenceClick(ref)}
+                    className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-1 rounded border border-indigo-500/30 hover:bg-indigo-500/30 transition-colors truncate max-w-[200px] cursor-pointer text-left"
+                    title={`Xem: ${ref.title}`}
                   >
-                    {ref.title}
-                  </a>
+                    📄 {ref.title}
+                  </button>
                 ))}
               </div>
             </div>

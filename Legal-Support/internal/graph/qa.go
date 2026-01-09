@@ -22,23 +22,27 @@ Bạn là Trợ lý Pháp luật Việt Nam với hơn 30 năm kinh nghiệm chu
 ### TASKS:
 Trả lời câu hỏi của người dùng về pháp luật Việt Nam dựa trên nội dung tham khảo được cung cấp.
 
-### HƯỚNG DẪN:
-1. **Hiểu câu hỏi**: Phân tích kỹ câu hỏi, bao gồm các từ đồng nghĩa và ý nghĩa ngầm.
+### HƯỚNG DẪN QUAN TRỌNG:
+1. **Hiểu câu hỏi**: Phân tích kỹ câu hỏi - người dùng muốn biết HẬU QUẢ PHÁP LÝ, MỨC PHẠT, hay QUYỀN LỢI của họ.
 
-2. **Nếu context không đủ**: Trả lời:
-   "Xin lỗi bạn. Kiến thức này nằm ngoài phạm vi hiểu biết của tôi dựa trên tài liệu được cung cấp. Bạn có thể hỏi tôi một câu hỏi khác không?"
+2. **TRẢ LỜI TRỰC TIẾP VÀO VẤN ĐỀ**:
+   - Nếu hỏi "thì như nào", "thì sao", "bị gì" → Giải thích HẬU QUẢ PHÁP LÝ cụ thể
+   - Nếu hỏi về tội phạm → Nêu rõ MỨC HÌNH PHẠT (bao nhiêu năm tù, phạt tiền...)
+   - Nếu có tình tiết giảm nhẹ/tăng nặng → Giải thích ẢNH HƯỞNG đến mức án
+   - KHÔNG chỉ liệt kê điều luật mà phải GIẢI THÍCH Ý NGHĨA cho người dùng
 
-3. **Viết câu trả lời**:
-   - Bắt đầu bằng tóm tắt ngắn gọn về vấn đề pháp lý
-   - Cung cấp lập luận rõ ràng, có cấu trúc (dùng bullet points hoặc numbered lists)
-   - KHÔNG bịa đặt thông tin hoặc giải thích pháp lý
-   - Chỉ rút ra kết luận được hỗ trợ rõ ràng từ tài liệu
-   - Kết thúc bằng câu trả lời trực tiếp cho câu hỏi
+3. **CẤU TRÚC CÂU TRẢ LỜI**:
+   - Mở đầu: Tóm tắt 1-2 câu về tình huống pháp lý
+   - Thân bài: Phân tích chi tiết với trích dẫn điều luật
+   - Kết luận: **TRẢ LỜI RÕ RÀNG** cho câu hỏi (VD: "Với tình huống của bạn, mức án có thể là...")
 
-4. **Trích dẫn nguồn**: Khi có thể, đề cập đến văn bản pháp luật cụ thể (Luật, Nghị định, Thông tư...) từ context.
+4. **Nếu context không đủ**: Trả lời:
+   "Xin lỗi bạn. Kiến thức này nằm ngoài phạm vi hiểu biết của tôi. Bạn có thể hỏi câu hỏi khác không?"
+
+5. **Trích dẫn nguồn**: Ghi rõ (Điều X, Luật Y) sau mỗi thông tin pháp lý.
 
 ### NGÔN NGỮ:
-Trả lời bằng tiếng Việt.`
+Trả lời bằng tiếng Việt, dễ hiểu cho người dân thông thường.`
 
 	// System prompt for query rewriting
 	QueryRewriteSystemPrompt = `### ROLE:
@@ -72,6 +76,7 @@ Trả về ĐÚNG 3 câu truy vấn, mỗi câu trên một dòng. KHÔNG đánh
 type QAProvider interface {
 	Answer(ctx context.Context, question, context string) (string, error)
 	RewriteQuery(ctx context.Context, query string) ([]string, error)
+	ExpandKeywords(ctx context.Context, question string, keywords []string) ([]string, error)
 }
 
 // OpenAIQAProvider uses OpenAI chat models to generate answers.
@@ -160,6 +165,11 @@ func (p *OpenAIQAProvider) RewriteQuery(ctx context.Context, query string) ([]st
 		}
 	}
 	return queries, nil
+}
+
+// ExpandKeywords for OpenAI - returns original keywords (stub)
+func (p *OpenAIQAProvider) ExpandKeywords(ctx context.Context, question string, keywords []string) ([]string, error) {
+	return keywords, nil
 }
 
 // GeminiQAProvider uses Google Gemini models.
@@ -337,4 +347,441 @@ Câu hỏi gốc: %s`, QueryRewriteSystemPrompt, query)
 		}
 	}
 	return queries, nil
+}
+
+// ExpandKeywords uses Gemini to expand keywords with legal synonyms
+func (p *GeminiQAProvider) ExpandKeywords(ctx context.Context, question string, keywords []string) ([]string, error) {
+	if p == nil || len(keywords) == 0 {
+		return keywords, nil
+	}
+
+	prompt := fmt.Sprintf(`Bạn là chuyên gia pháp luật Việt Nam. Phân tích câu hỏi và mở rộng từ khóa.
+
+Câu hỏi: %s
+Từ khóa gốc: %s
+
+NHIỆM VỤ: Thêm các từ khóa PHÁP LÝ đồng nghĩa hoặc liên quan trực tiếp.
+
+QUY TẮC BẮT BUỘC:
+1. Với "giảm án/được giảm" → PHẢI thêm: "tình tiết giảm nhẹ", "giảm nhẹ trách nhiệm hình sự", "Điều 51"
+2. Với "tăng án/nặng hơn" → PHẢI thêm: "tình tiết tăng nặng", "Điều 52"
+3. Với "tự thú" → PHẢI thêm: "đầu thú", "khai báo"
+4. Với "phạm tội/tội" → PHẢI thêm: "người phạm tội", "hình phạt"
+
+ĐỊNH DẠNG: Mỗi từ khóa mới trên 1 dòng. KHÔNG đánh số. KHÔNG giải thích.
+Tối đa 5 từ khóa mới.`, question, strings.Join(keywords, ", "))
+
+	url := "https://generativelanguage.googleapis.com/v1beta/models/" + p.model + ":generateContent?key=" + p.apiKey
+
+	type Part struct {
+		Text string `json:"text"`
+	}
+	type Content struct {
+		Parts []Part `json:"parts"`
+	}
+	type GenerationConfig struct {
+		Temperature     float32 `json:"temperature"`
+		MaxOutputTokens int     `json:"maxOutputTokens"`
+	}
+	type Request struct {
+		Contents         []Content        `json:"contents"`
+		GenerationConfig GenerationConfig `json:"generationConfig"`
+	}
+
+	reqBody := Request{
+		Contents: []Content{
+			{Parts: []Part{{Text: prompt}}},
+		},
+		GenerationConfig: GenerationConfig{
+			Temperature:     0.3,
+			MaxOutputTokens: 100,
+		},
+	}
+
+	jsonBody, _ := json.Marshal(reqBody)
+	req, _ := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(jsonBody))
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := p.client.Do(req)
+	if err != nil {
+		return keywords, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return keywords, nil // Return original on error
+	}
+
+	type Response struct {
+		Candidates []struct {
+			Content Content `json:"content"`
+		} `json:"candidates"`
+	}
+
+	var geminiResp Response
+	if err := json.NewDecoder(resp.Body).Decode(&geminiResp); err != nil {
+		return keywords, nil
+	}
+
+	if len(geminiResp.Candidates) == 0 || len(geminiResp.Candidates[0].Content.Parts) == 0 {
+		return keywords, nil
+	}
+
+	// Parse expanded keywords
+	text := geminiResp.Candidates[0].Content.Parts[0].Text
+	result := make([]string, 0, len(keywords)+5)
+	result = append(result, keywords...) // Keep original keywords
+	seen := make(map[string]bool)
+	for _, kw := range keywords {
+		seen[strings.ToLower(kw)] = true
+	}
+
+	for _, line := range strings.Split(text, "\n") {
+		trimmed := strings.TrimSpace(line)
+		trimmed = strings.TrimLeft(trimmed, "0123456789.-*•) ")
+		trimmed = strings.Trim(trimmed, "\"'")
+		if trimmed != "" && !seen[strings.ToLower(trimmed)] {
+			seen[strings.ToLower(trimmed)] = true
+			result = append(result, trimmed)
+		}
+	}
+
+	// Fallback expansion for common legal terms not covered by Gemini
+	// These are PREPENDED to ensure they're used in search (top 5 keywords)
+	questionLower := strings.ToLower(question)
+	fallbackExpansions := map[string][]string{
+		"giảm án":   {"tình tiết giảm nhẹ", "giảm nhẹ trách nhiệm hình sự"},
+		"được giảm": {"tình tiết giảm nhẹ", "giảm nhẹ"},
+		"giảm hình": {"tình tiết giảm nhẹ", "giảm nhẹ"},
+		"tăng án":   {"tình tiết tăng nặng", "tăng nặng trách nhiệm hình sự"},
+		"nặng hơn":  {"tình tiết tăng nặng"},
+		"tự thú":    {"đầu thú", "người phạm tội tự thú"},
+		"đầu thú":   {"tự thú", "người phạm tội đầu thú"},
+	}
+	var fallbackKeywords []string
+	for term, expansions := range fallbackExpansions {
+		if strings.Contains(questionLower, term) {
+			for _, exp := range expansions {
+				if !seen[strings.ToLower(exp)] {
+					seen[strings.ToLower(exp)] = true
+					fallbackKeywords = append(fallbackKeywords, exp)
+				}
+			}
+		}
+	}
+	// Prepend fallback keywords to ensure they're in top 5
+	if len(fallbackKeywords) > 0 {
+		result = append(fallbackKeywords, result...)
+	}
+
+	return result, nil
+}
+
+// GroqQAProvider uses Groq API (OpenAI-compatible) for fast inference
+type GroqQAProvider struct {
+	apiKey string
+	model  string
+	client *http.Client
+}
+
+func NewGroqQAProvider(apiKey, model string) *GroqQAProvider {
+	if apiKey == "" {
+		return nil
+	}
+	if model == "" {
+		model = "llama-3.3-70b-versatile"
+	}
+	return &GroqQAProvider{
+		apiKey: apiKey,
+		model:  model,
+		client: &http.Client{Timeout: 30 * time.Second},
+	}
+}
+
+func (p *GroqQAProvider) Answer(ctx context.Context, question, contextStr string) (string, error) {
+	if p == nil {
+		return "", errors.New("qa provider not configured")
+	}
+	if question == "" {
+		return "", errors.New("question required")
+	}
+
+	promptUser := fmt.Sprintf(`### CÂU HỎI:
+%s
+
+### NỘI DUNG THAM KHẢO:
+%s
+
+### YÊU CẦU:
+Dựa trên nội dung tham khảo ở trên, hãy trả lời câu hỏi một cách chi tiết và chính xác.`, question, contextStr)
+
+	type Message struct {
+		Role    string `json:"role"`
+		Content string `json:"content"`
+	}
+	type Request struct {
+		Model       string    `json:"model"`
+		Messages    []Message `json:"messages"`
+		Temperature float32   `json:"temperature"`
+		MaxTokens   int       `json:"max_tokens"`
+	}
+
+	reqBody := Request{
+		Model: p.model,
+		Messages: []Message{
+			{Role: "system", Content: LegalAnswerSystemPrompt},
+			{Role: "user", Content: promptUser},
+		},
+		Temperature: 0.2,
+		MaxTokens:   2000,
+	}
+
+	jsonBody, _ := json.Marshal(reqBody)
+	req, _ := http.NewRequestWithContext(ctx, "POST", "https://api.groq.com/openai/v1/chat/completions", bytes.NewBuffer(jsonBody))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+p.apiKey)
+
+	resp, err := p.client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("groq api error: %d", resp.StatusCode)
+	}
+
+	type Response struct {
+		Choices []struct {
+			Message struct {
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
+	}
+
+	var groqResp Response
+	if err := json.NewDecoder(resp.Body).Decode(&groqResp); err != nil {
+		return "", err
+	}
+
+	if len(groqResp.Choices) == 0 {
+		return "", errors.New("empty response from groq")
+	}
+
+	return groqResp.Choices[0].Message.Content, nil
+}
+
+func (p *GroqQAProvider) RewriteQuery(ctx context.Context, query string) ([]string, error) {
+	if p == nil {
+		return []string{query}, nil
+	}
+
+	type Message struct {
+		Role    string `json:"role"`
+		Content string `json:"content"`
+	}
+	type Request struct {
+		Model       string    `json:"model"`
+		Messages    []Message `json:"messages"`
+		Temperature float32   `json:"temperature"`
+	}
+
+	reqBody := Request{
+		Model: p.model,
+		Messages: []Message{
+			{Role: "system", Content: QueryRewriteSystemPrompt},
+			{Role: "user", Content: "Câu hỏi gốc: " + query},
+		},
+		Temperature: 0.7,
+	}
+
+	jsonBody, _ := json.Marshal(reqBody)
+	req, _ := http.NewRequestWithContext(ctx, "POST", "https://api.groq.com/openai/v1/chat/completions", bytes.NewBuffer(jsonBody))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+p.apiKey)
+
+	resp, err := p.client.Do(req)
+	if err != nil {
+		return []string{query}, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return []string{query}, nil
+	}
+
+	type Response struct {
+		Choices []struct {
+			Message struct {
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
+	}
+
+	var groqResp Response
+	if err := json.NewDecoder(resp.Body).Decode(&groqResp); err != nil {
+		return []string{query}, nil
+	}
+
+	if len(groqResp.Choices) == 0 {
+		return []string{query}, nil
+	}
+
+	text := groqResp.Choices[0].Message.Content
+	lines := strings.Split(text, "\n")
+	var queries []string
+	queries = append(queries, query)
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		trimmed = strings.TrimLeft(trimmed, "0123456789.-*) ")
+		if trimmed != "" && trimmed != query {
+			queries = append(queries, trimmed)
+		}
+	}
+	return queries, nil
+}
+
+// ExpandKeywords uses Groq to expand keywords with legal synonyms
+func (p *GroqQAProvider) ExpandKeywords(ctx context.Context, question string, keywords []string) ([]string, error) {
+	if p == nil || len(keywords) == 0 {
+		return keywords, nil
+	}
+
+	prompt := fmt.Sprintf(`Bạn là chuyên gia pháp luật Việt Nam. Nhiệm vụ: Mở rộng từ khóa tìm kiếm từ ngôn ngữ đời thường sang THUẬT NGỮ PHÁP LÝ CHÍNH XÁC.
+
+### CÂU HỎI:
+%s
+
+### TỪ KHÓA GỐC:
+%s
+
+### QUY TẮC QUAN TRỌNG:
+1. **Nếu đề cập TỘI DANH** → PHẢI thêm tên tội + "Điều [số]":
+   - "giết người" → "Tội giết người", "Điều 123"
+   - "trộm cắp" → "Tội trộm cắp tài sản", "Điều 173"  
+   - "cướp" → "Tội cướp tài sản", "Điều 168"
+   - "lừa đảo" → "Tội lừa đảo chiếm đoạt tài sản", "Điều 174"
+   - "hiếp dâm" → "Tội hiếp dâm", "Điều 141"
+   - "ma túy" → "Điều 249", "Điều 250", "Điều 251"
+
+2. **Nếu hỏi về giảm nhẹ/tăng nặng**:
+   - "được giảm", "tự thú", "đầu thú" → "tình tiết giảm nhẹ", "Điều 51"
+   - "tăng án", "tái phạm" → "tình tiết tăng nặng", "Điều 52"
+
+3. **ƯU TIÊN QUAN TRỌNG**: 
+   - Nếu câu hỏi có TỘI DANH → từ khóa tội danh PHẢI ở vị trí 1-2
+   - Nếu hỏi về tình tiết giảm nhẹ/tăng nặng → từ khóa đó ở vị trí tiếp theo
+
+### OUTPUT:
+- Trả về TỐI ĐA 7 từ khóa quan trọng nhất, mỗi từ một dòng
+- KHÔNG giải thích, KHÔNG đánh số`, question, strings.Join(keywords, ", "))
+
+	type Message struct {
+		Role    string `json:"role"`
+		Content string `json:"content"`
+	}
+	type Request struct {
+		Model       string    `json:"model"`
+		Messages    []Message `json:"messages"`
+		Temperature float32   `json:"temperature"`
+		MaxTokens   int       `json:"max_tokens"`
+	}
+
+	reqBody := Request{
+		Model: p.model,
+		Messages: []Message{
+			{Role: "user", Content: prompt},
+		},
+		Temperature: 0.3,
+		MaxTokens:   100,
+	}
+
+	jsonBody, _ := json.Marshal(reqBody)
+	req, _ := http.NewRequestWithContext(ctx, "POST", "https://api.groq.com/openai/v1/chat/completions", bytes.NewBuffer(jsonBody))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+p.apiKey)
+
+	resp, err := p.client.Do(req)
+	if err != nil {
+		return keywords, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return keywords, nil
+	}
+
+	type Response struct {
+		Choices []struct {
+			Message struct {
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
+	}
+
+	var groqResp Response
+	if err := json.NewDecoder(resp.Body).Decode(&groqResp); err != nil {
+		return keywords, nil
+	}
+
+	if len(groqResp.Choices) == 0 {
+		return keywords, nil
+	}
+
+	// Parse expanded keywords - LLM keywords go FIRST (they are more relevant)
+	text := groqResp.Choices[0].Message.Content
+	result := make([]string, 0, len(keywords)+5)
+	seen := make(map[string]bool)
+
+	// Add LLM expanded keywords FIRST (higher priority)
+	for _, line := range strings.Split(text, "\n") {
+		trimmed := strings.TrimSpace(line)
+		trimmed = strings.TrimLeft(trimmed, "0123456789.-*•) ")
+		trimmed = strings.Trim(trimmed, "\"'")
+		if trimmed != "" && !seen[strings.ToLower(trimmed)] {
+			seen[strings.ToLower(trimmed)] = true
+			result = append(result, trimmed)
+		}
+	}
+
+	// Then add original keywords (if not already included)
+	for _, kw := range keywords {
+		if !seen[strings.ToLower(kw)] {
+			seen[strings.ToLower(kw)] = true
+			result = append(result, kw)
+		}
+	}
+
+	// Fallback: detect common crimes and add relevant keywords
+	questionLower := strings.ToLower(question)
+	crimeKeywords := map[string][]string{
+		"giết người":           {"Tội giết người"},
+		"trộm cắp":             {"Tội trộm cắp tài sản"},
+		"cướp":                 {"Tội cướp tài sản"},
+		"lừa đảo":              {"Tội lừa đảo chiếm đoạt tài sản"},
+		"hiếp dâm":             {"Tội hiếp dâm"},
+		"ma túy":               {"Tội tàng trữ trái phép chất ma túy"},
+		"tham ô":               {"Tội tham ô tài sản"},
+		"đánh bạc":             {"Tội đánh bạc"},
+		"cố ý gây thương tích": {"Tội cố ý gây thương tích"},
+	}
+
+	var crimeExpansions []string
+	for crime, expansions := range crimeKeywords {
+		if strings.Contains(questionLower, crime) {
+			for _, exp := range expansions {
+				if !seen[strings.ToLower(exp)] {
+					seen[strings.ToLower(exp)] = true
+					crimeExpansions = append(crimeExpansions, exp)
+				}
+			}
+		}
+	}
+
+	// Prepend crime keywords to ensure they're searched
+	if len(crimeExpansions) > 0 {
+		result = append(crimeExpansions, result...)
+	}
+
+	return result, nil
 }

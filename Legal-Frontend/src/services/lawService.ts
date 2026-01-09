@@ -1,8 +1,7 @@
 import { authService } from "./authService";
+import { API_BASE_URL } from "../config";
 
-const runtimeBackend = (typeof window !== 'undefined' && (window as any).__BACKEND_URL__) as string | undefined;
-const backendUrl = runtimeBackend || import.meta.env.VITE_BACKEND_URL || '';
-const API_URL = `${backendUrl}/api/v1/query`;
+const API_URL = `${API_BASE_URL}/query`;
 
 export interface Document {
   id: string;

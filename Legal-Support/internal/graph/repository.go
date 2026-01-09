@@ -551,9 +551,11 @@ func (r *Repository) SearchUnitsByEmbedding(ctx context.Context, embedding []flo
 
 	// Search query uses the vector as the first argument; filters start at $2.
 	searchClauses, searchFilterArgs := buildFilters(2)
-	whereSearch := ""
+	// Always include the distance filter as a base condition
+	distanceClause := "(e.embedding <-> $1) < 0.95"
+	whereSearch := "WHERE " + distanceClause
 	if len(searchClauses) > 0 {
-		whereSearch = "WHERE " + strings.Join(searchClauses, " AND ")
+		whereSearch = "WHERE " + distanceClause + " AND " + strings.Join(searchClauses, " AND ")
 	}
 
 	vec := pgvector.NewVector(embedding)
@@ -561,9 +563,8 @@ func (r *Repository) SearchUnitsByEmbedding(ctx context.Context, embedding []flo
 	args = append(args, searchFilterArgs...)
 	args = append(args, limit, offset)
 
-	// Increased distance threshold from 0.6 to 0.85 for better recall
-	// Distance of 0.85 still indicates reasonable semantic similarity
-	// while allowing more potentially relevant results to be returned
+	// Increased distance threshold from 0.85 to 0.95 for better recall with Gemini embeddings
+	// Gemini text-embedding-004 tends to produce higher distances than OpenAI embeddings
 	query := `
 		SELECT u.id, u.document_id, u.level, u.code, u.text, u.parent_id, u.order_index, u.created_at,
 		       d.title as document_title,
@@ -572,7 +573,6 @@ func (r *Repository) SearchUnitsByEmbedding(ctx context.Context, embedding []flo
 		JOIN units u ON e.unit_id = u.id
 		JOIN documents d ON u.document_id = d.id
 		` + whereSearch + `
-		AND (e.embedding <-> $1) < 0.85
 		ORDER BY distance ASC, u.order_index ASC
 		LIMIT $%d OFFSET $%d`
 
@@ -595,6 +595,76 @@ func (r *Repository) SearchUnitsByEmbedding(ctx context.Context, embedding []flo
 	}
 
 	return units, total, rows.Err()
+}
+
+// SearchUnitsByKeywords performs keyword-based search on units text.
+// Ranks results by number of keywords matched and relevance.
+// Requires at least 2 keywords to match for better precision.
+func (r *Repository) SearchUnitsByKeywords(ctx context.Context, keywords []string, limit int) ([]UnitSimilarityView, error) {
+	if len(keywords) == 0 {
+		return nil, nil
+	}
+
+	if limit <= 0 {
+		limit = 10
+	}
+
+	// Build OR conditions for each keyword and count matches for ranking
+	var conditions []string
+	var matchCounts []string
+	var args []any
+
+	for i, kw := range keywords {
+		conditions = append(conditions, fmt.Sprintf("u.text ILIKE $%d", i+1))
+		// Count how many keywords match for ranking
+		matchCounts = append(matchCounts, fmt.Sprintf("CASE WHEN u.text ILIKE $%d THEN 1 ELSE 0 END", i+1))
+		args = append(args, "%"+kw+"%")
+	}
+	args = append(args, limit)
+
+	// Require at least 2 keywords to match for better precision
+	minMatches := 2
+	if len(keywords) == 1 {
+		minMatches = 1
+	}
+
+	// Query ranks by number of keyword matches (more matches = better)
+	// Distance is calculated as inverse of match count (lower = better)
+	matchCountExpr := strings.Join(matchCounts, " + ")
+	query := fmt.Sprintf(`
+		SELECT u.id, u.document_id, u.level, u.code, u.text, u.parent_id, u.order_index, u.created_at,
+		       d.title as document_title,
+		       (1.0 - ((%s)::float / %d.0)) * 0.5 as distance
+		FROM units u
+		JOIN documents d ON u.document_id = d.id
+		WHERE (%s) AND (%s) >= %d
+		ORDER BY (%s) DESC, u.order_index ASC
+		LIMIT $%d`,
+		matchCountExpr,
+		len(keywords),
+		strings.Join(conditions, " OR "),
+		matchCountExpr,
+		minMatches,
+		matchCountExpr,
+		len(args))
+
+	rows, err := r.db.Query(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var units []UnitSimilarityView
+	for rows.Next() {
+		u := UnitSimilarityView{}
+		if err := rows.Scan(&u.ID, &u.DocumentID, &u.Level, &u.Code, &u.Text, &u.ParentID, &u.OrderIndex, &u.CreatedAt,
+			&u.DocumentTitle, &u.Distance); err != nil {
+			return nil, err
+		}
+		units = append(units, u)
+	}
+
+	return units, rows.Err()
 }
 
 // Concepts
@@ -1011,4 +1081,186 @@ func (r *Repository) FindTriplesByStar(ctx context.Context, star QueryStar) ([]T
 	}
 
 	return triples, rows.Err()
+}
+
+// TripleSearchResult represents a triple with relevance scoring
+type TripleSearchResult struct {
+	TripleView
+	KeywordMatches int     `json:"keyword_matches"` // Number of keywords matched
+	MatchScore     float32 `json:"match_score"`     // Combined relevance score
+}
+
+// SearchTriplesByKeywords searches triples by matching keywords against unit text using ILIKE
+// This is more accurate for Vietnamese text than full-text search
+func (r *Repository) SearchTriplesByKeywords(ctx context.Context, keywords []string, limit int) ([]TripleSearchResult, error) {
+	if len(keywords) == 0 {
+		return nil, nil
+	}
+	if limit <= 0 {
+		limit = 20
+	}
+
+	// Limit keywords to avoid overly complex queries
+	maxKeywords := 6
+	if len(keywords) > maxKeywords {
+		keywords = keywords[:maxKeywords]
+	}
+
+	// Build ILIKE conditions for each keyword on text_unaccent column
+	// This allows searching with non-diacritic Vietnamese input
+	var conditions []string
+	var args []interface{}
+	argIdx := 1
+
+	for _, kw := range keywords {
+		if len(kw) >= 2 { // Only use keywords with at least 2 chars
+			// Search on text_unaccent column for diacritic-insensitive matching
+			conditions = append(conditions, fmt.Sprintf("u.text_unaccent ILIKE $%d", argIdx))
+			args = append(args, "%"+kw+"%")
+			argIdx++
+		}
+	}
+
+	if len(conditions) == 0 {
+		return nil, nil
+	}
+
+	// Use OR for keywords matching, then count how many matched
+	whereClause := "(" + strings.Join(conditions, " OR ") + ")"
+
+	// Build scoring expression to count keyword matches
+	var scoreExprParts []string
+	for i := range conditions {
+		scoreExprParts = append(scoreExprParts, fmt.Sprintf("CASE WHEN u.text_unaccent ILIKE $%d THEN 1 ELSE 0 END", i+1))
+	}
+	scoreExpr := strings.Join(scoreExprParts, " + ")
+
+	args = append(args, limit*3) // Fetch more to deduplicate later
+	limitArg := fmt.Sprintf("$%d", argIdx)
+
+	// Use subquery to first get unique units ordered by keyword matches,
+	// then join back to get triple details
+	query := fmt.Sprintf(`
+		WITH ranked_units AS (
+			SELECT DISTINCT u.id as unit_id, (%s) as keyword_matches
+			FROM units u
+			WHERE %s
+			ORDER BY keyword_matches DESC
+			LIMIT %s
+		)
+		SELECT t.id, t.subject_id, t.relation_id, t.object_id, t.unit_id, t.doc_ref,
+		       t.confidence, t.tfidf, t.is_blacklisted, t.context, t.created_at,
+		       cs.name as subject_name, cr.name as relation_name, co.name as object_name,
+		       u.text as unit_text, d.title as document_title, d.id as document_id,
+		       ru.keyword_matches
+		FROM ranked_units ru
+		JOIN units u ON ru.unit_id = u.id
+		JOIN triples t ON t.unit_id = u.id
+		JOIN concepts cs ON t.subject_id = cs.id
+		JOIN relations cr ON t.relation_id = cr.id
+		JOIN concepts co ON t.object_id = co.id
+		JOIN documents d ON u.document_id = d.id
+		WHERE t.is_blacklisted = false
+		ORDER BY ru.keyword_matches DESC, t.tfidf DESC NULLS LAST, t.confidence DESC`,
+		scoreExpr, whereClause, limitArg)
+
+	rows, err := r.db.Query(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []TripleSearchResult
+	for rows.Next() {
+		tr := TripleSearchResult{}
+		var keywordMatches int
+		err := rows.Scan(
+			&tr.ID, &tr.SubjectID, &tr.RelationID, &tr.ObjectID, &tr.UnitID,
+			&tr.DocRef, &tr.Confidence, &tr.TfIdf, &tr.IsBlacklisted, &tr.Context, &tr.CreatedAt,
+			&tr.SubjectName, &tr.RelationName, &tr.ObjectName,
+			&tr.UnitText, &tr.DocumentTitle, &tr.DocumentID,
+			&keywordMatches)
+		if err != nil {
+			return nil, err
+		}
+		tr.KeywordMatches = keywordMatches
+		// Score = weighted combination of keyword matches, tfidf, and confidence
+		tr.MatchScore = float32(keywordMatches)/float32(len(keywords))*0.5 + tr.TfIdf*0.25 + tr.Confidence*0.25
+		results = append(results, tr)
+	}
+
+	// Sort by match score descending
+	sort.Slice(results, func(i, j int) bool {
+		return results[i].MatchScore > results[j].MatchScore
+	})
+
+	// Limit results after sorting
+	if len(results) > limit {
+		results = results[:limit]
+	}
+
+	return results, rows.Err()
+}
+
+// GetUnitsByTriples retrieves unique units from triple results, with proper citations
+func (r *Repository) GetUnitsByTriples(ctx context.Context, triples []TripleSearchResult, limit int) ([]UnitSimilarityView, error) {
+	if len(triples) == 0 {
+		return nil, nil
+	}
+
+	// Collect unique unit IDs preserving order (higher scoring first)
+	seen := make(map[uuid.UUID]bool)
+	var unitIDs []uuid.UUID
+	unitScores := make(map[uuid.UUID]float32)
+
+	for _, t := range triples {
+		if !seen[t.UnitID] {
+			seen[t.UnitID] = true
+			unitIDs = append(unitIDs, t.UnitID)
+			unitScores[t.UnitID] = t.MatchScore
+		} else {
+			// Accumulate score if same unit found from multiple triples
+			unitScores[t.UnitID] += t.MatchScore * 0.5
+		}
+	}
+
+	if limit > 0 && len(unitIDs) > limit {
+		unitIDs = unitIDs[:limit]
+	}
+
+	// Fetch units
+	query := `
+		SELECT u.id, u.document_id, u.level, u.code, u.text, u.parent_id, u.order_index, u.created_at,
+		       d.title as document_title
+		FROM units u
+		JOIN documents d ON u.document_id = d.id
+		WHERE u.id = ANY($1)`
+
+	rows, err := r.db.Query(ctx, query, unitIDs)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	unitMap := make(map[uuid.UUID]UnitSimilarityView)
+	for rows.Next() {
+		u := UnitSimilarityView{}
+		err := rows.Scan(&u.ID, &u.DocumentID, &u.Level, &u.Code, &u.Text, &u.ParentID, &u.OrderIndex, &u.CreatedAt, &u.DocumentTitle)
+		if err != nil {
+			return nil, err
+		}
+		// Convert score to distance (lower = better)
+		u.Distance = 1.0 - unitScores[u.ID]/(unitScores[u.ID]+1.0)
+		unitMap[u.ID] = u
+	}
+
+	// Preserve original order
+	var results []UnitSimilarityView
+	for _, id := range unitIDs {
+		if u, ok := unitMap[id]; ok {
+			results = append(results, u)
+		}
+	}
+
+	return results, rows.Err()
 }

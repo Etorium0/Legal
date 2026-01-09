@@ -14,6 +14,8 @@ import UnitDetailPage from './components/UnitDetailPage'
 import PhapDienPage from './pages/PhapDienPage'
 import VBPLPage from './pages/VBPLPage'
 import VBPLDetailPage from './pages/VBPLDetailPage'
+import UsersPage from './pages/UsersPage'
+import ForgotPasswordPage from './components/ForgotPasswordPage'
 import ErrorBoundary from './components/ErrorBoundary'
 import AppLayout from './components/AppLayout'
 
@@ -37,8 +39,10 @@ const App: React.FC = () =>
               <Route path="/ingest" element={<ProtectedRoute><IngestPage /></ProtectedRoute>} />
               <Route path="/unit/:id" element={<ProtectedRoute><UnitDetailPage /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+              <Route path="/users" element={<ProtectedRoute requiredRole="admin"><UsersPage /></ProtectedRoute>} />
             </Route>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </HashRouter>

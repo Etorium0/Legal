@@ -1,15 +1,10 @@
-const getBackendUrl = () => 
-{
-  if (typeof window !== 'undefined' && (window as any).__BACKEND_URL__) 
-  {
-    return (window as any).__BACKEND_URL__
-  }
-  // Hardcode for Android testing if needed, or use env
-  // return 'http://192.168.1.3:8080'
-  return import.meta.env.VITE_BACKEND_URL || ''
-}
+import { getBackendUrl } from '../config'
 
-const getAuthBase = () => `${getBackendUrl()}/api/v1/auth`
+const getAuthBase = () => 
+{
+  const backend = getBackendUrl()
+  return backend ? `${backend}/api/v1/auth` : '/api/v1/auth'
+}
 
 const STORAGE_KEY = 'legal_auth_tokens'
 

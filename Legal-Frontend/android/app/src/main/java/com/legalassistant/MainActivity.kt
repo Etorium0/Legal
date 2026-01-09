@@ -140,10 +140,23 @@ class MainActivity : ComponentActivity() {
         } catch (_: Exception) { }
     }
 
+    override fun onStop() {
+        super.onStop()
+        // Stop HotwordService when app goes to background
+        stopService(Intent(this, HotwordService::class.java))
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        // Restart HotwordService when app comes back to foreground
+        checkAndRequestPermissions()
+    }
+
     override fun onDestroy() {
         unregisterReceiver(receiver)
         tts?.stop()
         tts?.shutdown()
+        stopService(Intent(this, HotwordService::class.java))
         super.onDestroy()
     }
 }
