@@ -19,6 +19,7 @@ const TreeView: React.FC<TreeViewProps> = ({ onSelectChuong }) =>
 {
     const [treeData, setTreeData] = useState<DataNode[]>([]);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => 
 {
@@ -28,29 +29,48 @@ const TreeView: React.FC<TreeViewProps> = ({ onSelectChuong }) =>
     const loadInitialData = async () => 
 {
         setLoading(true);
+        setError(null);
         try 
 {
-            // Fetch all Phap Dien documents (De Muc)
-            // Assuming type 'phapdien' represents Phap Dien documents
-            const res = await lawService.getDocuments({ type: 'phapdien', limit: 1000 });
+            // Fetch documents with timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+            
+            const res = await lawService.getDocuments({ limit: 100 }); // Reduced for mobile performance
+            clearTimeout(timeoutId);
             const docs: Document[] = res.items || [];
 
-            // Group by Authority (Chu De)
-            const themes: Record<string, Document[]> = {};
+            // Group by Document Type (Luật, Nghị định, Thông tư, etc.)
+            const typeGroups: Record<string, Document[]> = {};
             docs.forEach(doc => 
 {
-                const theme = doc.authority || 'Khác';
-                if (!themes[theme]) {themes[theme] = [];}
-                themes[theme].push(doc);
+                const docType = doc.type || 'Khác';
+                if (!typeGroups[docType]) {typeGroups[docType] = [];}
+                typeGroups[docType].push(doc);
             });
 
-            // Build Tree Nodes
-            const nodes: DataNode[] = Object.keys(themes).map((theme, index) => ({
-                title: theme,
-                key: `theme_${index}`,
+            // Sort types for consistent ordering
+            const typeOrder = ['Luật', 'Nghị định', 'Thông tư', 'Quyết định', 'Khác'];
+            const sortedTypes = Object.keys(typeGroups).sort((a, b) => 
+            {
+                const indexA = typeOrder.indexOf(a);
+                const indexB = typeOrder.indexOf(b);
+                if (indexA === -1 && indexB === -1) 
+                    return a.localeCompare(b);
+                if (indexA === -1) 
+                    return 1;
+                if (indexB === -1) 
+                    return -1;
+                return indexA - indexB;
+            });
+
+            // Build Tree Nodes grouped by type
+            const nodes: DataNode[] = sortedTypes.map((docType, index) => ({
+                title: `${docType} (${typeGroups[docType].length})`,
+                key: `type_${index}`,
                 isLeaf: false,
-                children: themes[theme].map(doc => ({
-                    title: `${doc.number ? doc.number + ': ' : ''}${doc.title}`,
+                children: typeGroups[docType].slice(0, 100).map(doc => ({ // Limit to 100 per type for performance
+                    title: `${doc.number ? doc.number + ': ' : ''}${doc.title}`.substring(0, 100),
                     key: `doc_${doc.id}`,
                     isLeaf: false,
                     data: doc
@@ -59,9 +79,10 @@ const TreeView: React.FC<TreeViewProps> = ({ onSelectChuong }) =>
 
             setTreeData(nodes);
         }
- catch (error) 
+ catch (err: any) 
 {
-            console.error("Failed to load Phap Dien tree:", error);
+            console.error("Failed to load documents tree:", err);
+            setError(err?.name === 'AbortError' ? 'Kết nối timeout. Vui lòng thử lại.' : 'Không thể tải dữ liệu. Kiểm tra kết nối mạng.');
         }
  finally 
 {
@@ -154,9 +175,17 @@ const TreeView: React.FC<TreeViewProps> = ({ onSelectChuong }) =>
     };
 
     return (
-        <div className="h-full overflow-auto bg-white p-4 rounded-lg shadow">
-            {loading && treeData.length === 0 ? (
-                <div className="flex justify-center p-4"><Spin /></div>
+        <div className="h-full overflow-auto bg-slate-800 p-4 rounded-lg">
+            {loading ? (
+                <div className="flex flex-col items-center justify-center p-8 gap-4">
+                    <Spin size="large" />
+                    <p className="text-white/70">Đang tải danh sách văn bản...</p>
+                </div>
+            ) : error ? (
+                <div className="flex flex-col items-center justify-center p-8 gap-4">
+                    <Empty description={<span className="text-red-400">{error}</span>} />
+                    <button onClick={loadInitialData} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500">Thử lại</button>
+                </div>
             ) : treeData.length > 0 ? (
                 <Tree
                     showLine
@@ -164,10 +193,11 @@ const TreeView: React.FC<TreeViewProps> = ({ onSelectChuong }) =>
                     treeData={treeData}
                     loadData={onLoadData}
                     onSelect={onSelect}
-                    height={600}
+                    className="bg-slate-800 text-white"
+                    style={{ background: 'transparent' }}
                 />
             ) : (
-                <Empty description="Không có dữ liệu pháp điển" />
+                <Empty description={<span className="text-white/70">Không có dữ liệu</span>} />
             )}
         </div>
     );

@@ -3,13 +3,26 @@ import { authService } from "./authService";
 import { API_BASE_URL } from "../config";
 
 // This service manages the connection to the Legal Backend.
-// It tries to connect to the Go Backend (localhost:8080).
-// Nếu backend không khả dụng, trả về thông báo thân thiện, không dùng Gemini fallback.
-
 const BASE_URL = API_BASE_URL;
-const QUERY_URL = `${BASE_URL}/query/rag`; // Use RAG endpoint for better accuracy
+const QUERY_URL = `${BASE_URL}/query/rag`;
+
+// Helper: Fetch with timeout
+const fetchWithTimeout = async (url: string, options: RequestInit, timeout = 30000): Promise<Response> => {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(id);
+    return response;
+  } catch (error) {
+    clearTimeout(id);
+    throw error;
+  }
+};
 
 export const queryLegalAssistant = async (query: string): Promise<Partial<Message>> => {
+  console.log("[LegalService] Querying:", query, "Backend:", QUERY_URL);
+  
   // 1. Attempt Real Backend Query
   try {
     const token = await authService.getValidAccessToken();
@@ -18,15 +31,15 @@ export const queryLegalAssistant = async (query: string): Promise<Partial<Messag
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const res = await fetch(QUERY_URL, {
+    const res = await fetchWithTimeout(QUERY_URL, {
       method: 'POST',
       headers,
       body: JSON.stringify({ question: query, top_k: 15, answer: true }),
-    });
+    }, 30000);
 
     if (res.ok) {
       const data = await res.json();
-      console.log("Received response from Go Backend (RAG):", data);
+      console.log("[LegalService] RAG Response:", data);
 
       const answerText = data.answer || "Tôi đã tìm thấy một số thông tin nhưng không thể tổng hợp câu trả lời chi tiết.";
       const items = data.items || [];
@@ -144,14 +157,14 @@ export const queryLegalAssistant = async (query: string): Promise<Partial<Messag
       };
     }
   }
- catch (error) 
+ catch (error: any) 
 {
-    console.warn("Backend không khả dụng hoặc hết thời gian chờ.", error);
+    console.error("[LegalService] Backend error:", error?.message || error);
   }
 
-  // 2. Fallback: Thông báo thân thiện, không gọi Gemini
+  // 2. Fallback: Thông báo thân thiện
   return {
-    text: "Xin lỗi, hệ thống đang bận hoặc chưa đủ dữ liệu để trả lời câu hỏi này. Vui lòng thử lại sau vài phút hoặc hỏi về Nghị định 100/2019 (xử phạt giao thông).",
+    text: "Xin lỗi, tôi không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng và thử lại.",
     sources: [],
     triples: [],
     role: 'assistant',

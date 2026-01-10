@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Spin, Button, Breadcrumb, Tag, Typography, Empty } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import SimpleLayout from '../components/SimpleLayout';
 import { lawService, Document, Unit } from '../services/lawService';
 import MarkdownIt from 'markdown-it';
@@ -141,6 +142,17 @@ const VBPLDetailPage: React.FC = () =>
     return (
         <SimpleLayout>
             <div className="max-w-5xl mx-auto px-4 py-8">
+                {/* Back Button - Fixed at top */}
+                <Button 
+                    type="text" 
+                    icon={<ArrowLeftOutlined />} 
+                    onClick={() => navigate(-1)}
+                    className="mb-4 text-indigo-400 hover:text-indigo-300 hover:bg-white/10"
+                    size="large"
+                >
+                    Quay lại
+                </Button>
+
                 <Breadcrumb className="mb-6 text-gray-300">
                     <Breadcrumb.Item>
                         <a onClick={() => navigate('/')} className="text-gray-400 hover:text-white">Trang chủ</a>

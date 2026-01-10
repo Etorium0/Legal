@@ -11,13 +11,14 @@ const DashboardPage: React.FC = () =>
     <SimpleLayout>
       <div>
         <h2 className="text-3xl font-bold text-white">Bảng điều khiển</h2>
-        <p className="mt-2 text-white/70">Tổng quan nhanh về hoạt động gần đây.</p>
+        <p className="mt-2 text-white/70">Truy cập nhanh các tính năng chính.</p>
 
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            { title: 'Văn bản mới', description: '12 văn bản được cập nhật tuần này', icon: '📄', color: 'from-blue-500 to-cyan-500', path: '/vbpl' },
-            { title: 'Yêu cầu tra cứu', description: '34 yêu cầu trong 24h gần nhất', icon: '🔍', color: 'from-purple-500 to-pink-500', path: '/assistant' },
-            { title: 'Liên kết tri thức', description: '128 cạnh mới được thêm', icon: '🔗', color: 'from-green-500 to-emerald-500', path: '/graph' },
+            { title: 'Hỏi đáp pháp luật', description: 'Đặt câu hỏi bằng giọng nói hoặc văn bản', icon: '🎤', color: 'from-blue-500 to-cyan-500', path: '/assistant' },
+            { title: 'Tra cứu văn bản', description: 'Duyệt danh sách VBQPPL', icon: '📄', color: 'from-purple-500 to-pink-500', path: '/vbpl' },
+            { title: 'Bộ Pháp Điển', description: 'Tra cứu theo chủ đề, đề mục', icon: '📚', color: 'from-amber-500 to-orange-500', path: '/phapdien' },
+            { title: 'Biểu đồ tri thức', description: 'Xem quan hệ giữa các khái niệm', icon: '🔗', color: 'from-green-500 to-emerald-500', path: '/graph' },
           ].map((item, i) => (
             <div 
               key={i} 
@@ -34,7 +35,7 @@ const DashboardPage: React.FC = () =>
         </div>
 
         <div className="mt-10">
-          <MapCard height={320} />
+          <MapCard />
         </div>
       </div>
     </SimpleLayout>

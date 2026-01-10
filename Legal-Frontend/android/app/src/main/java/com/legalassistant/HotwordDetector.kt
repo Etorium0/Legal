@@ -27,6 +27,7 @@ class HotwordDetector(private val context: Context) {
     @Volatile private var isRunning = false
 
     fun stop() {
+        Log.d(TAG, "Stopping hotword detector")
         isRunning = false
         try {
             recorder?.stop()
@@ -36,14 +37,19 @@ class HotwordDetector(private val context: Context) {
             e.printStackTrace()
         }
     }
+    
+    fun reset() {
+        Log.d(TAG, "Resetting recognizer for next detection")
+        recognizer?.reset()
+    }
 
     suspend fun listen(onWake: (Boolean) -> Unit) {
         Log.d(TAG, "Starting listen...")
         if (model == null) {
             try {
-                // Load model from assets/vosk-model-small-vn-0.4
+                // Load model from assets/assets/vosk-model-vn-0.4
                 Log.d(TAG, "Loading model...")
-                val modelPath = StorageService.sync(context, "vosk-model-small-vn-0.4", "model-vn")
+                val modelPath = StorageService.sync(context, "assets/vosk-model-vn-0.4", "model-vn")
                 Log.d(TAG, "Sync complete. Path: $modelPath")
                 
                 // Verify model files exist
@@ -57,9 +63,9 @@ class HotwordDetector(private val context: Context) {
                 model = Model(modelPath)
                 Log.d(TAG, "Model loaded successfully")
                 
-                // Initialize recognizer with grammar for specific wake words
-                // Relaxed grammar for testing, or check if words exist
-                recognizer = Recognizer(model, sampleRate.toFloat(), "[\"chào trợ lý\", \"hê lô nô va\", \"hey nova\", \"nova ơi\", \"nô va\", \"trợ lý ơi\", \"ê nô va\"]")
+                // Initialize recognizer without grammar - we'll check text manually
+                // Model doesn't support runtime grammar, so we listen to all speech
+                recognizer = Recognizer(model, sampleRate.toFloat())
                 Log.d(TAG, "Recognizer initialized")
             } catch (e: IOException) {
                 Log.e(TAG, "Failed to load model", e)
@@ -89,6 +95,14 @@ class HotwordDetector(private val context: Context) {
             recorder?.startRecording()
             Log.d(TAG, "Recording started")
             isRunning = true
+            
+            // Wake words - include variations that Vosk might recognize
+            val wakeWords = listOf(
+                "nova", "nô va", "nô-va", "no va", "nôva",
+                "hey nova", "hê nova", "hây nova", "hei nova",
+                "chào trợ lý", "chào trợ", "trợ lý", "trợ lý ơi",
+                "xin chào", "ê trợ lý", "ê nova"
+            )
 
             while (kotlin.coroutines.coroutineContext.isActive && isRunning) {
                 val nread = recorder?.read(buffer, 0, buffer.size) ?: 0
@@ -96,9 +110,16 @@ class HotwordDetector(private val context: Context) {
                     if (recognizer?.acceptWaveForm(buffer, nread) == true) {
                         val result = recognizer?.result ?: ""
                         Log.d(TAG, "Result: $result")
-                        // Check if result contains any of our wake words
-                        if (result.contains("hey nova") || result.contains("hê lô nô va") || result.contains("chào trợ lý") || result.contains("nova ơi") || result.contains("nô va") || result.contains("trợ lý ơi") || result.contains("ê nô va")) {
-                             Log.d(TAG, "Wake word detected!")
+                        
+                        // Extract text from JSON result  
+                        val textMatch = Regex("\"text\"\\s*:\\s*\"([^\"]+)\"").find(result)
+                        val text = textMatch?.groupValues?.get(1)?.lowercase() ?: ""
+                        Log.d(TAG, "Recognized: $text")
+                        
+                        // Check if text contains any wake word
+                        val detected = wakeWords.any { wake -> text.contains(wake) }
+                        if (detected) {
+                             Log.d(TAG, "*** WAKE WORD DETECTED! ***")
                              onWake(true)
                              recognizer?.reset()
                         }

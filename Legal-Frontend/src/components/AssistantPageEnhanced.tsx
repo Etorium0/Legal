@@ -477,13 +477,13 @@ const AssistantPage: React.FC = () =>
                       className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
-                        className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+                        className={`max-w-[85%] rounded-2xl px-4 py-3 overflow-hidden ${
                         msg.role === 'user'
                           ? 'bg-primary text-white ml-12'
                           : 'bg-white/5 text-gray-100 mr-12 border border-white/10'
                       }`}
                     >
-                      <p className="text-sm md:text-base leading-relaxed break-words whitespace-pre-wrap max-w-full overflow-hidden">{msg.text}</p>
+                      <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap break-all overflow-wrap-anywhere">{msg.text}</p>
                       
                       {msg.triples && msg.triples.length > 0 && (
                           <div className="mt-3 pt-3 border-t border-white/10">

@@ -435,13 +435,13 @@ const DocumentBrowserPage: React.FC = () =>
                className={`px-4 py-2 rounded-lg font-medium transition-colors ${activeTab === 'vbpl' ? 'bg-indigo-600 text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
                onClick={() => setActiveTab('vbpl')}
             >
-               Văn bản quy phạm pháp luật
+               Danh sách VBPL
             </button>
             <button 
                className={`px-4 py-2 rounded-lg font-medium transition-colors ${activeTab === 'phapdien' ? 'bg-indigo-600 text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
                onClick={() => setActiveTab('phapdien')}
             >
-               Bộ Pháp Điển
+               Duyệt theo loại
             </button>
         </div>
 
@@ -701,12 +701,12 @@ const DocumentBrowserPage: React.FC = () =>
                     <span className="text-xs text-white/50">{selectedUnit.level}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <a
-                      href={`/unit/${selectedUnit.id}`}
+                    <Link
+                      to={`/unit/${selectedUnit.id}`}
                       className="text-xs px-3 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-500"
                     >
                       Mở ở VBQPPL Viewer
-                    </a>
+                    </Link>
                   </div>
                 </div>
                 {unitDetailLoading && <div className="text-white/70">Đang tải nội dung...</div>}
@@ -811,7 +811,7 @@ const TreeNode: React.FC<{
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-white/50">{node.level}</span>
-          <a href={`/unit/${node.id}`} className="text-xs px-2 py-1 rounded bg-white/10 border border-white/20 text-white/80 hover:bg-white/20">Mở Viewer</a>
+          <Link to={`/unit/${node.id}`} className="text-xs px-2 py-1 rounded bg-white/10 border border-white/20 text-white/80 hover:bg-white/20">Mở Viewer</Link>
         </div>
       </div>
       <div className="text-white/90 text-sm whitespace-pre-wrap leading-relaxed line-clamp-4">

@@ -1,7 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Button from './ui/button'
 import { useAuth } from './AuthContext'
+
+// Password validation helper
+const validatePassword = (password: string) => {
+  const checks = {
+    minLength: password.length >= 8,
+    hasUppercase: /[A-Z]/.test(password),
+    hasLowercase: /[a-z]/.test(password),
+    hasNumber: /[0-9]/.test(password),
+    hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  };
+  const isValid = Object.values(checks).every(Boolean);
+  return { checks, isValid };
+};
 
 const LoginPage: React.FC = () => 
 {
@@ -13,10 +26,20 @@ const LoginPage: React.FC = () =>
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showPasswordHints, setShowPasswordHints] = useState(false)
+
+  const passwordValidation = useMemo(() => validatePassword(password), [password]);
 
   const handleSubmit = (e: React.FormEvent) => 
 {
     e.preventDefault()
+    
+    // Validate password on register
+    if (mode === 'register' && !passwordValidation.isValid) {
+      setError('Mật khẩu không đủ mạnh. Vui lòng kiểm tra các yêu cầu bên dưới.');
+      return;
+    }
+    
     const action = mode === 'login' ? login : register
     setLoading(true)
     setError(null)
@@ -58,10 +81,33 @@ const LoginPage: React.FC = () =>
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onFocus={() => mode === 'register' && setShowPasswordHints(true)}
+                onBlur={() => setShowPasswordHints(false)}
                 className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/5 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" 
                 placeholder="••••••••"
                 required
               />
+              {/* Password strength hints for registration */}
+              {mode === 'register' && (showPasswordHints || password.length > 0) && (
+                <div className="mt-2 p-3 rounded-lg bg-white/5 border border-white/10 text-xs space-y-1">
+                  <p className="text-white/70 font-medium mb-2">Yêu cầu mật khẩu:</p>
+                  <p className={passwordValidation.checks.minLength ? 'text-green-400' : 'text-white/50'}>
+                    {passwordValidation.checks.minLength ? '✓' : '○'} Ít nhất 8 ký tự
+                  </p>
+                  <p className={passwordValidation.checks.hasUppercase ? 'text-green-400' : 'text-white/50'}>
+                    {passwordValidation.checks.hasUppercase ? '✓' : '○'} Có chữ in hoa (A-Z)
+                  </p>
+                  <p className={passwordValidation.checks.hasLowercase ? 'text-green-400' : 'text-white/50'}>
+                    {passwordValidation.checks.hasLowercase ? '✓' : '○'} Có chữ thường (a-z)
+                  </p>
+                  <p className={passwordValidation.checks.hasNumber ? 'text-green-400' : 'text-white/50'}>
+                    {passwordValidation.checks.hasNumber ? '✓' : '○'} Có số (0-9)
+                  </p>
+                  <p className={passwordValidation.checks.hasSpecial ? 'text-green-400' : 'text-white/50'}>
+                    {passwordValidation.checks.hasSpecial ? '✓' : '○'} Có ký tự đặc biệt (!@#$%...)
+                  </p>
+                </div>
+              )}
             </div>
             {mode === 'register' && (
               <div>

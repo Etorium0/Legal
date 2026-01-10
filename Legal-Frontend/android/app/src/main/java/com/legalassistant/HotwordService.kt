@@ -88,7 +88,11 @@ class HotwordService : LifecycleService() {
                 broadcast(json)
                 socket.send(FinalTranscript(text))
                 asr.stop()
-                startHotwordLoop() // Restart hotword
+                Log.d(TAG, "ASR done, restarting hotword loop after delay")
+                scope.launch {
+                    kotlinx.coroutines.delay(500) // Give time for mic to release
+                    startHotwordLoop() // Restart hotword
+                }
             }
         )
     }

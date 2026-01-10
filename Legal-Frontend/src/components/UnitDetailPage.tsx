@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import SimpleLayout from './SimpleLayout'
 import { authService } from '../services/authService'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, ArrowLeft } from 'lucide-react'
 
 type UnitDetail =
 {
@@ -23,6 +23,7 @@ const prettifyText = (txt: string): string =>
 const UnitDetailPage: React.FC = () =>
 {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<UnitDetail | null>(null)
@@ -79,6 +80,15 @@ const UnitDetailPage: React.FC = () =>
   return (
     <SimpleLayout>
       <div className="space-y-6">
+        {/* Back Button */}
+        <button 
+          onClick={() => navigate(-1)} 
+          className="flex items-center gap-2 text-indigo-400 hover:text-indigo-300 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Quay lại</span>
+        </button>
+
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-indigo-400" />

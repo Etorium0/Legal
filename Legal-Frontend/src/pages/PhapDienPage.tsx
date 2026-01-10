@@ -24,13 +24,13 @@ const PhapDienPage: React.FC = () =>
     return (
         <SimpleLayout>
             <div className="h-[calc(100vh-64px)] flex flex-col">
-                <div className="bg-gradient-to-r from-blue-900 to-indigo-900 p-6 text-white shadow-md flex items-center justify-between">
+                <div className="bg-gradient-to-r from-blue-900 to-indigo-900 p-4 text-white shadow-md flex items-center justify-between">
                     <div>
-                        <Title level={2} style={{ color: 'white', margin: 0 }}>
-                            Bộ Pháp Điển Việt Nam
+                        <Title level={3} style={{ color: 'white', margin: 0 }}>
+                            Duyệt Văn Bản Pháp Luật
                         </Title>
-                        <p className="mt-2 opacity-90">
-                            Tra cứu hệ thống pháp luật được sắp xếp theo chủ đề, đề mục, chương, điều.
+                        <p className="mt-1 opacity-90 text-sm">
+                            Xem văn bản theo loại: Luật, Nghị định, Thông tư...
                         </p>
                     </div>
                     {/* Mobile Menu Button */}

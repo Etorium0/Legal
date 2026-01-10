@@ -22,9 +22,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField "String", "WEB_APP_URL", "\"http://192.168.1.5:5173/\""
-    buildConfigField "String", "WEB_SOCKET_URL", "\"ws://192.168.1.5:8080/ws\""
-    buildConfigField "String", "BACKEND_URL", "\"http://192.168.1.5:8080\""
+        buildConfigField "String", "WEB_APP_URL", "\"https://legal-production-c091.up.railway.app/\""
+        buildConfigField "String", "WEB_SOCKET_URL", "\"wss://legal-production-c091.up.railway.app/ws\""
+        buildConfigField "String", "BACKEND_URL", "\"https://legal-production-c091.up.railway.app\""
     }
 
     buildTypes {

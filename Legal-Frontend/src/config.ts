@@ -1,9 +1,16 @@
 // Platform detection helper
 const getPlatform = (): string => {
     try {
-        // Check if running in Capacitor environment
-        if (typeof window !== 'undefined' && (window as any).Capacitor) {
-            return (window as any).Capacitor.getPlatform?.() || 'web';
+        // Check if running in Android WebView
+        if (typeof window !== 'undefined') {
+            const ua = navigator.userAgent || '';
+            if (ua.includes('Android') && ua.includes('wv')) {
+                return 'android';
+            }
+            // Check Capacitor
+            if ((window as any).Capacitor) {
+                return (window as any).Capacitor.getPlatform?.() || 'web';
+            }
         }
     } catch {
         // Fallback to web
@@ -11,30 +18,44 @@ const getPlatform = (): string => {
     return 'web';
 };
 
+// Railway production backend URL
+const PRODUCTION_BACKEND_URL = 'https://legal-production-c091.up.railway.app';
+
+// Check if URL is local development
+const isLocalUrl = (url: string): boolean => {
+    if (!url) return false;
+    return url.includes('localhost') || url.includes('127.0.0.1') || url.includes('192.168.') || url.includes('10.0.');
+};
+
 export const getBackendUrl = (): string => 
 {
+    // 1. First priority: Runtime override from Android native
     if (typeof window !== 'undefined' && (window as any).__BACKEND_URL__) 
     {
-        return (window as any).__BACKEND_URL__
+        const runtimeUrl = (window as any).__BACKEND_URL__;
+        console.log(`[Config] Using runtime URL: ${runtimeUrl}`);
+        return runtimeUrl;
     }
 
     const platform = getPlatform();
-    console.log(`[Config] Platform: ${platform}, Env URL: ${import.meta.env.VITE_BACKEND_URL}`);
+    const envUrl = import.meta.env.VITE_BACKEND_URL as string;
+    console.log(`[Config] Platform: ${platform}, Env URL: ${envUrl}`);
 
-    if (platform === 'android') 
+    // 2. On Android or if env URL is local, use production
+    if (platform === 'android' || isLocalUrl(envUrl)) 
     {
-        // Force Emulator IP for Android to avoid .env overriding it with LAN IP or localhost
-        // If you are on a real device, change this to your computer's LAN IP (e.g., http://192.168.1.x:8080)
-        // return 'http://10.0.2.2:8080';
-        return 'http://192.168.1.5:8080';
+        console.log(`[Config] Using production URL: ${PRODUCTION_BACKEND_URL}`);
+        return PRODUCTION_BACKEND_URL;
     }
 
-    if (import.meta.env.VITE_BACKEND_URL) 
+    // 3. Use env URL if available and not local
+    if (envUrl) 
     {
-        return import.meta.env.VITE_BACKEND_URL;
+        return envUrl;
     }
 
-    return ''; // Web fallback (will use relative path)
+    // 4. Default to production
+    return PRODUCTION_BACKEND_URL;
 }
 
 export const API_BASE_URL = getBackendUrl() ? `${getBackendUrl()}/api/v1` : '/api/v1';
