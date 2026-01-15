@@ -9,16 +9,17 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 
-	"example.com/legallaw/internal/graph"
+	"example.com/legallaw/internal/model"
+	"example.com/legallaw/internal/repository"
 )
 
 // HTTP exposes document/unit endpoints for law metadata service.
 type HTTP struct {
-	repo *graph.Repository
+	repo *repository.Repository
 }
 
 // NewHTTP builds the law HTTP handler.
-func NewHTTP(repo *graph.Repository) *HTTP {
+func NewHTTP(repo *repository.Repository) *HTTP {
 	return &HTTP{repo: repo}
 }
 
@@ -41,7 +42,7 @@ func (h *HTTP) handleSearchDocuments(w http.ResponseWriter, r *http.Request) {
 	search := strings.TrimSpace(q.Get("search"))
 	limit := parseIntDefault(q.Get("limit"), 50)
 	offset := parseIntDefault(q.Get("offset"), 0)
-	filter := graph.DocumentFilter{
+	filter := model.DocumentFilter{
 		Types:     q["type"],
 		Status:    q.Get("status"),
 		Authority: q.Get("authority"),
@@ -65,7 +66,7 @@ func (h *HTTP) handleSearchDocuments(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *HTTP) handleCreateDocument(w http.ResponseWriter, r *http.Request) {
-	var req graph.Document
+	var req model.Document
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid JSON", http.StatusBadRequest)
 		return
@@ -109,7 +110,7 @@ func (h *HTTP) handleUpdateDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req graph.Document
+	var req model.Document
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid JSON", http.StatusBadRequest)
 		return

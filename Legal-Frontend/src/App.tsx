@@ -1,6 +1,5 @@
 import React from 'react'
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
-import LandingPage from './components/LandingPage'
 import DocumentBrowserPage from './components/DocumentBrowserPage'
 import KnowledgeGraphPage from './components/KnowledgeGraphPage'
 import SettingsPage from './components/SettingsPage'
@@ -15,6 +14,7 @@ import PhapDienPage from './pages/PhapDienPage'
 import VBPLPage from './pages/VBPLPage'
 import VBPLDetailPage from './pages/VBPLDetailPage'
 import UsersPage from './pages/UsersPage'
+import MapPage from './pages/MapPage'
 import ForgotPasswordPage from './components/ForgotPasswordPage'
 import ErrorBoundary from './components/ErrorBoundary'
 import AppLayout from './components/AppLayout'
@@ -29,7 +29,6 @@ const App: React.FC = () =>
             <Route element={<AppLayout />}>
               <Route path="/" element={<Navigate to="/assistant" replace />} />
               <Route path="/assistant" element={<ProtectedRoute><AssistantPageEnhanced /></ProtectedRoute>} />
-              <Route path="/home" element={<LandingPage />} />
               <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
               <Route path="/phapdien" element={<ProtectedRoute><PhapDienPage /></ProtectedRoute>} />
               <Route path="/vbpl" element={<ProtectedRoute><VBPLPage /></ProtectedRoute>} />
@@ -38,6 +37,7 @@ const App: React.FC = () =>
               <Route path="/graph" element={<ProtectedRoute><KnowledgeGraphPage /></ProtectedRoute>} />
               <Route path="/ingest" element={<ProtectedRoute><IngestPage /></ProtectedRoute>} />
               <Route path="/unit/:id" element={<ProtectedRoute><UnitDetailPage /></ProtectedRoute>} />
+              <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
               <Route path="/users" element={<ProtectedRoute requiredRole="admin"><UsersPage /></ProtectedRoute>} />
             </Route>

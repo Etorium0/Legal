@@ -8,13 +8,14 @@ import (
 
 // User represents an application user for authentication
 type User struct {
-	ID           uuid.UUID `json:"id" db:"id"`
-	Email        string    `json:"email" db:"email"`
-	Name         string    `json:"name" db:"name"`
-	PasswordHash string    `json:"-" db:"password_hash"`
-	Role         string    `json:"role" db:"role"`
-	CreatedAt    time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
+	ID            uuid.UUID `json:"id" db:"id"`
+	Email         string    `json:"email" db:"email"`
+	Name          string    `json:"name" db:"name"`
+	PasswordHash  string    `json:"-" db:"password_hash"`
+	Role          string    `json:"role" db:"role"`
+	EmailVerified bool      `json:"email_verified" db:"email_verified"`
+	CreatedAt     time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at" db:"updated_at"`
 }
 
 // LoginRequest represents login payload
@@ -49,4 +50,38 @@ type RefreshToken struct {
 	ExpiresAt time.Time `json:"expires_at" db:"expires_at"`
 	Revoked   bool      `json:"revoked" db:"revoked"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
+}
+
+// PasswordResetToken tracks password reset tokens
+type PasswordResetToken struct {
+	UserID    uuid.UUID `json:"user_id" db:"user_id"`
+	Token     string    `json:"token" db:"token"`
+	ExpiresAt time.Time `json:"expires_at" db:"expires_at"`
+	Used      bool      `json:"used" db:"used"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+}
+
+// EmailVerificationToken tracks email verification tokens
+type EmailVerificationToken struct {
+	UserID    uuid.UUID `json:"user_id" db:"user_id"`
+	Token     string    `json:"token" db:"token"`
+	ExpiresAt time.Time `json:"expires_at" db:"expires_at"`
+	Used      bool      `json:"used" db:"used"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+}
+
+// ForgotPasswordRequest represents forgot password request
+type ForgotPasswordRequest struct {
+	Email string `json:"email"`
+}
+
+// ResetPasswordRequest represents reset password request
+type ResetPasswordRequest struct {
+	Token       string `json:"token"`
+	NewPassword string `json:"new_password"`
+}
+
+// VerifyEmailRequest represents email verification request
+type VerifyEmailRequest struct {
+	Token string `json:"token"`
 }

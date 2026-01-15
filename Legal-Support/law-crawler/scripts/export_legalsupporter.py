@@ -100,7 +100,8 @@ def ingest_demuc(demuc: PDDeMuc, chude_title: str | None):
         print(f"[skip] DeMuc {demuc.id} - {demuc.ten}: no units")
         return
 
-    number = str(demuc.stt) if demuc.stt is not None else None
+    # number = str(demuc.stt) if demuc.stt is not None else None
+    number = None # Avoid matching unrelated documents by simple integer STT
     authority = chude_title if chude_title else None
 
     payload = {

@@ -28,6 +28,12 @@ type Service interface {
 	ListUsers(ctx context.Context) ([]User, error)
 	UpdateUser(ctx context.Context, user User) error
 	DeleteUser(ctx context.Context, id uuid.UUID) error
+	// Password reset
+	ForgotPassword(ctx context.Context, email, frontendURL string) error
+	ResetPassword(ctx context.Context, token, newPassword string) error
+	// Email verification
+	SendVerificationEmail(ctx context.Context, userID uuid.UUID, frontendURL string) error
+	VerifyEmail(ctx context.Context, token string) error
 }
 
 // Repository defines persistence for users and refresh tokens
@@ -42,23 +48,41 @@ type Repository interface {
 	GetRefreshToken(ctx context.Context, token string) (*RefreshToken, error)
 	RevokeRefreshToken(ctx context.Context, token string) error
 	RevokeAllUserTokens(ctx context.Context, userID uuid.UUID) error
+	// Password reset
+	CreatePasswordResetToken(ctx context.Context, userID uuid.UUID, token string, expiresAt time.Time) error
+	GetPasswordResetToken(ctx context.Context, token string) (*PasswordResetToken, error)
+	MarkPasswordResetTokenUsed(ctx context.Context, token string) error
+	UpdateUserPassword(ctx context.Context, userID uuid.UUID, passwordHash string) error
+	// Email verification
+	CreateEmailVerificationToken(ctx context.Context, userID uuid.UUID, token string, expiresAt time.Time) error
+	GetEmailVerificationToken(ctx context.Context, token string) (*EmailVerificationToken, error)
+	MarkEmailVerified(ctx context.Context, userID uuid.UUID) error
+	MarkEmailVerificationTokenUsed(ctx context.Context, token string) error
+}
+
+// EmailSender defines the interface for sending emails
+type EmailSender interface {
+	SendPasswordResetEmail(to, resetToken, resetURL string) error
+	SendVerificationEmail(to, verificationToken, verificationURL string) error
 }
 
 // service is repository-backed auth service
 type service struct {
-	repo       Repository
-	jwtSecret  []byte
-	accessTTL  time.Duration
-	refreshTTL time.Duration
+	repo         Repository
+	jwtSecret    []byte
+	accessTTL    time.Duration
+	refreshTTL   time.Duration
+	emailService EmailSender
 }
 
 // NewService constructs a new auth service
-func NewService(repo Repository, jwtSecret string) Service {
+func NewService(repo Repository, jwtSecret string, emailService EmailSender) Service {
 	return &service{
-		repo:       repo,
-		jwtSecret:  []byte(jwtSecret),
-		accessTTL:  15 * time.Minute,
-		refreshTTL: 24 * time.Hour,
+		repo:         repo,
+		jwtSecret:    []byte(jwtSecret),
+		accessTTL:    15 * time.Minute,
+		refreshTTL:   24 * time.Hour,
+		emailService: emailService,
 	}
 }
 
@@ -240,4 +264,130 @@ func (s *service) UpdateUser(ctx context.Context, user User) error {
 
 func (s *service) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	return s.repo.DeleteUser(ctx, id)
+}
+
+// ForgotPassword creates a password reset token and sends email
+func (s *service) ForgotPassword(ctx context.Context, email, frontendURL string) error {
+	// Find user by email
+	user, err := s.repo.GetUserByEmail(ctx, email)
+	if err != nil {
+		// Don't reveal if user exists or not for security
+		return nil
+	}
+
+	// Generate reset token
+	resetToken := uuid.NewString()
+	expiresAt := time.Now().Add(1 * time.Hour) // 1 hour expiry
+
+	// Store token in database
+	if err := s.repo.CreatePasswordResetToken(ctx, user.ID, resetToken, expiresAt); err != nil {
+		return err
+	}
+
+	// Send email if email service is configured
+	if s.emailService != nil {
+		resetURL := frontendURL + "/reset-password?token=" + resetToken
+		return s.emailService.SendPasswordResetEmail(user.Email, resetToken, resetURL)
+	}
+
+	return nil
+}
+
+// ResetPassword validates token and updates password
+func (s *service) ResetPassword(ctx context.Context, token, newPassword string) error {
+	// Validate new password
+	if strings.TrimSpace(newPassword) == "" || len(newPassword) < 6 {
+		return errors.New("password must be at least 6 characters")
+	}
+
+	// Get reset token from database
+	resetToken, err := s.repo.GetPasswordResetToken(ctx, token)
+	if err != nil {
+		return errors.New("invalid or expired reset token")
+	}
+
+	// Check if token is already used
+	if resetToken.Used {
+		return errors.New("reset token already used")
+	}
+
+	// Check if token is expired
+	if resetToken.ExpiresAt.Before(time.Now()) {
+		return errors.New("reset token expired")
+	}
+
+	// Hash new password
+	hash, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	// Update password
+	if err := s.repo.UpdateUserPassword(ctx, resetToken.UserID, string(hash)); err != nil {
+		return err
+	}
+
+	// Mark token as used
+	if err := s.repo.MarkPasswordResetTokenUsed(ctx, token); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SendVerificationEmail sends email verification to user
+func (s *service) SendVerificationEmail(ctx context.Context, userID uuid.UUID, frontendURL string) error {
+	// Get user
+	user, err := s.repo.GetUserByID(ctx, userID)
+	if err != nil {
+		return errors.New("user not found")
+	}
+
+	// Generate verification token
+	verificationToken := uuid.NewString()
+	expiresAt := time.Now().Add(24 * time.Hour) // 24 hour expiry
+
+	// Store token in database
+	if err := s.repo.CreateEmailVerificationToken(ctx, userID, verificationToken, expiresAt); err != nil {
+		return err
+	}
+
+	// Send email if email service is configured
+	if s.emailService != nil {
+		verificationURL := frontendURL + "/verify-email?token=" + verificationToken
+		return s.emailService.SendVerificationEmail(user.Email, verificationToken, verificationURL)
+	}
+
+	return nil
+}
+
+// VerifyEmail validates token and marks email as verified
+func (s *service) VerifyEmail(ctx context.Context, token string) error {
+	// Get verification token from database
+	verificationToken, err := s.repo.GetEmailVerificationToken(ctx, token)
+	if err != nil {
+		return errors.New("invalid or expired verification token")
+	}
+
+	// Check if token is already used
+	if verificationToken.Used {
+		return errors.New("verification token already used")
+	}
+
+	// Check if token is expired
+	if verificationToken.ExpiresAt.Before(time.Now()) {
+		return errors.New("verification token expired")
+	}
+
+	// Mark email as verified
+	if err := s.repo.MarkEmailVerified(ctx, verificationToken.UserID); err != nil {
+		return err
+	}
+
+	// Mark token as used
+	if err := s.repo.MarkEmailVerificationTokenUsed(ctx, token); err != nil {
+		return err
+	}
+
+	return nil
 }

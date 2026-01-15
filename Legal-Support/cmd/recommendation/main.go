@@ -17,7 +17,8 @@ import (
 
 	"example.com/legallaw/internal/config"
 	"example.com/legallaw/internal/db"
-	"example.com/legallaw/internal/graph"
+	"example.com/legallaw/internal/model"
+	"example.com/legallaw/internal/repository"
 )
 
 func main() {
@@ -30,7 +31,7 @@ func main() {
 	}
 	defer pool.Close()
 
-	repo := graph.NewRepository(pool)
+	repo := repository.NewRepository(pool)
 	handler := &recommendHandler{repo: repo}
 
 	r := chi.NewRouter()
@@ -63,7 +64,7 @@ func main() {
 
 // recommendHandler handles keyword recommend/search endpoints.
 type recommendHandler struct {
-	repo *graph.Repository
+	repo *repository.Repository
 }
 
 func (h *recommendHandler) handleRecommend(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +76,7 @@ func (h *recommendHandler) handleRecommend(w http.ResponseWriter, r *http.Reques
 
 	limit := parseIntDefault(r.URL.Query().Get("limit"), 10)
 	offset := parseIntDefault(r.URL.Query().Get("offset"), 0)
-	filter := graph.UnitSearchFilter{
+	filter := model.UnitSearchFilter{
 		Keyword:  keyword,
 		DocTypes: r.URL.Query()["doc_type"],
 		Levels:   r.URL.Query()["level"],

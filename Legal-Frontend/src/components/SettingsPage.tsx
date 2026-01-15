@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import SimpleLayout from './SimpleLayout'
 import { useAuth } from './AuthContext'
 
-const SettingsPage: React.FC = () => {
+const SettingsPage: React.FC = () => 
+{
   const navigate = useNavigate()
   const { tokens, user, logout } = useAuth()
   const [theme, setTheme] = useState('dark')
@@ -48,7 +49,8 @@ const SettingsPage: React.FC = () => {
                     </button>
                   )}
                   <button
-                    onClick={() => {
+                    onClick={() => 
+{
                       logout()
                       navigate('/login')
                     }}

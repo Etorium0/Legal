@@ -6,6 +6,12 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"example.com/legallaw/internal/ai/chat"
+	"example.com/legallaw/internal/ai/llm"
+	"example.com/legallaw/internal/ai/prompt"
+	"example.com/legallaw/internal/ai/search"
+	"example.com/legallaw/internal/ai/tools"
 )
 
 // EnhancedQAConfig configuration for enhanced QA provider
@@ -26,22 +32,22 @@ type EnhancedQAConfig struct {
 
 // EnhancedQAProvider is an advanced QA provider with all features
 type EnhancedQAProvider struct {
-	baseProvider    QAProvider
-	promptManager   *PromptManager
-	chatHistory     *ChatHistoryManager
-	webSearch       *WebSearchClient
-	reranker        *MultiStrategyReranker
-	streamingClient *StreamingLLMClient
+	baseProvider    llm.QAProvider
+	promptManager   *prompt.PromptManager
+	chatHistory     *chat.ChatHistoryManager
+	webSearch       *tools.WebSearchClient
+	reranker        *search.HybridReranker
+	streamingClient *llm.StreamingLLMClient
 	config          EnhancedQAConfig
 }
 
 // NewEnhancedQAProvider creates a new enhanced QA provider
 func NewEnhancedQAProvider(config EnhancedQAConfig) *EnhancedQAProvider {
-	var baseProvider QAProvider
+	var baseProvider llm.QAProvider
 	if config.OpenAIKey != "" {
-		baseProvider = NewOpenAIQAProvider(config.OpenAIKey, config.Model)
+		baseProvider = llm.NewOpenAIQAProvider(config.OpenAIKey, config.Model)
 	} else if config.GeminiKey != "" {
-		baseProvider = NewGeminiQAProvider(config.GeminiKey, config.Model)
+		baseProvider = llm.NewGeminiQAProvider(config.GeminiKey, config.Model)
 	}
 
 	// Set defaults
@@ -54,23 +60,21 @@ func NewEnhancedQAProvider(config EnhancedQAConfig) *EnhancedQAProvider {
 
 	provider := &EnhancedQAProvider{
 		baseProvider:  baseProvider,
-		promptManager: GetPromptManager(),
-		chatHistory:   NewChatHistoryManager(config.MaxChatHistory, config.ChatHistoryTTL),
+		promptManager: prompt.GetPromptManager(),
+		chatHistory:   chat.NewChatHistoryManager(config.MaxChatHistory, config.ChatHistoryTTL),
 		config:        config,
 	}
 
 	// Initialize web search if configured
 	if config.GoogleSearchAPIKey != "" {
-		provider.webSearch = NewWebSearchClient(config.GoogleSearchAPIKey, config.GoogleSearchEngineID)
+		provider.webSearch = tools.NewWebSearchClient(config.GoogleSearchAPIKey, config.GoogleSearchEngineID)
 	}
 
 	// Initialize reranker
-	provider.reranker = NewMultiStrategyReranker(MultiStrategyRerankerConfig{
-		CohereAPIKey:          config.CohereAPIKey,
-		LocalRerankerEndpoint: config.LocalRerankerEndpoint,
-		CrossEncoderEndpoint:  config.CrossEncoderEndpoint,
-		DefaultStrategy:       RerankerTypeCohere,
-	})
+	// Using HybridReranker which supports RRF and Cohere
+	// Note: LocalRerankerEndpoint and CrossEncoderEndpoint are not currently used in HybridReranker
+	// but could be added later. For now we use Cohere if key is present.
+	provider.reranker = search.NewHybridReranker(config.CohereAPIKey, "rerank-v3.5", true)
 
 	// Initialize streaming client if using OpenAI
 	if config.EnableStreaming && config.OpenAIKey != "" {
@@ -78,7 +82,7 @@ func NewEnhancedQAProvider(config EnhancedQAConfig) *EnhancedQAProvider {
 		if model == "" {
 			model = "gpt-4o-mini"
 		}
-		provider.streamingClient = NewStreamingLLMClient(config.OpenAIKey, model)
+		provider.streamingClient = llm.NewStreamingLLMClient(config.OpenAIKey, model)
 	}
 
 	return provider
@@ -165,6 +169,7 @@ func (p *EnhancedQAProvider) AnswerWithFallback(ctx context.Context, sessionID, 
 Dựa trên thông tin tìm được từ Internet, hãy trả lời câu hỏi. 
 Lưu ý: Thông tin từ Internet có thể không chính xác 100%%, hãy khuyến khích người dùng kiểm tra với nguồn chính thức.`, question, webContext)
 
+			// We use baseProvider directly here as we crafted a specific prompt
 			answer, err := p.baseProvider.Answer(ctx, userPrompt, systemPrompt)
 			if err == nil {
 				// Add disclaimer
@@ -183,14 +188,14 @@ Lưu ý: Thông tin từ Internet có thể không chính xác 100%%, hãy khuy�
 // ============================================================================
 
 // AnswerStream generates an answer with streaming response
-func (p *EnhancedQAProvider) AnswerStream(ctx context.Context, sessionID, question, contextStr string, writer StreamWriter) error {
+func (p *EnhancedQAProvider) AnswerStream(ctx context.Context, sessionID, question, contextStr string, writer llm.StreamWriter) error {
 	if p.streamingClient == nil {
 		// Fallback to non-streaming
 		answer, err := p.AnswerWithSession(ctx, sessionID, question, contextStr)
 		if err != nil {
 			return err
 		}
-		return writer.Write(StreamChunk{Content: answer, Done: true})
+		return writer.Write(llm.StreamChunk{Content: answer, Done: true})
 	}
 
 	var systemPrompt, userPrompt string
@@ -243,14 +248,14 @@ func (p *EnhancedQAProvider) AnswerStream(ctx context.Context, sessionID, questi
 }
 
 // AnswerStreamToChannel returns a channel for streaming responses
-func (p *EnhancedQAProvider) AnswerStreamToChannel(ctx context.Context, sessionID, question, contextStr string) (<-chan StreamChunk, error) {
-	ch := make(chan StreamChunk, 100)
-	writer := NewChannelStreamWriter(ch)
+func (p *EnhancedQAProvider) AnswerStreamToChannel(ctx context.Context, sessionID, question, contextStr string) (<-chan llm.StreamChunk, error) {
+	ch := make(chan llm.StreamChunk, 100)
+	writer := llm.NewChannelStreamWriter(ch)
 
 	go func() {
 		defer close(ch)
 		if err := p.AnswerStream(ctx, sessionID, question, contextStr, writer); err != nil {
-			ch <- StreamChunk{Error: err.Error(), Done: true}
+			ch <- llm.StreamChunk{Error: err.Error(), Done: true}
 		}
 	}()
 
@@ -274,7 +279,7 @@ func (p *EnhancedQAProvider) RewriteQuery(ctx context.Context, query string) ([]
 // ============================================================================
 
 // GetChatHistory returns chat history for a session
-func (p *EnhancedQAProvider) GetChatHistory(sessionID string, limit int) []ChatMessage {
+func (p *EnhancedQAProvider) GetChatHistory(sessionID string, limit int) []chat.ChatMessage {
 	return p.chatHistory.GetHistory(sessionID, limit)
 }
 
@@ -297,7 +302,27 @@ func (p *EnhancedQAProvider) Rerank(ctx context.Context, query string, documents
 		}
 		return indices, nil, nil
 	}
-	return p.reranker.RerankWithFallback(ctx, query, documents, topK)
+
+	// HybridReranker returns RerankResult directly
+	results, err := p.reranker.Rerank(ctx, query, documents)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	indices := make([]int, len(results))
+	scores := make([]float64, len(results))
+	for i, res := range results {
+		indices[i] = res.Index
+		scores[i] = res.RelevanceScore
+	}
+
+	// Apply topK if needed
+	if topK > 0 && topK < len(indices) {
+		indices = indices[:topK]
+		scores = scores[:topK]
+	}
+
+	return indices, scores, nil
 }
 
 // ============================================================================

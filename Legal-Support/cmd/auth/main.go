@@ -16,6 +16,7 @@ import (
 	"example.com/legallaw/internal/auth"
 	"example.com/legallaw/internal/config"
 	"example.com/legallaw/internal/db"
+	"example.com/legallaw/internal/email"
 )
 
 func main() {
@@ -29,7 +30,12 @@ func main() {
 	defer pool.Close()
 
 	repo := auth.NewRepository(pool)
-	service := auth.NewService(repo, cfg.JWTSecret)
+
+	// Initialize email service
+	emailService := email.NewEmailService()
+
+	// Create auth service with email service
+	service := auth.NewService(repo, cfg.JWTSecret, emailService)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer)

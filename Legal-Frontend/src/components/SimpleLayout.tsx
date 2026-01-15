@@ -7,7 +7,6 @@ const SimpleLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   
   const navItems = [
     { path: '/assistant', label: 'Trợ lý AI', icon: '🤖' },
-    { path: '/home', label: 'Trang chủ', icon: '🏠' },
     { path: '/dashboard', label: 'Dashboard', icon: '📊' },
     { path: '/documents', label: 'Tài liệu', icon: '📄' },
     { path: '/graph', label: 'Biểu đồ', icon: '🔗' },

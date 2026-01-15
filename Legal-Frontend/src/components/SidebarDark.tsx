@@ -10,6 +10,7 @@ const defaultItems: Item[] = [
   { key: 'home', label: 'Trang chủ', icon: <span>🏠</span>, path: '/home' },
   { key: 'dashboard', label: 'Dashboard', icon: <span>📊</span>, path: '/dashboard' },
   { key: 'documents', label: 'Tài liệu', icon: <span>📄</span>, path: '/documents' },
+  { key: 'map', label: 'Bản đồ', icon: <span>🗺️</span>, path: '/map' },
   { key: 'graph', label: 'Biểu đồ tri thức', icon: <span>🔗</span>, path: '/graph' },
   { key: 'settings', label: 'Cài đặt', icon: <span>⚙️</span>, path: '/settings' },
 ]

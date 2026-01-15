@@ -14,7 +14,8 @@ import (
 
 	"example.com/legallaw/internal/config"
 	"example.com/legallaw/internal/db"
-	"example.com/legallaw/internal/graph"
+	"example.com/legallaw/internal/model"
+	"example.com/legallaw/internal/repository"
 )
 
 // LegalTriple represents an extracted triple
@@ -109,13 +110,27 @@ func main() {
 
 	ctx := context.Background()
 
+	// Initialize repository
 	pool, err := db.Connect(ctx, cfg.DatabaseURL)
 	if err != nil {
-		log.Fatalf("db connect: %v", err)
+		log.Fatalf("Failed to create connection pool: %v", err)
 	}
-	defer pool.Close()
+	repo := repository.NewRepository(pool)
 
-	repo := graph.NewRepository(pool)
+	// Fetch concepts and relations for extraction
+	log.Println("Fetching ontology...")
+	concepts, err := repo.GetAllConcepts(ctx)
+	if err != nil {
+		log.Fatalf("GetAllConcepts: %v", err)
+	}
+	conceptMap := make(map[string]*model.Concept)
+	for _, c := range concepts {
+		// Index by name and synonyms
+		conceptMap[strings.ToLower(c.Name)] = &c
+		for _, syn := range c.Synonyms {
+			conceptMap[strings.ToLower(syn)] = &c
+		}
+	}
 
 	// Get document IDs for criminal law
 	docIDs := os.Getenv("DOCUMENT_IDS")
@@ -124,31 +139,14 @@ func main() {
 		docIDs = "f784adb8-b34d-41af-9056-255293a38a9d,0693ff97-7174-46b4-aafd-906fd4c0e706,761aa168-fd60-4669-9d68-89723dd00fe9"
 	}
 
-	// First, create/upsert all criminal concepts
-	log.Println("Creating criminal law concepts...")
-	conceptMap := make(map[string]*graph.Concept)
-	for _, conceptName := range criminalConcepts {
-		concept, err := repo.UpsertConcept(ctx, conceptName, nil, "criminal")
-		if err != nil {
-			log.Printf("Error creating concept %s: %v", conceptName, err)
-			continue
-		}
-		conceptMap[strings.ToLower(conceptName)] = concept
+	relations, err := repo.GetAllRelations(ctx)
+	if err != nil {
+		log.Fatalf("GetAllRelations: %v", err)
 	}
-	log.Printf("Created %d criminal concepts", len(conceptMap))
-
-	// Create relations
-	log.Println("Creating legal relations...")
-	relationMap := make(map[string]*graph.Relation)
-	for relName, keywords := range legalRelations {
-		relation, err := repo.UpsertRelation(ctx, relName, keywords, "legal")
-		if err != nil {
-			log.Printf("Error creating relation %s: %v", relName, err)
-			continue
-		}
-		relationMap[relName] = relation
+	relationMap := make(map[string]*model.Relation)
+	for _, r := range relations {
+		relationMap[r.Name] = &r
 	}
-	log.Printf("Created %d relations", len(relationMap))
 
 	// Process each document
 	for _, docIDStr := range strings.Split(docIDs, ",") {
@@ -166,7 +164,7 @@ func main() {
 	log.Println("Triple extraction completed!")
 }
 
-func processDocument(ctx context.Context, repo *graph.Repository, docID uuid.UUID, conceptMap map[string]*graph.Concept, relationMap map[string]*graph.Relation) {
+func processDocument(ctx context.Context, repo *repository.Repository, docID uuid.UUID, conceptMap map[string]*model.Concept, relationMap map[string]*model.Relation) {
 	// Get all units for this document
 	units, total, err := repo.GetUnitsByDocument(ctx, docID, 10000, 0)
 	if err != nil {
@@ -198,7 +196,7 @@ func processDocument(ctx context.Context, repo *graph.Repository, docID uuid.UUI
 			}
 
 			tripleContext := triple.Context
-			err := repo.InsertTriple(ctx, &graph.Triple{
+			err := repo.InsertTriple(ctx, &model.Triple{
 				SubjectID:     triple.Subject.ID,
 				RelationID:    triple.Relation.ID,
 				ObjectID:      triple.Object.ID,
@@ -221,20 +219,20 @@ func processDocument(ctx context.Context, repo *graph.Repository, docID uuid.UUI
 }
 
 type ExtractedTriple struct {
-	Subject    *graph.Concept
-	Relation   *graph.Relation
-	Object     *graph.Concept
+	Subject    *model.Concept
+	Relation   *model.Relation
+	Object     *model.Concept
 	Confidence float32
 	TfIdf      float32
 	Context    string
 }
 
-func extractTriplesFromText(text string, conceptMap map[string]*graph.Concept, relationMap map[string]*graph.Relation) []ExtractedTriple {
+func extractTriplesFromText(text string, conceptMap map[string]*model.Concept, relationMap map[string]*model.Relation) []ExtractedTriple {
 	var triples []ExtractedTriple
 	textLower := strings.ToLower(text)
 
 	// Find all concepts in text
-	var foundConcepts []*graph.Concept
+	var foundConcepts []*model.Concept
 	for name, concept := range conceptMap {
 		if strings.Contains(textLower, name) {
 			foundConcepts = append(foundConcepts, concept)
@@ -246,7 +244,7 @@ func extractTriplesFromText(text string, conceptMap map[string]*graph.Concept, r
 	}
 
 	// Find relations in text
-	var foundRelations []*graph.Relation
+	var foundRelations []*model.Relation
 	for relName, relation := range relationMap {
 		keywords := legalRelations[relName]
 		for _, kw := range keywords {
@@ -269,7 +267,7 @@ func extractTriplesFromText(text string, conceptMap map[string]*graph.Concept, r
 		sentLower := strings.ToLower(sentence)
 
 		// Find concepts in this sentence
-		var sentConcepts []*graph.Concept
+		var sentConcepts []*model.Concept
 		for name, concept := range conceptMap {
 			if strings.Contains(sentLower, name) {
 				sentConcepts = append(sentConcepts, concept)
@@ -281,7 +279,7 @@ func extractTriplesFromText(text string, conceptMap map[string]*graph.Concept, r
 		}
 
 		// Find relations in this sentence
-		var sentRelations []*graph.Relation
+		var sentRelations []*model.Relation
 		for relName, relation := range relationMap {
 			keywords := legalRelations[relName]
 			for _, kw := range keywords {

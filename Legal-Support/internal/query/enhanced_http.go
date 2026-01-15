@@ -8,39 +8,24 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"example.com/legallaw/internal/ai/llm"
 	"example.com/legallaw/internal/config"
-	"example.com/legallaw/internal/graph"
+	"example.com/legallaw/internal/service/chat"
 )
 
 // EnhancedHTTP provides enhanced query endpoints with streaming and chat history
 type EnhancedHTTP struct {
 	*HTTP
-	enhancedQA *graph.EnhancedQAProvider
-	cfg        config.Config
+	chatService *chat.Service
+	cfg         config.Config
 }
 
 // NewEnhancedHTTP creates enhanced HTTP handler
-func NewEnhancedHTTP(base *HTTP, cfg config.Config) *EnhancedHTTP {
-	// Create enhanced QA provider
-	enhancedQA := graph.NewEnhancedQAProvider(graph.EnhancedQAConfig{
-		OpenAIKey:               cfg.EmbeddingAPIKey,
-		GeminiKey:               "", // Add from config if needed
-		Model:                   cfg.QAModel,
-		CohereAPIKey:            cfg.RerankAPIKeys,
-		GoogleSearchAPIKey:      cfg.GoogleSearchAPIKey,
-		GoogleSearchEngineID:    cfg.GoogleSearchEngineID,
-		LocalRerankerEndpoint:   cfg.LocalRerankerEndpoint,
-		CrossEncoderEndpoint:    cfg.CrossEncoderEndpoint,
-		MaxChatHistory:          cfg.MaxChatHistory,
-		ChatHistoryTTL:          cfg.GetChatHistoryTTL(),
-		EnableWebSearchFallback: cfg.EnableWebSearchFallback,
-		EnableStreaming:         cfg.EnableStreaming,
-	})
-
+func NewEnhancedHTTP(base *HTTP, chatService *chat.Service, cfg config.Config) *EnhancedHTTP {
 	return &EnhancedHTTP{
-		HTTP:       base,
-		enhancedQA: enhancedQA,
-		cfg:        cfg,
+		HTTP:        base,
+		chatService: chatService,
+		cfg:         cfg,
 	}
 }
 
@@ -100,67 +85,9 @@ func (h *EnhancedHTTP) handleChat(w http.ResponseWriter, r *http.Request) {
 		sessionID = generateSessionID()
 	}
 
-	ctx := r.Context()
-
-	// Classify query first
-	queryType, _ := h.enhancedQA.ClassifyQuery(ctx, req.Question)
-
-	// Handle different query types
-	switch queryType {
-	case 0: // Greeting
-		json.NewEncoder(w).Encode(ChatResponse{
-			Answer:    h.enhancedQA.GetGreetingResponse(),
-			Source:    "greeting",
-			SessionID: sessionID,
-		})
-		return
-
-	case 2: // Invalid
-		json.NewEncoder(w).Encode(ChatResponse{
-			Answer:    h.enhancedQA.GetInvalidResponse(),
-			Source:    "invalid",
-			SessionID: sessionID,
-		})
-		return
-	}
-
-	// Legal query - get context from database
-	topK := req.TopK
-	if topK <= 0 {
-		topK = 10
-	}
-
-	// Get embedding and search
-	contextStr := ""
-	var contextItems []map[string]interface{}
-
-	if h.embedder != nil {
-		emb, err := h.embedder.Embed(ctx, req.Question)
-		if err == nil {
-			filter := graph.UnitSearchFilter{Limit: topK}
-			results, _, _ := h.repo.SearchUnitsByEmbedding(ctx, emb, filter)
-
-			for _, u := range results {
-				snippet := u.Text
-				if len(snippet) > 800 {
-					snippet = snippet[:800] + "..."
-				}
-				contextStr += snippet + "\n\n"
-				contextItems = append(contextItems, map[string]interface{}{
-					"unit_id":        u.ID,
-					"document_title": u.DocumentTitle,
-					"code":           u.Code,
-					"level":          u.Level,
-					"snippet":        snippet[:min(200, len(snippet))],
-				})
-			}
-		}
-	}
-
-	// Generate answer with fallback
-	answer, source, err := h.enhancedQA.AnswerWithFallback(ctx, sessionID, req.Question, contextStr)
+	answer, source, contextItems, err := h.chatService.ProcessChat(r.Context(), sessionID, req.Question, req.TopK)
 	if err != nil {
-		http.Error(w, "Failed to generate answer: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to process chat: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -194,40 +121,21 @@ func (h *EnhancedHTTP) handleChatStream(w http.ResponseWriter, r *http.Request) 
 	ctx := r.Context()
 
 	// Create stream writer
-	streamWriter, err := graph.NewHTTPStreamWriter(w)
+	streamWriter, err := llm.NewHTTPStreamWriter(w)
 	if err != nil {
 		http.Error(w, "Streaming not supported", http.StatusInternalServerError)
 		return
 	}
 
 	// Send session ID first
-	streamWriter.Write(graph.StreamChunk{Content: "SESSION:" + sessionID + "\n"})
+	streamWriter.Write(llm.StreamChunk{Content: "SESSION:" + sessionID + "\n"})
 
 	// Get context
-	topK := req.TopK
-	if topK <= 0 {
-		topK = 10
-	}
-
-	contextStr := ""
-	if h.embedder != nil {
-		emb, err := h.embedder.Embed(ctx, req.Question)
-		if err == nil {
-			filter := graph.UnitSearchFilter{Limit: topK}
-			results, _, _ := h.repo.SearchUnitsByEmbedding(ctx, emb, filter)
-			for _, u := range results {
-				snippet := u.Text
-				if len(snippet) > 800 {
-					snippet = snippet[:800] + "..."
-				}
-				contextStr += snippet + "\n\n"
-			}
-		}
-	}
+	contextStr, _, _ := h.chatService.RetrieveContext(ctx, req.Question, req.TopK)
 
 	// Stream the answer
-	if err := h.enhancedQA.AnswerStream(ctx, sessionID, req.Question, contextStr, streamWriter); err != nil {
-		streamWriter.Write(graph.StreamChunk{Error: err.Error(), Done: true})
+	if err := h.chatService.AnswerStream(ctx, sessionID, req.Question, contextStr, streamWriter); err != nil {
+		streamWriter.Write(llm.StreamChunk{Error: err.Error(), Done: true})
 	}
 }
 
@@ -240,7 +148,7 @@ func (h *EnhancedHTTP) handleGetChatHistory(w http.ResponseWriter, r *http.Reque
 	}
 
 	limit := parseIntDefault(r.URL.Query().Get("limit"), 20)
-	history := h.enhancedQA.GetChatHistory(sessionID, limit)
+	history := h.chatService.GetChatHistory(sessionID, limit)
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	json.NewEncoder(w).Encode(map[string]interface{}{
@@ -257,7 +165,7 @@ func (h *EnhancedHTTP) handleClearChatHistory(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	h.enhancedQA.ClearChatHistory(sessionID)
+	h.chatService.ClearChatHistory(sessionID)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
@@ -268,8 +176,7 @@ func (h *EnhancedHTTP) handleClearChatHistory(w http.ResponseWriter, r *http.Req
 
 // WebSearchRequest represents a web search request
 type WebSearchRequest struct {
-	Query      string `json:"query"`
-	NumResults int    `json:"num_results,omitempty"`
+	Query string `json:"query"`
 }
 
 // handleWebSearch performs web search
@@ -285,7 +192,7 @@ func (h *EnhancedHTTP) handleWebSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	results, err := h.enhancedQA.SearchWeb(r.Context(), req.Query)
+	results, err := h.chatService.SearchWeb(r.Context(), req.Query)
 	if err != nil {
 		http.Error(w, "Search failed: "+err.Error(), http.StatusInternalServerError)
 		return

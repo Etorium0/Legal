@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -36,11 +37,14 @@ func AuthMiddleware(s Service) func(http.Handler) http.Handler {
 				return
 			}
 			tokenStr := parts[1]
+			log.Printf("[AuthMiddleware] Validating token: %s...", tokenStr[:min(50, len(tokenStr))])
 			claims, err := s.ValidateToken(tokenStr)
 			if err != nil {
+				log.Printf("[AuthMiddleware] Token validation failed: %v", err)
 				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 				return
 			}
+			log.Printf("[AuthMiddleware] Token valid for user: %s", claims.Subject)
 			ctx := r.Context()
 			ctx = context.WithValue(ctx, ctxSubjectKey, claims.Subject)
 			next.ServeHTTP(w, r.WithContext(ctx))

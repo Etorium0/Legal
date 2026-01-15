@@ -4,7 +4,8 @@ import Button from './ui/button'
 import { useAuth } from './AuthContext'
 
 // Password validation helper
-const validatePassword = (password: string) => {
+const validatePassword = (password: string) => 
+{
   const checks = {
     minLength: password.length >= 8,
     hasUppercase: /[A-Z]/.test(password),
@@ -35,7 +36,8 @@ const LoginPage: React.FC = () =>
     e.preventDefault()
     
     // Validate password on register
-    if (mode === 'register' && !passwordValidation.isValid) {
+    if (mode === 'register' && !passwordValidation.isValid) 
+{
       setError('Mật khẩu không đủ mạnh. Vui lòng kiểm tra các yêu cầu bên dưới.');
       return;
     }

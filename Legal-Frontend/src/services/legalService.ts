@@ -7,27 +7,34 @@ const BASE_URL = API_BASE_URL;
 const QUERY_URL = `${BASE_URL}/query/rag`;
 
 // Helper: Fetch with timeout
-const fetchWithTimeout = async (url: string, options: RequestInit, timeout = 30000): Promise<Response> => {
+const fetchWithTimeout = async (url: string, options: RequestInit, timeout = 30000): Promise<Response> => 
+{
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
-  try {
+  try 
+{
     const response = await fetch(url, { ...options, signal: controller.signal });
     clearTimeout(id);
     return response;
-  } catch (error) {
+  }
+ catch (error) 
+{
     clearTimeout(id);
     throw error;
   }
 };
 
-export const queryLegalAssistant = async (query: string): Promise<Partial<Message>> => {
+export const queryLegalAssistant = async (query: string): Promise<Partial<Message>> => 
+{
   console.log("[LegalService] Querying:", query, "Backend:", QUERY_URL);
   
   // 1. Attempt Real Backend Query
-  try {
+  try 
+{
     const token = await authService.getValidAccessToken();
     const headers: Record<string, string> = { 'Content-Type': 'application/json; charset=utf-8' };
-    if (token) {
+    if (token) 
+{
       headers['Authorization'] = `Bearer ${token}`;
     }
 
@@ -35,45 +42,66 @@ export const queryLegalAssistant = async (query: string): Promise<Partial<Messag
       method: 'POST',
       headers,
       body: JSON.stringify({ question: query, top_k: 15, answer: true }),
-    }, 30000);
+    }, 120000); // Increased timeout to 120s for complex questions
 
-    if (res.ok) {
+    if (res.ok) 
+{
       const data = await res.json();
       console.log("[LegalService] RAG Response:", data);
 
       const answerText = data.answer || "Tôi đã tìm thấy một số thông tin nhưng không thể tổng hợp câu trả lời chi tiết.";
       const items = data.items || [];
 
-      // Extract article numbers mentioned in the answer
+      // Extract article numbers and references mentioned in the answer
       const mentionedArticles = new Set<string>();
-      
+      const mentionedDocs = new Set<string>();
+
       // Match patterns like: Điều 123, Điều 16.1.LQ.51, Điều 51, khoản 1 Điều 123
       const articlePatterns = [
         /Điều\s+(\d+(?:\.\d+)?(?:\.LQ\.?\d*)?)/gi,
         /điều\s+(\d+(?:\.\d+)?(?:\.LQ\.?\d*)?)/gi,
         /(\d+\.\d+\.LQ\.\d+)/g,
+        /khoản\s+\d+\s+Điều\s+(\d+)/gi,
       ];
-      
-      for (const pattern of articlePatterns) {
+
+      for (const pattern of articlePatterns)
+      {
         const matches = answerText.matchAll(pattern);
-        for (const match of matches) 
+        for (const match of matches)
         {
-          // Extract just the main article number (e.g., "123" from "16.1.LQ.123" or "Điều 123")
           const fullMatch = match[1];
           mentionedArticles.add(fullMatch);
-          
+
           // Also extract the last number part for simple matching
           const lastNum = fullMatch.match(/(\d+)$/);
-          if (lastNum) 
+          if (lastNum)
           {
             mentionedArticles.add(lastNum[1]);
           }
         }
       }
-      
-      console.log("[LegalService] Articles mentioned in answer:", Array.from(mentionedArticles));
 
-      const allSources = items.map((item: any) => {
+      // Match document names mentioned in answer
+      const docPatterns = [
+        /Bộ luật\s+(Dân sự|Hình sự|Tố tụng[^,.\n]*)/gi,
+        /Luật\s+([A-Za-zÀ-ỹ\s]+?)(?:\s+\d{4}|\s*,|\s*\.|\s+quy định)/gi,
+        /Nghị định\s+(\d+\/\d+\/NĐ-CP)/gi,
+      ];
+
+      for (const pattern of docPatterns)
+      {
+        const matches = answerText.matchAll(pattern);
+        for (const match of matches)
+        {
+          mentionedDocs.add(match[1].trim().toLowerCase());
+        }
+      }
+
+      console.log("[LegalService] Articles mentioned in answer:", Array.from(mentionedArticles));
+      console.log("[LegalService] Documents mentioned in answer:", Array.from(mentionedDocs));
+
+      const allSources = items.map((item: any) => 
+{
         // Fallback for missing title
         let docTitle = item.document_title;
         // Check if title is useless (like just an ID or empty)
@@ -113,23 +141,32 @@ export const queryLegalAssistant = async (query: string): Promise<Partial<Messag
 
       // Filter sources: only show those actually mentioned in the answer
       // OR top 3 most relevant if none are explicitly mentioned
-      let filteredSources = allSources.filter((s: any) => 
+      let filteredSources = allSources.filter((s: any) =>
       {
-        if (mentionedArticles.size === 0) return false;
-        
-        for (const mentioned of mentionedArticles) 
+        if (mentionedArticles.size === 0 && mentionedDocs.size === 0) { return false; }
+
+        // Check article number matches
+        for (const mentioned of mentionedArticles)
         {
-          // Check various matching strategies
           // 1. Exact match on articleNum
-          if (s.articleNum && s.articleNum === mentioned) return true;
+          if (s.articleNum && s.articleNum === mentioned) { return true; }
           // 2. Simple number match (e.g., "123" matches "16.1.LQ.123")
-          if (s.simpleArticleNum && s.simpleArticleNum === mentioned) return true;
+          if (s.simpleArticleNum && s.simpleArticleNum === mentioned) { return true; }
           // 3. articleNum ends with mentioned number
-          if (s.articleNum && s.articleNum.endsWith(`.${mentioned}`)) return true;
+          if (s.articleNum && s.articleNum.endsWith(`.${mentioned}`)) { return true; }
           // 4. Snippet contains the article reference
-          if (s.snippet && s.snippet.includes(`Điều ${mentioned}`)) return true;
-          if (s.snippet && s.snippet.includes(`.${mentioned}.`)) return true;
+          if (s.snippet && s.snippet.includes(`Điều ${mentioned}`)) { return true; }
+          if (s.snippet && s.snippet.includes(`.${mentioned}.`)) { return true; }
+          // 5. Unit code matches (e.g., code "459" matches mentioned "459")
+          if (s.unit && s.unit.includes(mentioned)) { return true; }
         }
+
+        // Check document name matches
+        for (const doc of mentionedDocs)
+        {
+          if (s.document && s.document.toLowerCase().includes(doc)) { return true; }
+        }
+
         return false;
       });
 

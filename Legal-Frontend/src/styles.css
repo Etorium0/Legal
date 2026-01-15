@@ -37,3 +37,63 @@
 	.input-bar-dark { @apply rounded-full border border-white/10 bg-white/5 px-4 py-2 shadow-sm flex items-center gap-2 text-white; }
 	.btn-pill { @apply inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium; }
 }
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+	background: rgba(255, 255, 255, 0.05);
+	border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+	background: rgba(99, 102, 241, 0.3);
+	border-radius: 4px;
+	transition: background 0.2s;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+	background: rgba(99, 102, 241, 0.5);
+}
+
+/* Firefox scrollbar */
+.custom-scrollbar {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(99, 102, 241, 0.3) rgba(255, 255, 255, 0.05);
+}
+
+/* Custom prose styling for legal content */
+.prose-legal {
+	@apply prose prose-invert max-w-none;
+}
+
+.prose-legal h1,
+.prose-legal h2,
+.prose-legal h3,
+.prose-legal h4 {
+	@apply text-white font-semibold mt-6 mb-3;
+	background: none !important;
+	border: none !important;
+	padding: 0 !important;
+}
+
+.prose-legal h1 { @apply text-xl; }
+.prose-legal h2 { @apply text-lg; }
+.prose-legal h3 { @apply text-base; }
+.prose-legal h4 { @apply text-sm; }
+
+.prose-legal p {
+	@apply text-white/90 leading-relaxed mb-4;
+}
+
+.prose-legal strong {
+	@apply text-white font-semibold;
+}
+
+.prose-legal ul,
+.prose-legal ol {
+	@apply text-white/90 space-y-2;
+}

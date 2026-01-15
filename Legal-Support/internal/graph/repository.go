@@ -115,14 +115,14 @@ func (r *Repository) GetDocument(ctx context.Context, id uuid.UUID) (*Document, 
 }
 
 // FindDocumentByMetadata finds a document by title or other metadata to detect duplicates
-func (r *Repository) FindDocumentByMetadata(ctx context.Context, title string, number *string) (*Document, error) {
+func (r *Repository) FindDocumentByMetadata(ctx context.Context, title string, number *string, docType string) (*Document, error) {
 	query := `
 		SELECT id, title, type, number, year, authority, status, created_at, updated_at
-		FROM documents 
-		WHERE LOWER(title) = LOWER($1) OR ($2::text IS NOT NULL AND LOWER(number) = LOWER($2))`
+		FROM documents
+		WHERE type = $1 AND (LOWER(title) = LOWER($2) OR ($3::text IS NOT NULL AND LOWER(number) = LOWER($3)))`
 
 	doc := &Document{}
-	err := r.db.QueryRow(ctx, query, title, number).Scan(
+	err := r.db.QueryRow(ctx, query, docType, title, number).Scan(
 		&doc.ID, &doc.Title, &doc.Type, &doc.Number, &doc.Year,
 		&doc.Authority, &doc.Status, &doc.CreatedAt, &doc.UpdatedAt)
 
@@ -1106,16 +1106,17 @@ func (r *Repository) SearchTriplesByKeywords(ctx context.Context, keywords []str
 		keywords = keywords[:maxKeywords]
 	}
 
-	// Build ILIKE conditions for each keyword on text_unaccent column
-	// This allows searching with non-diacritic Vietnamese input
+	// Build ILIKE conditions for each keyword on concepts.name and relations.name
+	// Search on both subject, relation, and object concepts for better matching
 	var conditions []string
 	var args []interface{}
 	argIdx := 1
 
 	for _, kw := range keywords {
 		if len(kw) >= 2 { // Only use keywords with at least 2 chars
-			// Search on text_unaccent column for diacritic-insensitive matching
-			conditions = append(conditions, fmt.Sprintf("u.text_unaccent ILIKE $%d", argIdx))
+			// Search on concepts and relations names (case-insensitive)
+			// Match on subject, relation, or object
+			conditions = append(conditions, fmt.Sprintf("(cs.name ILIKE $%d OR cr.name ILIKE $%d OR co.name ILIKE $%d)", argIdx, argIdx, argIdx))
 			args = append(args, "%"+kw+"%")
 			argIdx++
 		}
@@ -1126,42 +1127,42 @@ func (r *Repository) SearchTriplesByKeywords(ctx context.Context, keywords []str
 	}
 
 	// Use OR for keywords matching, then count how many matched
-	whereClause := "(" + strings.Join(conditions, " OR ") + ")"
+	whereClause := strings.Join(conditions, " OR ")
 
 	// Build scoring expression to count keyword matches
 	var scoreExprParts []string
-	for i := range conditions {
-		scoreExprParts = append(scoreExprParts, fmt.Sprintf("CASE WHEN u.text_unaccent ILIKE $%d THEN 1 ELSE 0 END", i+1))
+	for i := 1; i <= len(conditions); i++ {
+		scoreExprParts = append(scoreExprParts, fmt.Sprintf("CASE WHEN (cs.name ILIKE $%d OR cr.name ILIKE $%d OR co.name ILIKE $%d) THEN 1 ELSE 0 END", i, i, i))
 	}
 	scoreExpr := strings.Join(scoreExprParts, " + ")
 
 	args = append(args, limit*3) // Fetch more to deduplicate later
 	limitArg := fmt.Sprintf("$%d", argIdx)
 
-	// Use subquery to first get unique units ordered by keyword matches,
-	// then join back to get triple details
+	// Search directly on triples by matching concept/relation names
 	query := fmt.Sprintf(`
-		WITH ranked_units AS (
-			SELECT DISTINCT u.id as unit_id, (%s) as keyword_matches
-			FROM units u
-			WHERE %s
-			ORDER BY keyword_matches DESC
+		WITH scored_triples AS (
+			SELECT t.id, t.subject_id, t.relation_id, t.object_id, t.unit_id, t.doc_ref,
+			       t.confidence, t.tfidf, t.is_blacklisted, t.context, t.created_at,
+			       cs.name as subject_name, cr.name as relation_name, co.name as object_name,
+			       (%s) as keyword_matches
+			FROM triples t
+			JOIN concepts cs ON t.subject_id = cs.id
+			JOIN relations cr ON t.relation_id = cr.id
+			JOIN concepts co ON t.object_id = co.id
+			WHERE t.is_blacklisted = false AND (%s)
+			ORDER BY keyword_matches DESC, t.tfidf DESC NULLS LAST, t.confidence DESC
 			LIMIT %s
 		)
-		SELECT t.id, t.subject_id, t.relation_id, t.object_id, t.unit_id, t.doc_ref,
-		       t.confidence, t.tfidf, t.is_blacklisted, t.context, t.created_at,
-		       cs.name as subject_name, cr.name as relation_name, co.name as object_name,
+		SELECT st.id, st.subject_id, st.relation_id, st.object_id, st.unit_id, st.doc_ref,
+		       st.confidence, st.tfidf, st.is_blacklisted, st.context, st.created_at,
+		       st.subject_name, st.relation_name, st.object_name,
 		       u.text as unit_text, d.title as document_title, d.id as document_id,
-		       ru.keyword_matches
-		FROM ranked_units ru
-		JOIN units u ON ru.unit_id = u.id
-		JOIN triples t ON t.unit_id = u.id
-		JOIN concepts cs ON t.subject_id = cs.id
-		JOIN relations cr ON t.relation_id = cr.id
-		JOIN concepts co ON t.object_id = co.id
+		       st.keyword_matches
+		FROM scored_triples st
+		JOIN units u ON st.unit_id = u.id
 		JOIN documents d ON u.document_id = d.id
-		WHERE t.is_blacklisted = false
-		ORDER BY ru.keyword_matches DESC, t.tfidf DESC NULLS LAST, t.confidence DESC`,
+		ORDER BY st.keyword_matches DESC, st.tfidf DESC NULLS LAST, st.confidence DESC`,
 		scoreExpr, whereClause, limitArg)
 
 	rows, err := r.db.Query(ctx, query, args...)

@@ -11,7 +11,6 @@ interface NavItem {
 
 const defaultItems: NavItem[] = [
   { label: 'Trò chuyện ảo', href: '/assistant' },
-  { label: 'Trang chủ', href: '/home' },
   { label: 'Bảng điều khiển', href: '/dashboard' },
   { label: 'Tài liệu', href: '/documents' },
   { label: 'Biểu đồ tri thức', href: '/graph' },

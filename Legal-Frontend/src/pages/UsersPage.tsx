@@ -213,7 +213,7 @@ const UsersPage: React.FC = () =>
 
             {/* Modal Edit/Create */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 px-4 animate-in fade-in duration-200">
                     <div className="w-full max-w-md rounded-2xl bg-[#1e1e24] border border-white/10 p-6 shadow-2xl ring-1 ring-white/10">
                         <h2 className="mb-6 text-xl font-bold text-white">{editingUser ? 'Sửa thông tin' : 'Thêm người dùng mới'}</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
@@ -290,7 +290,7 @@ const UsersPage: React.FC = () =>
 
             {/* Modal Delete Confirmation */}
             {deletingUser && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 px-4 animate-in fade-in duration-200">
                     <div className="w-full max-w-sm rounded-2xl bg-[#1e1e24] border border-white/10 p-6 shadow-2xl ring-1 ring-white/10">
                         <h2 className="mb-4 text-xl font-bold text-white">Xác nhận xoá</h2>
                         <p className="mb-6 text-white/70">

@@ -155,7 +155,7 @@ const VBPLDetailPage: React.FC = () =>
 
                 <Breadcrumb className="mb-6 text-gray-300">
                     <Breadcrumb.Item>
-                        <a onClick={() => navigate('/')} className="text-gray-400 hover:text-white">Trang chủ</a>
+                        <a onClick={() => navigate('/dashboard')} className="text-gray-400 hover:text-white">Trang chủ</a>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
                         <a onClick={() => navigate('/vbpl')} className="text-gray-400 hover:text-white">Văn bản pháp luật</a>

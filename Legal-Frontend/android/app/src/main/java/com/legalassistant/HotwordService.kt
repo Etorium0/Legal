@@ -39,12 +39,12 @@ class HotwordService : LifecycleService() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 startForeground(
-                    NotificationHelper.NOTIF_ID, 
-                    notifier.build("Đang nghe 'Hey Nova'"),
+                    NotificationHelper.NOTIF_ID,
+                    notifier.build("Đang nghe 'Hey Legal'"),
                     ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
                 )
             } else {
-                startForeground(NotificationHelper.NOTIF_ID, notifier.build("Đang nghe 'Hey Nova'"))
+                startForeground(NotificationHelper.NOTIF_ID, notifier.build("Đang nghe 'Hey Legal'"))
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start foreground service", e)
@@ -68,7 +68,7 @@ class HotwordService : LifecycleService() {
                      
                      // Add delay to ensure mic is released before starting capture
                      scope.launch {
-                        kotlinx.coroutines.delay(300)
+                        kotlinx.coroutines.delay(500)  // Increased from 300ms for better mic release
                         startCapture()
                      }
                  }

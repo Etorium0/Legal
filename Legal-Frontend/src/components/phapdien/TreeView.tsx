@@ -56,11 +56,11 @@ const TreeView: React.FC<TreeViewProps> = ({ onSelectChuong }) =>
                 const indexA = typeOrder.indexOf(a);
                 const indexB = typeOrder.indexOf(b);
                 if (indexA === -1 && indexB === -1) 
-                    return a.localeCompare(b);
+                    {return a.localeCompare(b);}
                 if (indexA === -1) 
-                    return 1;
+                    {return 1;}
                 if (indexB === -1) 
-                    return -1;
+                    {return -1;}
                 return indexA - indexB;
             });
 
@@ -108,11 +108,12 @@ const TreeView: React.FC<TreeViewProps> = ({ onSelectChuong }) =>
                 // but getDocumentTree usually returns a flat list or nested list.
                 // Assuming getDocumentTree returns a nested structure starting from root units.
                 
-                const mapUnitToNode = (unit: Unit): DataNode => 
+                const mapUnitToNode = (unit: Unit): DataNode =>
 {
                     const isChapter = unit.level === 'chapter' || unit.level === 'Chuong';
-                    const title = `${unit.code ? unit.code + ' ' : ''}${unit.text}`;
-                    
+                    // Only show text, hide long code IDs
+                    const title = unit.text || unit.level || 'Unit';
+
                     return {
                         title: title,
                         key: `unit_${unit.id}`,
@@ -149,27 +150,35 @@ const TreeView: React.FC<TreeViewProps> = ({ onSelectChuong }) =>
         });
     };
 
-    const onSelect = (selectedKeys: React.Key[], info: any) => 
+    const onSelect = (_selectedKeys: React.Key[], info: any) =>
 {
         const node = info.node;
-        if (!node.data) {return;}
+        console.log('[TreeView] Selected node:', node.key, 'Data:', node.data);
 
-        // If selected node is a Chapter (or has children which are articles)
-        // In this UI, selecting a Chapter should show its Articles in the reader
-        
+        if (!node.data) 
+{
+            console.log('[TreeView] No data on node');
+            return;
+        }
+
         // Check if it's a unit
-        if (String(node.key).startsWith('unit_')) 
+        if (String(node.key).startsWith('unit_'))
 {
             const unit = node.data as Unit;
-            // If it's a chapter, pass it to parent
-            if (unit.children && unit.children.length > 0) 
+            console.log('[TreeView] Unit selected:', unit.level, 'Children count:', unit.children?.length || 0);
+
+            // If it's a chapter with children, show them
+            if (unit.children && unit.children.length > 0)
 {
-                 onSelectChuong(unit, unit.children);
+                console.log('[TreeView] Calling onSelectChuong with', unit.children.length, 'children');
+                onSelectChuong(unit, unit.children);
             }
- else 
+ else
 {
-                // If it's an article, maybe scroll to it?
-                // For now just handle chapters as the container for reading
+                // If it's a unit without children (leaf node), load its children
+                console.log('[TreeView] Unit has no children, trying to load...');
+                // Try to pass unit itself as both chapter and single article
+                onSelectChuong(unit, [unit]);
             }
         }
     };

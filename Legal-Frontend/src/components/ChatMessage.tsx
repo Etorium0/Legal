@@ -14,26 +14,31 @@ export const ChatMessageView: React.FC<{ message: ChatMessage }> = ({ message })
   const navigate = useNavigate()
   const isUser = message.role === 'user'
 
-  const handleReferenceClick = (ref: { title: string; url: string; unitId?: string; docId?: string }) => {
+  const handleReferenceClick = (ref: { title: string; url: string; unitId?: string; docId?: string }) => 
+{
     // Try to navigate within the app first
-    if (ref.unitId) {
+    if (ref.unitId) 
+{
       navigate(`/unit/${ref.unitId}`)
       return
     }
-    if (ref.docId) {
+    if (ref.docId) 
+{
       navigate(`/vbpl/${ref.docId}`)
       return
     }
     
     // Try to extract document/unit ID from URL
     const unitMatch = ref.url.match(/units\/(\d+)/i)
-    if (unitMatch) {
+    if (unitMatch) 
+{
       navigate(`/unit/${unitMatch[1]}`)
       return
     }
     
     const docMatch = ref.url.match(/documents\/(\d+)/i) || ref.url.match(/vbpl\/(\d+)/i)
-    if (docMatch) {
+    if (docMatch) 
+{
       navigate(`/vbpl/${docMatch[1]}`)
       return
     }

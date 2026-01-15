@@ -19,7 +19,7 @@ import android.util.Log
 class HotwordDetector(private val context: Context) {
     private val TAG = "HotwordDetector"
     private val sampleRate = 16000
-    private val bufferSize = 4096
+    private val bufferSize = 8192  // Increased from 4096 for better capture
     
     private var recorder: AudioRecord? = null
     private var recognizer: Recognizer? = null
@@ -97,11 +97,19 @@ class HotwordDetector(private val context: Context) {
             isRunning = true
             
             // Wake words - include variations that Vosk might recognize
+            // Prioritize "legal" and "lego" (common misrecognition)
             val wakeWords = listOf(
-                "nova", "nô va", "nô-va", "no va", "nôva",
-                "hey nova", "hê nova", "hây nova", "hei nova",
-                "chào trợ lý", "chào trợ", "trợ lý", "trợ lý ơi",
-                "xin chào", "ê trợ lý", "ê nova"
+                // Primary: "Hey Legal" and variants
+                "legal", "lê go", "lê gô", "le go", "lego", "li go", "li gô",
+                "hey legal", "hây legal", "hê legal", "hei legal", "ê legal",
+                "hey lego", "hây lego", "hê lego", "ê lego",
+
+                // Vietnamese alternatives
+                "trợ lý pháp luật", "trợ lý", "trợ lý ơi", "ê trợ lý",
+                "chào trợ lý", "xin chào trợ lý",
+
+                // Backup: nova (old wake word)
+                "nova", "nô va", "no va", "nôva", "hey nova"
             )
 
             while (kotlin.coroutines.coroutineContext.isActive && isRunning) {
@@ -111,21 +119,39 @@ class HotwordDetector(private val context: Context) {
                         val result = recognizer?.result ?: ""
                         Log.d(TAG, "Result: $result")
                         
-                        // Extract text from JSON result  
+                        // Extract text from JSON result
                         val textMatch = Regex("\"text\"\\s*:\\s*\"([^\"]+)\"").find(result)
                         val text = textMatch?.groupValues?.get(1)?.lowercase() ?: ""
-                        Log.d(TAG, "Recognized: $text")
-                        
-                        // Check if text contains any wake word
-                        val detected = wakeWords.any { wake -> text.contains(wake) }
-                        if (detected) {
-                             Log.d(TAG, "*** WAKE WORD DETECTED! ***")
-                             onWake(true)
-                             recognizer?.reset()
+
+                        if (text.isNotEmpty()) {
+                            Log.d(TAG, "Recognized: '$text'")
+
+                            // Check if text contains any wake word
+                            val detected = wakeWords.any { wake -> text.contains(wake) }
+                            if (detected) {
+                                 Log.d(TAG, "*** WAKE WORD DETECTED: '$text' ***")
+                                 onWake(true)
+                                 recognizer?.reset()
+                            }
                         }
                     } else {
-                        // Uncomment for debugging partial results
-                        // Log.d(TAG, "Partial: " + recognizer?.partialResult)
+                        // Check partial results for faster response
+                        val partial = recognizer?.partialResult ?: ""
+                        if (partial.isNotEmpty()) {
+                            val partialTextMatch = Regex("\"partial\"\\s*:\\s*\"([^\"]+)\"").find(partial)
+                            val partialText = partialTextMatch?.groupValues?.get(1)?.lowercase() ?: ""
+
+                            // Only trigger on partial if we see high-confidence wake words
+                            if (partialText.isNotEmpty()) {
+                                val strongMatches = listOf("legal", "lego", "nova", "trợ lý")
+                                val detectedPartial = strongMatches.any { wake -> partialText.contains(wake) }
+                                if (detectedPartial) {
+                                    Log.d(TAG, "*** WAKE WORD DETECTED (PARTIAL): '$partialText' ***")
+                                    onWake(true)
+                                    recognizer?.reset()
+                                }
+                            }
+                        }
                     }
                 }
                 yield()

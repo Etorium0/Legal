@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Navigation, MapPin, ExternalLink, Map } from 'lucide-react';
-
-// Google Maps API Key
-const GOOGLE_MAPS_API_KEY = 'AIzaSyDxZOEx_qsBtCl7LNzZsebM2c1AXkwD9b4';
+import GoongMap from './GoongMap';
 
 export type MapLocation = {
   name: string;
@@ -50,106 +48,30 @@ const defaultLocations: MapLocation[] = [
   },
 ];
 
-// Gọi Native Bridge để mở Google Maps app
-const openGoogleMapsNavigation = (location: MapLocation) => {
-  const destination = location.lat && location.lng 
-    ? `${location.lat},${location.lng}`
-    : encodeURIComponent(location.address);
-  
-  // URL cho Google Maps navigation
-  const mapsUrl = location.lat && location.lng
-    ? `google.navigation:q=${location.lat},${location.lng}`
-    : `google.navigation:q=${encodeURIComponent(location.address)}`;
-  
-  // Fallback URL cho web
-  const webUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
-
-  // Gửi command tới Native Bridge (Android)
-  if (typeof window !== 'undefined' && (window as any).NativeBridge) {
-    (window as any).NativeBridge.postMessage(JSON.stringify({
-      type: 'command',
-      name: 'openUrl',
-      data: { url: mapsUrl }
-    }));
-  } else {
-    // Fallback: mở trong browser/webview
-    window.open(webUrl, '_blank');
-  }
-};
-
-// Mở Google Maps để xem vị trí (không navigation)
-const openGoogleMapsView = (location: MapLocation) => {
-  const query = location.lat && location.lng 
-    ? `${location.lat},${location.lng}`
-    : encodeURIComponent(location.address);
-  
-  const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
-  
-  if (typeof window !== 'undefined' && (window as any).NativeBridge) {
-    (window as any).NativeBridge.postMessage(JSON.stringify({
-      type: 'command',
-      name: 'openUrl',
-      data: { url }
-    }));
-  } else {
-    window.open(url, '_blank');
-  }
-};
-
 export default function MapCard({
   locations = defaultLocations,
   height = 200,
   showNavButton = true,
-}: MapCardProps) 
+}: MapCardProps)
 {
   const [selected, setSelected] = useState(locations[0]);
-  const [showEmbeddedMap, setShowEmbeddedMap] = useState(false);
-
-  // Build Google Maps embed URL
-  const getEmbedUrl = (location: MapLocation) => {
-    const q = location.lat && location.lng 
-      ? `${location.lat},${location.lng}`
-      : encodeURIComponent(location.address);
-    return `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${q}&zoom=15&language=vi`;
-  };
+  const [showGoongMap, setShowGoongMap] = useState(false);
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-4 shadow-lg">
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-emerald-300/80">Hỗ trợ pháp lý</p>
-          <h3 className="text-xl font-semibold text-white mt-1">Tìm địa điểm gần bạn</h3>
-          <p className="text-sm text-white/60 mt-1">Chọn địa điểm và nhấn "Dẫn đường" để đi.</p>
+    <>
+      <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-4 shadow-lg">
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-emerald-300/80">Hỗ trợ pháp lý</p>
+            <h3 className="text-xl font-semibold text-white mt-1">Tìm địa điểm gần bạn</h3>
+            <p className="text-sm text-white/60 mt-1">Chọn địa điểm và nhấn "Xem bản đồ" hoặc "Dẫn đường".</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="px-2 py-1 bg-blue-500/20 border border-blue-400/30 rounded text-xs text-blue-300">
+              Goong Maps
+            </div>
+          </div>
         </div>
-        {/* Toggle embedded map */}
-        <button
-          onClick={() => setShowEmbeddedMap(!showEmbeddedMap)}
-          className={`p-2 rounded-lg transition-all ${
-            showEmbeddedMap 
-              ? 'bg-emerald-500/30 text-emerald-300' 
-              : 'bg-white/10 text-white/70 hover:bg-white/20'
-          }`}
-          title={showEmbeddedMap ? 'Ẩn bản đồ' : 'Xem bản đồ'}
-        >
-          <Map className="w-5 h-5" />
-        </button>
-      </div>
-
-      {/* Embedded Google Maps - shows when toggled */}
-      {showEmbeddedMap && (
-        <div className="mb-4 rounded-xl overflow-hidden border border-white/10">
-          <iframe
-            title="Google Maps"
-            width="100%"
-            height={height}
-            style={{ border: 0 }}
-            loading="lazy"
-            allowFullScreen
-            referrerPolicy="no-referrer-when-downgrade"
-            src={getEmbedUrl(selected)}
-          />
-        </div>
-      )}
 
       {/* Location Pills */}
       <div className="flex flex-wrap gap-2 mb-4">
@@ -189,14 +111,14 @@ export default function MapCard({
         {showNavButton && (
           <div className="flex gap-2 mt-4">
             <button
-              onClick={() => openGoogleMapsNavigation(selected)}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl font-medium hover:from-emerald-500 hover:to-green-500 transition-all shadow-lg shadow-emerald-500/20"
+              onClick={() => setShowGoongMap(true)}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-500 hover:to-indigo-500 transition-all shadow-lg shadow-blue-500/20"
             >
               <Navigation className="w-5 h-5" />
               Dẫn đường
             </button>
             <button
-              onClick={() => openGoogleMapsView(selected)}
+              onClick={() => setShowGoongMap(true)}
               className="flex items-center justify-center gap-2 px-4 py-3 bg-white/10 text-white rounded-xl font-medium hover:bg-white/20 transition-all border border-white/10"
             >
               <ExternalLink className="w-4 h-4" />
@@ -211,5 +133,16 @@ export default function MapCard({
         💬 Hỏi trợ lý: "Tìm trung tâm trợ giúp pháp lý gần đây"
       </div>
     </div>
+
+    {/* Goong Map Modal */}
+    {showGoongMap && (
+      <GoongMap
+        destination={selected.address}
+        destinationCoords={selected.lat && selected.lng ? [selected.lng, selected.lat] : undefined}
+        onClose={() => setShowGoongMap(false)}
+        showNavigation={true}
+      />
+    )}
+    </>
   );
 }

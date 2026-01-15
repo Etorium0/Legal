@@ -202,7 +202,11 @@ func (e *QueryEngine) ProcessQuery(ctx context.Context, queryText string, includ
 		var docs []string
 		for _, ans := range candidatesToRerank {
 			// Combine title and context for better reranking
-			docText := fmt.Sprintf("Title: %s\nContent: %s", ans.Title, ans.Context)
+			ctxVal := ""
+			if ans.Context != nil {
+				ctxVal = *ans.Context
+			}
+			docText := fmt.Sprintf("Title: %s\nContent: %s", ans.Title, ctxVal)
 			docs = append(docs, docText)
 		}
 

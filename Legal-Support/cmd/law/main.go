@@ -15,8 +15,8 @@ import (
 
 	"example.com/legallaw/internal/config"
 	"example.com/legallaw/internal/db"
-	"example.com/legallaw/internal/graph"
 	"example.com/legallaw/internal/law"
+	"example.com/legallaw/internal/repository"
 )
 
 func main() {
@@ -29,7 +29,7 @@ func main() {
 	}
 	defer pool.Close()
 
-	repo := graph.NewRepository(pool)
+	repo := repository.NewRepository(pool)
 	lawHTTP := law.NewHTTP(repo)
 
 	r := chi.NewRouter()

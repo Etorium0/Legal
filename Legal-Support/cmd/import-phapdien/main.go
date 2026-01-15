@@ -7,10 +7,13 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 
+	"example.com/legallaw/internal/ai/embedding"
 	"example.com/legallaw/internal/config"
 	"example.com/legallaw/internal/db"
-	"example.com/legallaw/internal/graph"
+	"example.com/legallaw/internal/repository"
+	ingestSvc "example.com/legallaw/internal/service/ingest"
 )
 
 // PDDeMuc represents a topic in Pháp Điển
@@ -29,6 +32,7 @@ type PDDieu struct {
 }
 
 func main() {
+	_ = godotenv.Load()
 	ctx := context.Background()
 	cfg := config.Load()
 
@@ -53,13 +57,13 @@ func main() {
 		log.Fatalf("ping mysql: %v", err)
 	}
 
-	repo := graph.NewRepository(pg)
+	repo := repository.NewRepository(pg)
 
-	var embedder graph.EmbeddingProvider
+	var embedder embedding.EmbeddingProvider
 	if cfg.EmbeddingEnabled && cfg.EmbeddingAPIKey != "" {
-		embedder = graph.NewOpenAIEmbeddingProvider(cfg.EmbeddingAPIKey, cfg.EmbeddingModel)
+		embedder = embedding.NewOpenAIEmbeddingProvider(cfg.EmbeddingAPIKey, cfg.EmbeddingModel)
 	}
-	ingest := graph.NewIngestionService(repo, embedder, cfg.EmbeddingModel)
+	ingest := ingestSvc.NewService(repo, embedder, cfg.EmbeddingModel)
 
 	demucs, err := loadDeMuc(ctx, mysqlDB)
 	if err != nil {
@@ -78,13 +82,13 @@ func main() {
 			continue
 		}
 
-		req := graph.IngestRequest{
-			Document: graph.DocumentRequest{
+		req := ingestSvc.IngestRequest{
+			Document: ingestSvc.DocumentRequest{
 				Title:     d.Name,
 				Type:      docType,
 				Authority: &d.ChuDeName,
 			},
-			Units:          make([]graph.UnitRequest, 0, len(dieus)),
+			Units:          make([]ingestSvc.UnitRequest, 0, len(dieus)),
 			AutoEmbed:      boolPtr(cfg.EmbeddingEnabled),
 			EmbeddingModel: cfg.EmbeddingModel,
 		}
@@ -92,7 +96,7 @@ func main() {
 		for _, dieu := range dieus {
 			code := dieu.ID
 			text := dieu.Title + "\n" + dieu.Content
-			req.Units = append(req.Units, graph.UnitRequest{
+			req.Units = append(req.Units, ingestSvc.UnitRequest{
 				Level:      "article",
 				Code:       &code,
 				Text:       text,

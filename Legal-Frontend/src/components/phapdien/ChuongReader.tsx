@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Empty, Typography, Divider } from 'antd';
+import React from 'react';
 import MarkdownIt from 'markdown-it';
 import { Unit } from '../../services/lawService';
 
@@ -13,40 +12,31 @@ const md = new MarkdownIt({ html: true, breaks: true });
 const ChuongReader: React.FC<ChuongReaderProps> = ({ chuong, dieus }) => 
 {
     
-    if (!chuong) 
+    if (!chuong)
 {
         return (
-            <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
-                <Empty description="Chọn một chương để xem nội dung" />
+            <div className="flex flex-col items-center justify-center h-full gap-4">
+                <div className="text-6xl">📄</div>
+                <p className="text-white/60 text-center">Chọn một chương để xem nội dung</p>
             </div>
         );
     }
 
     return (
-        <div className="h-full overflow-auto p-4 bg-white rounded-lg shadow">
-            <Typography.Title level={3} className="text-center text-blue-800">
-                {chuong.text}
-            </Typography.Title>
-            <Divider />
-            
+        <div className="h-full overflow-auto custom-scrollbar p-4">
             <div className="space-y-6">
                 {dieus.map((dieu) => (
-                    <Card 
-                        key={dieu.id} 
+                    <div
+                        key={dieu.id}
                         id={`dieu-${dieu.id}`}
-                        className="shadow-sm hover:shadow-md transition-shadow"
-                        title={<span className="font-bold text-lg">{dieu.code || `Điều ${dieu.order_index}`}</span>}
-                    >
-                        <div 
-                            className="prose max-w-none text-gray-800"
-                            dangerouslySetInnerHTML={{ __html: md.render(dieu.text || '') }}
-                        />
-                    </Card>
+                        className="prose-legal"
+                        dangerouslySetInnerHTML={{ __html: md.render(dieu.text || '') }}
+                    />
                 ))}
-                
+
                 {dieus.length === 0 && (
-                    <div className="p-4 text-center text-gray-500">
-                        (Chương này không có nội dung hoặc các điều chưa được cập nhật)
+                    <div className="p-8 text-center text-white/60 bg-white/5 rounded-xl border border-white/10">
+                        Chương này không có nội dung hoặc các điều chưa được cập nhật
                     </div>
                 )}
             </div>

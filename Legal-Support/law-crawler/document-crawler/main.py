@@ -170,16 +170,19 @@ def extract_metadata(soup, item_id):
             metadata['co_quan'] = cq_elem.get_text(strip=True)
     
     # Extract content
-    fulltext_divs = soup.find_all('div', class_='fulltext')
-    if fulltext_divs:
-        content_div = fulltext_divs[0]
-        toanvan = soup.find('div', id='toanvancontent')
-        if toanvan:
-            metadata['noidung'] = str(toanvan)
-        elif len(content_div.find_all('div')) > 1:
-            metadata['noidung'] = str(content_div.find_all('div')[1])
-        else:
-            metadata['noidung'] = str(content_div)
+    # First try looking for the main content ID directly
+    toanvan = soup.find('div', id='toanvancontent')
+    if toanvan:
+        metadata['noidung'] = str(toanvan)
+    else:
+        # Fallback to looking for fulltext class
+        fulltext_divs = soup.find_all('div', class_='fulltext')
+        if fulltext_divs:
+            content_div = fulltext_divs[0]
+            if len(content_div.find_all('div')) > 1:
+                metadata['noidung'] = str(content_div.find_all('div')[1])
+            else:
+                metadata['noidung'] = str(content_div)
     
     return metadata
 

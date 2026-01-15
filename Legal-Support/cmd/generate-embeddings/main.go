@@ -13,9 +13,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 
+	"example.com/legallaw/internal/ai/embedding"
 	"example.com/legallaw/internal/config"
 	"example.com/legallaw/internal/db"
-	"example.com/legallaw/internal/graph"
+	"example.com/legallaw/internal/model"
+	"example.com/legallaw/internal/repository"
 )
 
 func main() {
@@ -30,14 +32,14 @@ func main() {
 	}
 	defer pool.Close()
 
-	repo := graph.NewRepository(pool)
+	repo := repository.NewRepository(pool)
 
 	// Initialize embedding provider
-	var embedder graph.EmbeddingProvider
+	var embedder embedding.EmbeddingProvider
 	if cfg.EmbeddingProvider == "gemini" {
-		embedder = graph.NewGeminiEmbeddingProvider(cfg.EmbeddingAPIKey, cfg.EmbeddingModel)
+		embedder = embedding.NewGeminiEmbeddingProvider(cfg.EmbeddingAPIKey, cfg.EmbeddingModel)
 	} else {
-		embedder = graph.NewOpenAIEmbeddingProvider(cfg.EmbeddingAPIKey, cfg.EmbeddingModel)
+		embedder = embedding.NewOpenAIEmbeddingProvider(cfg.EmbeddingAPIKey, cfg.EmbeddingModel)
 	}
 
 	if embedder == nil {
@@ -65,7 +67,7 @@ func main() {
 		}
 	} else {
 		// Get all documents
-		docs, _, err := repo.SearchDocuments(ctx, "", graph.DocumentFilter{}, 10000, 0)
+		docs, _, err := repo.SearchDocuments(ctx, "", model.DocumentFilter{}, 10000, 0)
 		if err != nil {
 			log.Fatalf("Error getting documents: %v", err)
 		}
@@ -120,7 +122,7 @@ func main() {
 	log.Printf("Completed! Total units: %d, Total embeddings: %d, Time: %v", totalUnits, totalEmbeddings, elapsed)
 }
 
-func processUnitBatch(ctx context.Context, embedder graph.EmbeddingProvider, repo *graph.Repository, units []graph.Unit, model string) (int, error) {
+func processUnitBatch(ctx context.Context, embedder embedding.EmbeddingProvider, repo *repository.Repository, units []model.Unit, modelName string) (int, error) {
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	embeddings := 0
@@ -131,7 +133,7 @@ func processUnitBatch(ctx context.Context, embedder graph.EmbeddingProvider, rep
 
 	for _, unit := range units {
 		wg.Add(1)
-		go func(u graph.Unit) {
+		go func(u model.Unit) {
 			defer wg.Done()
 			semaphore <- struct{}{}
 			defer func() { <-semaphore }()
@@ -148,7 +150,7 @@ func processUnitBatch(ctx context.Context, embedder graph.EmbeddingProvider, rep
 			}
 
 			// Generate embedding
-			embedding, err := embedder.Embed(ctx, text)
+			emb, err := embedder.Embed(ctx, text)
 			if err != nil {
 				mu.Lock()
 				errors++
@@ -158,7 +160,7 @@ func processUnitBatch(ctx context.Context, embedder graph.EmbeddingProvider, rep
 			}
 
 			// Save to database
-			if err := repo.UpsertUnitEmbedding(ctx, u.ID, embedding, model); err != nil {
+			if err := repo.UpsertUnitEmbedding(ctx, u.ID, emb, modelName); err != nil {
 				mu.Lock()
 				errors++
 				mu.Unlock()

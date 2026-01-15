@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(DATABASE_URL=\"postgres://legaluser:legalpass@localhost:5433/legaldb?sslmode=disable\" MYSQL_DSN=\"root:123456789@tcp\\(localhost:3307\\)/law?parseTime=true&charset=utf8mb4\" go run:*)",
+      "Bash(tee:*)"
+    ]
+  }
+}

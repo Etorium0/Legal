@@ -13,11 +13,17 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
 
+	"example.com/legallaw/internal/ai/embedding"
+	"example.com/legallaw/internal/ai/llm"
+	"example.com/legallaw/internal/ai/prompt"
 	"example.com/legallaw/internal/auth"
+	chatHTTP "example.com/legallaw/internal/chat"
 	"example.com/legallaw/internal/config"
 	"example.com/legallaw/internal/db"
-	"example.com/legallaw/internal/graph"
+	"example.com/legallaw/internal/email"
 	"example.com/legallaw/internal/query"
+	"example.com/legallaw/internal/repository"
+	"example.com/legallaw/internal/service/chat"
 )
 
 func main() {
@@ -25,7 +31,7 @@ func main() {
 	cfg := config.Load()
 
 	// Load prompts from YAML file
-	pm := graph.GetPromptManager()
+	pm := prompt.GetPromptManager()
 	if err := pm.LoadFromFile(cfg.PromptsFilePath); err != nil {
 		log.Printf("Warning: Could not load prompts from %s: %v (using defaults)", cfg.PromptsFilePath, err)
 	}
@@ -37,20 +43,25 @@ func main() {
 	defer pool.Close()
 
 	authRepo := auth.NewRepository(pool)
-	authService := auth.NewService(authRepo, cfg.JWTSecret)
+
+	// Initialize email service
+	emailService := email.NewEmailService()
+
+	// Create auth service with email service
+	authService := auth.NewService(authRepo, cfg.JWTSecret, emailService)
 
 	// Seed Admin account
 	if err := auth.SeedAdmin(context.Background(), authRepo); err != nil {
 		log.Printf("Failed to seed admin: %v", err)
 	}
 
-	var embedder graph.EmbeddingProvider
-	var qa graph.QAProvider
+	var embedder embedding.EmbeddingProvider
+	var qa llm.QAProvider
 	if cfg.EmbeddingEnabled {
 		if cfg.EmbeddingProvider == "gemini" {
-			embedder = graph.NewGeminiEmbeddingProvider(cfg.EmbeddingAPIKey, cfg.EmbeddingModel)
+			embedder = embedding.NewGeminiEmbeddingProvider(cfg.EmbeddingAPIKey, cfg.EmbeddingModel)
 		} else {
-			embedder = graph.NewOpenAIEmbeddingProvider(cfg.EmbeddingAPIKey, cfg.EmbeddingModel)
+			embedder = embedding.NewOpenAIEmbeddingProvider(cfg.EmbeddingAPIKey, cfg.EmbeddingModel)
 		}
 		if embedder == nil {
 			log.Printf("embedding disabled: missing EMBEDDING_API_KEY")
@@ -61,25 +72,42 @@ func main() {
 	switch cfg.QAProvider {
 	case "groq":
 		if cfg.GroqAPIKey != "" {
-			qa = graph.NewGroqQAProvider(cfg.GroqAPIKey, cfg.QAModel)
+			qa = llm.NewGroqQAProvider(cfg.GroqAPIKey, cfg.QAModel)
 			log.Printf("QA provider: Groq (%s)", cfg.QAModel)
 		}
 	case "openai":
 		if cfg.EmbeddingAPIKey != "" {
-			qa = graph.NewOpenAIQAProvider(cfg.EmbeddingAPIKey, cfg.QAModel)
+			qa = llm.NewOpenAIQAProvider(cfg.EmbeddingAPIKey, cfg.QAModel)
 			log.Printf("QA provider: OpenAI (%s)", cfg.QAModel)
 		}
 	default: // gemini
 		if cfg.EmbeddingAPIKey != "" {
-			qa = graph.NewGeminiQAProvider(cfg.EmbeddingAPIKey, cfg.QAModel)
+			qa = llm.NewGeminiQAProvider(cfg.EmbeddingAPIKey, cfg.QAModel)
 			log.Printf("QA provider: Gemini (%s)", cfg.QAModel)
 		}
 	}
 
 	queryHTTP := query.NewHTTP(pool, embedder, cfg.EmbeddingModel, qa, cfg)
 
+	// Create chat service
+	repo := repository.NewRepository(pool)
+	chatConfig := chat.Config{
+		OpenAIKey:               cfg.EmbeddingAPIKey,
+		Model:                   cfg.QAModel,
+		CohereAPIKey:            cfg.RerankAPIKeys,
+		GoogleSearchAPIKey:      cfg.GoogleSearchAPIKey,
+		GoogleSearchEngineID:    cfg.GoogleSearchEngineID,
+		LocalRerankerEndpoint:   cfg.LocalRerankerEndpoint,
+		CrossEncoderEndpoint:    cfg.CrossEncoderEndpoint,
+		MaxChatHistory:          cfg.MaxChatHistory,
+		ChatHistoryTTL:          cfg.GetChatHistoryTTL(),
+		EnableWebSearchFallback: cfg.EnableWebSearchFallback,
+		EnableStreaming:         cfg.EnableStreaming,
+	}
+	chatService := chat.NewService(repo, embedder, qa, chatConfig)
+
 	// Create enhanced HTTP handler with streaming and chat history support
-	enhancedHTTP := query.NewEnhancedHTTP(queryHTTP, cfg)
+	enhancedHTTP := query.NewEnhancedHTTP(queryHTTP, chatService, cfg)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer)
@@ -98,6 +126,13 @@ func main() {
 
 	// Enhanced routes with streaming and chat history
 	r.Mount("/api/v2/chat", enhancedHTTP.EnhancedRoutes())
+
+	// Chat history management routes (requires auth)
+	chatHistoryHTTP := chatHTTP.NewHTTP(pool)
+	r.Group(func(r chi.Router) {
+		r.Use(auth.AuthMiddleware(authService))
+		r.Mount("/api/v1/chat", chatHistoryHTTP.Routes())
+	})
 
 	srv := &http.Server{
 		Addr:         ":" + cfg.HTTPPort,

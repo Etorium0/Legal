@@ -2,7 +2,7 @@ import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Mic, Home, FileText, Activity, Settings } from 'lucide-react'
 
-const TabLink: React.FC<{ to: string; label: string; icon: React.ReactNode }> = ({ to, label, icon }) => 
+const TabLink: React.FC<{ to: string; label: string; icon: React.ReactNode }> = ({ to, label, icon }) =>
 {
   const { pathname } = useLocation()
   const active = pathname === to || (pathname.startsWith(to) && to !== '/')
@@ -17,8 +17,19 @@ const TabLink: React.FC<{ to: string; label: string; icon: React.ReactNode }> = 
   )
 }
 
-const MobileNav: React.FC = () => 
+// Pages that should hide the mobile nav (fullscreen pages)
+const FULLSCREEN_PAGES = ['/map']
+
+const MobileNav: React.FC = () =>
 {
+  const { pathname } = useLocation()
+
+  // Hide nav on fullscreen pages
+  if (FULLSCREEN_PAGES.some(page => pathname.startsWith(page)))
+{
+    return null
+  }
+
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 bg-slate-900/95 backdrop-blur-lg border-t border-white/10 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.5)] sm:hidden">
       <div className="flex justify-around items-center h-16">

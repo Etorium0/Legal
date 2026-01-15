@@ -31,6 +31,15 @@ type Config struct {
 	MaxChatHistory          int
 	ChatHistoryTTLMinutes   int
 	PromptsFilePath         string
+
+	// Email Configuration
+	SMTPHost     string
+	SMTPPort     string
+	SMTPUser     string
+	SMTPPassword string
+	FromEmail    string
+	FromName     string
+	FrontendURL  string
 }
 
 func Load() Config {
@@ -59,6 +68,15 @@ func Load() Config {
 	chatHistoryTTL := getenvInt("CHAT_HISTORY_TTL_MINUTES", 120)
 	promptsFilePath := getenv("PROMPTS_FILE_PATH", "prompts.yaml")
 
+	// Email Configuration
+	smtpHost := getenv("SMTP_HOST", "smtp.gmail.com")
+	smtpPort := getenv("SMTP_PORT", "587")
+	smtpUser := getenv("SMTP_USER", "")
+	smtpPassword := getenv("SMTP_PASSWORD", "")
+	fromEmail := getenv("FROM_EMAIL", "noreply@legal-support.com")
+	fromName := getenv("FROM_NAME", "Legal Support System")
+	frontendURL := getenv("FRONTEND_URL", "http://localhost:3000")
+
 	return Config{
 		HTTPPort:                port,
 		DatabaseURL:             db,
@@ -82,6 +100,13 @@ func Load() Config {
 		MaxChatHistory:          maxChatHistory,
 		ChatHistoryTTLMinutes:   chatHistoryTTL,
 		PromptsFilePath:         promptsFilePath,
+		SMTPHost:                smtpHost,
+		SMTPPort:                smtpPort,
+		SMTPUser:                smtpUser,
+		SMTPPassword:            smtpPassword,
+		FromEmail:               fromEmail,
+		FromName:                fromName,
+		FrontendURL:             frontendURL,
 	}
 }
 

@@ -89,7 +89,7 @@ func NewIngestionService(repo *Repository, embedder EmbeddingProvider, embedding
 // IngestLegalContent processes and stores legal content
 func (s *IngestionService) IngestLegalContent(ctx context.Context, req IngestRequest) (*IngestResponse, error) {
 	// Check if document exists to avoid duplicates
-	existingDoc, err := s.repo.FindDocumentByMetadata(ctx, req.Document.Title, req.Document.Number)
+	existingDoc, err := s.repo.FindDocumentByMetadata(ctx, req.Document.Title, req.Document.Number, req.Document.Type)
 	if err != nil {
 		return nil, fmt.Errorf("checking for existing document: %w", err)
 	}
@@ -97,7 +97,7 @@ func (s *IngestionService) IngestLegalContent(ctx context.Context, req IngestReq
 	if existingDoc != nil {
 		return &IngestResponse{
 			DocumentID:        existingDoc.ID,
-			ProcessingSummary: fmt.Sprintf("Document '%s' already exists. Skipped re-ingestion.", existingDoc.Title),
+			ProcessingSummary: fmt.Sprintf("Document '%s' (type=%s) already exists. Skipped re-ingestion.", existingDoc.Title, existingDoc.Type),
 		}, nil
 	}
 
