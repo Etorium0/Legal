@@ -16,6 +16,7 @@ const VBPLDetailPage: React.FC = () =>
     const [document, setDocument] = useState<Document | null>(null);
     const [units, setUnits] = useState<Unit[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => 
     {
@@ -28,16 +29,14 @@ const VBPLDetailPage: React.FC = () =>
     const fetchData = async (docId: string) => 
     {
         setLoading(true);
+        setError(null);
         try 
         {
-            // First fetch document metadata
             const docRes = await lawService.getDocument(docId);
             setDocument(docRes);
 
-            // Try to fetch tree structure
             let treeRes = await lawService.getDocumentTree(docId);
             
-            // If tree is empty, fallback to flat units list
             if (!treeRes || treeRes.length === 0) 
             {
                 const unitsRes = await lawService.getUnits(docId, 1000);
@@ -49,6 +48,8 @@ const VBPLDetailPage: React.FC = () =>
         catch (error) 
         {
             console.error("Failed to fetch document details:", error);
+            const message = error instanceof Error ? error.message : 'Không tải được nội dung văn bản';
+            setError(message);
         } 
         finally 
         {
@@ -95,7 +96,7 @@ const VBPLDetailPage: React.FC = () =>
         return (
             <div key={unit.id} style={style} id={`unit-${unit.id}`} className="mb-2">
                 <div 
-                    className="text-gray-800 leading-relaxed text-lg"
+                    className="text-gray-200 leading-relaxed text-lg"
                     dangerouslySetInnerHTML={{ __html: md.render(unit.text || '') }}
                 />
                 {renderChildren(unit, depth)}
@@ -122,6 +123,19 @@ const VBPLDetailPage: React.FC = () =>
             <SimpleLayout>
                 <div className="flex justify-center items-center h-screen">
                     <Spin size="large" tip="Đang tải văn bản..." className="text-white" />
+                </div>
+            </SimpleLayout>
+        );
+    }
+
+    if (error) 
+    {
+        return (
+            <SimpleLayout>
+                <div className="text-center py-20 text-white">
+                    <Title level={3} className="text-white">Lỗi tải văn bản</Title>
+                    <p className="text-red-400 mb-4">{error}</p>
+                    <Button onClick={() => navigate('/vbpl')} ghost>Quay lại danh sách</Button>
                 </div>
             </SimpleLayout>
         );

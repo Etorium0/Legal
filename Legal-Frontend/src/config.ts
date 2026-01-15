@@ -65,3 +65,4 @@ export const getBackendUrl = (): string =>
 }
 
 export const API_BASE_URL = getBackendUrl() ? `${getBackendUrl()}/api/v1` : '/api/v1';
+export const LAW_API_BASE_URL = getBackendUrl() ? `${getBackendUrl()}/api/v1/law` : '/api/v1/law';

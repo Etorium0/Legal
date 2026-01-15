@@ -21,6 +21,7 @@ import (
 	"example.com/legallaw/internal/config"
 	"example.com/legallaw/internal/db"
 	"example.com/legallaw/internal/email"
+	"example.com/legallaw/internal/law"
 	"example.com/legallaw/internal/query"
 	"example.com/legallaw/internal/repository"
 	"example.com/legallaw/internal/service/chat"
@@ -123,6 +124,10 @@ func main() {
 
 	// Standard query routes
 	r.Mount("/api/v1/query", queryHTTP.Routes())
+
+	// Law document/unit routes
+	lawHTTP := law.NewHTTP(repo)
+	r.Mount("/api/v1/law", lawHTTP.Routes())
 
 	// Enhanced routes with streaming and chat history
 	r.Mount("/api/v2/chat", enhancedHTTP.EnhancedRoutes())

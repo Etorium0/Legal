@@ -1,7 +1,7 @@
 import { authService } from "./authService";
-import { API_BASE_URL } from "../config";
+import { LAW_API_BASE_URL } from "../config";
 
-const API_URL = `${API_BASE_URL}/query`;
+const API_URL = LAW_API_BASE_URL;
 
 export interface Document {
   id: string;

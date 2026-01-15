@@ -33,9 +33,17 @@
 
 @layer components {
 	.container { @apply mx-auto max-w-6xl px-4; }
-	.input-bar { @apply rounded-full border bg-white/90 backdrop-blur px-4 py-2 shadow-sm flex items-center gap-2; }
+	.input-bar { @apply rounded-full border bg-white/90 px-4 py-2 shadow-sm flex items-center gap-2; }
 	.input-bar-dark { @apply rounded-full border border-white/10 bg-white/5 px-4 py-2 shadow-sm flex items-center gap-2 text-white; }
 	.btn-pill { @apply inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium; }
+}
+
+/* Disable backdrop-blur on mobile/WebView to prevent rendering issues */
+@media (max-width: 768px) {
+	* {
+		-webkit-backdrop-filter: none !important;
+		backdrop-filter: none !important;
+	}
 }
 
 /* Custom Scrollbar */

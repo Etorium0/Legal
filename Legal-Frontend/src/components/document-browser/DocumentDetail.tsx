@@ -71,7 +71,7 @@ export const DocumentDetail: React.FC<DocumentDetailProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-0 sm:p-4 overflow-y-auto"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4 overflow-y-auto bg-[#0a0a0a]"
       onClick={() => setSelectedDoc(null)}
     >
       <div

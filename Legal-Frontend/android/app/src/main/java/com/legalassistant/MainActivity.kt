@@ -167,12 +167,13 @@ fun WebContainer(url: String, onCommand: (String) -> Unit, onReady: (WebView) ->
         modifier = Modifier.fillMaxSize(),
         factory = { ctx ->
             WebView(ctx).apply {
+                clearCache(true)
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
                 settings.allowFileAccess = true
                 settings.allowFileAccessFromFileURLs = true
                 settings.allowUniversalAccessFromFileURLs = true
-                settings.cacheMode = WebSettings.LOAD_DEFAULT
+                settings.cacheMode = WebSettings.LOAD_NO_CACHE
                 webChromeClient = object : WebChromeClient() {
                     override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
                         android.util.Log.d("WebViewConsole", "${consoleMessage?.message()} -- From line ${consoleMessage?.lineNumber()} of ${consoleMessage?.sourceId()}")

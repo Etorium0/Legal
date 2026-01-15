@@ -31,7 +31,7 @@ export const DocumentGrid: React.FC<DocumentGridProps> = ({
         {filteredDocs.map((doc) => (
           <div
             key={doc.id}
-            className="rounded-xl border border-white/10 bg-white/5 backdrop-blur p-6 hover:bg-white/10 transition-all group cursor-pointer"
+            className="rounded-xl border border-white/10 bg-slate-800/50 p-6 hover:bg-slate-800/70 transition-all group cursor-pointer"
             onClick={() => setSelectedDoc(doc)}
           >
             <div className="flex items-start justify-between mb-3">

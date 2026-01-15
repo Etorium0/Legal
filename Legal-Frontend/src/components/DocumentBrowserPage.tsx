@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import SimpleLayout from './SimpleLayout';
 import PhapDienView from './phapdien/PhapDienView';
 import { useDocumentBrowser } from '../hooks/useDocumentBrowser';
@@ -9,6 +10,12 @@ import { DocumentDetail } from './document-browser/DocumentDetail';
 
 const DocumentBrowserPage: React.FC = () =>
 {
+  const navigate = useNavigate();
+  const isAndroidWebView =
+    typeof navigator !== 'undefined' &&
+    navigator.userAgent.includes('Android') &&
+    navigator.userAgent.includes('wv');
+
   const {
     activeTab,
     setActiveTab,
@@ -126,7 +133,17 @@ const DocumentBrowserPage: React.FC = () =>
               loading={loading}
               error={error}
               filteredDocs={filteredDocs}
-              setSelectedDoc={setSelectedDoc}
+              setSelectedDoc={(doc) =>
+              {
+                if (isAndroidWebView)
+                {
+                  navigate(`/vbpl/${doc.id}`);
+                }
+                else
+                {
+                  setSelectedDoc(doc);
+                }
+              }}
             />
 
             {selectedDoc && (

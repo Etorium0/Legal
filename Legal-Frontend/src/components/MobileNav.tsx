@@ -31,7 +31,7 @@ const MobileNav: React.FC = () =>
   }
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 bg-slate-900/95 backdrop-blur-lg border-t border-white/10 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.5)] sm:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-50 bg-slate-900 border-t border-white/10 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.5)] sm:hidden">
       <div className="flex justify-around items-center h-16">
         <TabLink to="/home" label="Trang chủ" icon={<Home className="w-5 h-5" />} />
         <TabLink to="/documents" label="Tài liệu" icon={<FileText className="w-5 h-5" />} />

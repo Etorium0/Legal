@@ -83,6 +83,8 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    volumes:
+      - law_mysql_data:/var/lib/mysql
 
   phpmyadmin:
     image: phpmyadmin:latest
@@ -180,3 +182,6 @@ volumes:
   postgres_data:
   pantomatrix_outputs:
   pantomatrix_uploads:
+  law_mysql_data:
+    external: true
+    name: 09eb8ca337f6d2c7f7bdc40073343ee499f829bdc227d706a576f030a8638d4f
